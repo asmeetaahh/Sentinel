@@ -165,10 +165,22 @@ def _sample_severity_params(rng: np.random.Generator, event_type: str) -> tuple[
         params = {"gmv_mult_peak": gmv_peak, "new_customer_mult_peak": new_cust_peak}
         score = (gmv_peak - 1.3) / (2.5 - 1.3)
     elif event_type == "payment_method_shift":
+        # gmv_mult_peak is intentionally small and is NOT the scenario's
+        # primary signal — this is a payment-mix/operational-transition
+        # hard negative first, a mild GMV tailwind second. GMV growth is not
+        # guaranteed for any individual instance: ordinary trend/seasonality/
+        # noise (volatility_range up to 0.24) routinely dominates a peak
+        # multiplier this small. See docs/architecture/data_generation.md.
         shift_magnitude = rng.uniform(0.10, 0.35)
         gmv_peak = rng.uniform(1.02, 1.15)
         from_method_idx = rng.integers(0, 5)
         to_method_idx = rng.integers(0, 5)
+        while to_method_idx == from_method_idx:
+            # Resample so the scenario always has a real payment-mix effect
+            # to observe — a same-method "shift" was a no-op bug: it still
+            # recorded a nonzero severity_score and affects=payment_mix,gmv
+            # despite zero actual payment-mix change.
+            to_method_idx = rng.integers(0, 5)
         params = {
             "shift_magnitude_peak": shift_magnitude,
             "gmv_mult_peak": gmv_peak,

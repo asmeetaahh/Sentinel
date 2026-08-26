@@ -204,6 +204,28 @@ def test_events_do_not_self_overlap_per_merchant(small_dataset):
             prev_end = row["recovery_end_date"]
 
 
+def test_payment_method_shift_never_has_identical_source_and_destination(benchmark_dataset):
+    """Regression guard: _sample_severity_params() used to draw
+    from_method_idx/to_method_idx independently, so ~1-in-5 instances were a
+    silent no-op (recorded as a real scenario with nonzero severity and
+    affects=payment_mix,gmv, but zero actual payment-mix effect). Fixed by
+    resampling until they differ — see events.py.
+    """
+    from ml.data_generation.events import schedule_events_for_merchant
+
+    pms_events = benchmark_dataset.events[benchmark_dataset.events["event_type"] == "payment_method_shift"]
+    assert len(pms_events) > 0
+
+    merchant_ids = benchmark_dataset.merchants["merchant_id"].tolist()
+    for idx, merchant_id in enumerate(merchant_ids):
+        events = schedule_events_for_merchant(
+            seed=benchmark_dataset.seed, merchant_idx=idx, merchant_id=merchant_id, n_days=benchmark_dataset.n_days
+        )
+        for ev in events:
+            if ev.event_type == "payment_method_shift":
+                assert ev.params["from_method_idx"] != ev.params["to_method_idx"], (merchant_id, ev.event_id)
+
+
 def test_all_nine_event_types_appear_in_benchmark_run(benchmark_dataset):
     observed = set(benchmark_dataset.events["event_type"].unique())
     assert observed == set(cfg.EVENT_TYPES.keys())

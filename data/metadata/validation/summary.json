@@ -1,0 +1,2042 @@
+{
+  "1_structure": {
+    "n_merchants": 50,
+    "n_daily_rows": 9000,
+    "days_per_merchant": {
+      "min": 180,
+      "max": 180
+    },
+    "date_range": {
+      "min": "2024-01-01",
+      "max": "2024-06-28"
+    },
+    "merchants_with_day_index_gaps": 0,
+    "merchants_with_date_gaps": 0,
+    "duplicates": {
+      "merchant_ids": 0,
+      "daily_merchant_date_rows": 0,
+      "event_ids": 0,
+      "label_merchant_asof_horizon_rows": 0
+    },
+    "null_counts": {
+      "merchants": {},
+      "daily": {},
+      "events": {},
+      "labels": {}
+    },
+    "schema_column_mismatch": {
+      "merchants": [],
+      "daily": [],
+      "events": [],
+      "labels": []
+    },
+    "dtypes": {
+      "merchants": {
+        "merchant_id": "str",
+        "archetype": "str",
+        "business_tier": "str",
+        "signup_date": "datetime64[us]",
+        "baseline_daily_gmv": "float64",
+        "baseline_daily_txn_count": "float64",
+        "baseline_aov": "float64",
+        "baseline_refund_rate": "float64",
+        "baseline_chargeback_rate": "float64",
+        "baseline_fulfillment_delay_days": "float64",
+        "baseline_on_time_rate": "float64",
+        "baseline_new_customer_rate": "float64",
+        "baseline_pct_pay_card": "float64",
+        "baseline_pct_pay_upi": "float64",
+        "baseline_pct_pay_netbanking": "float64",
+        "baseline_pct_pay_wallet": "float64",
+        "baseline_pct_pay_bnpl": "float64",
+        "annual_growth_rate": "float64",
+        "volatility_factor": "float64",
+        "liquidity_buffer_days": "float64",
+        "settlement_cycle_days": "int64",
+        "weekly_seasonality_profile": "str"
+      },
+      "daily": {
+        "merchant_id": "str",
+        "date": "datetime64[us]",
+        "day_index": "int64",
+        "gmv": "float64",
+        "transaction_count": "int64",
+        "aov": "float64",
+        "refund_count": "int64",
+        "refund_amount": "float64",
+        "refund_rate": "float64",
+        "chargeback_count": "int64",
+        "chargeback_amount": "float64",
+        "chargeback_rate": "float64",
+        "fulfillment_delay_avg_days": "float64",
+        "fulfillment_on_time_rate": "float64",
+        "customer_count": "int64",
+        "new_customers": "int64",
+        "returning_customers": "int64",
+        "new_customer_rate": "float64",
+        "pct_pay_card": "float64",
+        "pct_pay_upi": "float64",
+        "pct_pay_netbanking": "float64",
+        "pct_pay_wallet": "float64",
+        "pct_pay_bnpl": "float64",
+        "liquidity_balance": "float64",
+        "pending_settlement_amount": "float64"
+      },
+      "events": {
+        "event_id": "str",
+        "merchant_id": "str",
+        "event_type": "str",
+        "category": "str",
+        "hard_negative": "bool",
+        "shape": "str",
+        "start_date": "datetime64[us]",
+        "end_date": "datetime64[us]",
+        "recovery_end_date": "datetime64[us]",
+        "duration_days": "int64",
+        "severity_score": "float64",
+        "affects": "str",
+        "description": "str"
+      },
+      "labels": {
+        "merchant_id": "str",
+        "as_of_date": "datetime64[us]",
+        "day_index": "int64",
+        "horizon_days": "int64",
+        "future_chargeback_amount": "float64",
+        "future_chargeback_rate": "float64",
+        "future_transaction_count": "int64",
+        "baseline_daily_gmv_trailing": "float64",
+        "baseline_daily_chargeback_amount_trailing": "float64",
+        "baseline_chargeback_rate_trailing": "float64",
+        "elevation_ratio_amount": "float64",
+        "elevation_ratio_rate": "float64",
+        "label_elevated_chargeback": "int64"
+      }
+    },
+    "impossible_or_inconsistent_values": {
+      "negative_gmv": 0,
+      "negative_transaction_count": 0,
+      "negative_refund_amount": 0,
+      "negative_chargeback_amount": 0,
+      "negative_liquidity_balance": 0,
+      "refund_amount_exceeds_gmv": 0,
+      "refund_count_exceeds_transactions": 0,
+      "chargeback_count_exceeds_transactions": 0,
+      "chargeback_amount_exceeds_gmv_same_day": 10,
+      "customer_split_inconsistent": 0,
+      "aov_times_txn_not_equal_gmv": 0,
+      "payment_mix_not_summing_to_one": 0,
+      "rates_out_of_unit_interval": {
+        "refund_rate": 0,
+        "chargeback_rate": 0,
+        "fulfillment_on_time_rate": 0,
+        "new_customer_rate": 0
+      },
+      "self_overlapping_events_per_merchant": 0
+    }
+  },
+  "2_archetypes": {
+    "merchant_counts_by_archetype": {
+      "D2C Fashion": 7,
+      "Electronics": 7,
+      "SaaS": 6,
+      "Travel": 6,
+      "Marketplace": 6,
+      "Education": 6,
+      "Quick Commerce": 6,
+      "Digital Goods": 6
+    },
+    "mean_merchants_per_archetype": 6.25,
+    "archetypes_below_70pct_of_mean": {},
+    "note": "50 merchants across 8 archetypes gives ~6-7 merchants/archetype by construction (even allocation, not random) \u2014 inherently small per-archetype N at this benchmark size, not a generator defect.",
+    "median_behavior_by_archetype": {
+      "gmv": {
+        "D2C Fashion": 20384.749076,
+        "Digital Goods": 7566.086928,
+        "Education": 17637.446082,
+        "Electronics": 25035.602302,
+        "Marketplace": 27569.522068,
+        "Quick Commerce": 27674.663183,
+        "SaaS": 13232.128963,
+        "Travel": 21522.207337
+      },
+      "aov": {
+        "D2C Fashion": 1476.570194,
+        "Digital Goods": 2172.506895,
+        "Education": 1739.230513,
+        "Electronics": 5091.159171,
+        "Marketplace": 1403.245871,
+        "Quick Commerce": 657.33771,
+        "SaaS": 2473.200365,
+        "Travel": 7655.052357
+      },
+      "refund_rate": {
+        "D2C Fashion": 0.111111,
+        "Digital Goods": 0.0,
+        "Education": 0.0,
+        "Electronics": 0.0,
+        "Marketplace": 0.083333,
+        "Quick Commerce": 0.038462,
+        "SaaS": 0.0,
+        "Travel": 0.0
+      },
+      "chargeback_rate": {
+        "D2C Fashion": 0.0,
+        "Digital Goods": 0.0,
+        "Education": 0.0,
+        "Electronics": 0.0,
+        "Marketplace": 0.0,
+        "Quick Commerce": 0.0,
+        "SaaS": 0.0,
+        "Travel": 0.0
+      },
+      "fulfillment_on_time_rate": {
+        "D2C Fashion": 0.875382,
+        "Digital Goods": 0.976252,
+        "Education": 0.930727,
+        "Electronics": 0.881456,
+        "Marketplace": 0.813633,
+        "Quick Commerce": 0.92846,
+        "SaaS": 0.970988,
+        "Travel": 0.931028
+      },
+      "new_customer_rate": {
+        "D2C Fashion": 0.5,
+        "Digital Goods": 0.428571,
+        "Education": 0.315789,
+        "Electronics": 0.4,
+        "Marketplace": 0.308167,
+        "Quick Commerce": 0.485366,
+        "SaaS": 0.2,
+        "Travel": 0.333333
+      }
+    }
+  },
+  "3_core_distributions": {
+    "transaction_count": {
+      "count": 9000,
+      "mean": 16.363777777777777,
+      "std": 22.08238267936268,
+      "min": 1.0,
+      "p10": 2.0,
+      "p25": 4.0,
+      "median": 10.0,
+      "p75": 19.0,
+      "p90": 36.0,
+      "p99": 107.01000000000022,
+      "max": 291.0
+    },
+    "gmv": {
+      "count": 9000,
+      "mean": 25439.909523690323,
+      "std": 24882.97924556647,
+      "min": 2167.814477929772,
+      "p10": 7332.131897260929,
+      "p25": 11459.283108098296,
+      "median": 19648.65617853259,
+      "p75": 30231.891210925707,
+      "p90": 45734.948350896724,
+      "p99": 134310.39549975304,
+      "max": 323329.454734359
+    },
+    "aov": {
+      "count": 9000,
+      "mean": 3046.7183744938816,
+      "std": 3051.7341202936996,
+      "min": 270.69106255276785,
+      "p10": 705.85532250243,
+      "p25": 1078.623514893634,
+      "median": 2049.29556959597,
+      "p75": 4062.201861230311,
+      "p90": 6152.044444128951,
+      "p99": 15358.992387494547,
+      "max": 20635.105257002197
+    },
+    "refund_count": {
+      "count": 9000,
+      "mean": 1.067,
+      "std": 1.6872543715000463,
+      "min": 0.0,
+      "p10": 0.0,
+      "p25": 0.0,
+      "median": 0.0,
+      "p75": 2.0,
+      "p90": 3.0,
+      "p99": 8.0,
+      "max": 15.0
+    },
+    "refund_rate": {
+      "count": 9000,
+      "mean": 0.070816925616204,
+      "std": 0.1275314404962043,
+      "min": 0.0,
+      "p10": 0.0,
+      "p25": 0.0,
+      "median": 0.0,
+      "p75": 0.1,
+      "p90": 0.2,
+      "p99": 0.5555555555555556,
+      "max": 1.0
+    },
+    "chargeback_count": {
+      "count": 9000,
+      "mean": 0.11611111111111111,
+      "std": 0.3717529181116902,
+      "min": 0.0,
+      "p10": 0.0,
+      "p25": 0.0,
+      "median": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "p99": 2.0,
+      "max": 4.0
+    },
+    "chargeback_rate": {
+      "count": 9000,
+      "mean": 0.009434848306295021,
+      "std": 0.05416778888356192,
+      "min": 0.0,
+      "p10": 0.0,
+      "p25": 0.0,
+      "median": 0.0,
+      "p75": 0.0,
+      "p90": 0.0064228255404726355,
+      "p99": 0.2,
+      "max": 1.0
+    },
+    "fulfillment_on_time_rate": {
+      "count": 9000,
+      "mean": 0.893287740767491,
+      "std": 0.09902690026235145,
+      "min": 0.3603782525636605,
+      "p10": 0.7970222767650199,
+      "p25": 0.8562003513828795,
+      "median": 0.9180771447039314,
+      "p75": 0.9560186905500534,
+      "p90": 0.982414036763606,
+      "p99": 0.999,
+      "max": 0.999
+    },
+    "fulfillment_delay_avg_days": {
+      "count": 9000,
+      "mean": 1.5412455349829939,
+      "std": 1.6268709829590717,
+      "min": 0.0,
+      "p10": 0.0,
+      "p25": 0.17500001226622836,
+      "median": 0.8053827172966801,
+      "p75": 2.654876189649158,
+      "p90": 4.040210379689644,
+      "p99": 6.0339084668856815,
+      "max": 8.569438214376465
+    },
+    "new_customer_rate": {
+      "count": 9000,
+      "mean": 0.3656645051004872,
+      "std": 0.17900789234816633,
+      "min": 0.0,
+      "p10": 0.0833333333333333,
+      "p25": 0.2666666666666666,
+      "median": 0.375,
+      "p75": 0.5,
+      "p90": 0.5555555555555556,
+      "p99": 0.9090909090909092,
+      "max": 1.0
+    },
+    "liquidity_balance": {
+      "count": 9000,
+      "mean": 222060.32412844824,
+      "std": 281177.5741497812,
+      "min": 28960.662469992232,
+      "p10": 50465.075804812455,
+      "p25": 87898.12580033699,
+      "median": 162255.07487389777,
+      "p75": 266397.4936359885,
+      "p90": 381766.83373366535,
+      "p99": 1894377.82517469,
+      "max": 2840922.299506619
+    },
+    "pending_settlement_amount": {
+      "count": 9000,
+      "mean": 73512.07133444145,
+      "std": 76112.05792824815,
+      "min": 1286.2168718446271,
+      "p10": 12477.542175319617,
+      "p25": 22908.227440266033,
+      "median": 52784.099480189616,
+      "p75": 93618.90417948253,
+      "p90": 154895.26261082882,
+      "p99": 413894.77598058165,
+      "max": 714821.1465594245
+    },
+    "_gap_international_customer_share": "NOT PRESENT in this benchmark. The generator models new_customers/returning_customers only; there is no domestic/international split anywhere in the schema. Reported here as a documented gap rather than fabricated or silently skipped."
+  },
+  "4_scenarios": {
+    "event_counts_by_type": {
+      "festival_growth": 26,
+      "fulfillment_degradation": 21,
+      "chargeback_deterioration": 18,
+      "refund_shock": 17,
+      "compound_risk": 16,
+      "viral_campaign": 13,
+      "payment_method_shift": 11,
+      "product_launch": 10,
+      "customer_mix_shift": 8
+    },
+    "duration_days_by_type": {
+      "chargeback_deterioration": {
+        "count": 18,
+        "mean": 29.5,
+        "std": 7.617703838080468,
+        "min": 20.0,
+        "p10": 22.0,
+        "p25": 23.25,
+        "median": 27.0,
+        "p75": 34.5,
+        "p90": 42.3,
+        "p99": 43.83,
+        "max": 44.0
+      },
+      "compound_risk": {
+        "count": 16,
+        "mean": 38.75,
+        "std": 8.386497083606082,
+        "min": 25.0,
+        "p10": 28.0,
+        "p25": 32.75,
+        "median": 40.0,
+        "p75": 45.5,
+        "p90": 49.0,
+        "p99": 49.85,
+        "max": 50.0
+      },
+      "customer_mix_shift": {
+        "count": 8,
+        "mean": 30.0,
+        "std": 7.708992893275452,
+        "min": 22.0,
+        "p10": 22.0,
+        "p25": 23.5,
+        "median": 29.0,
+        "p75": 36.5,
+        "p90": 38.6,
+        "p99": 39.86,
+        "max": 40.0
+      },
+      "festival_growth": {
+        "count": 26,
+        "mean": 14.26923076923077,
+        "std": 4.02549566943195,
+        "min": 7.0,
+        "p10": 10.5,
+        "p25": 11.0,
+        "median": 13.0,
+        "p75": 17.75,
+        "p90": 20.0,
+        "p99": 20.75,
+        "max": 21.0
+      },
+      "fulfillment_degradation": {
+        "count": 21,
+        "mean": 26.714285714285715,
+        "std": 8.03207854258695,
+        "min": 15.0,
+        "p10": 18.0,
+        "p25": 20.0,
+        "median": 26.0,
+        "p75": 31.0,
+        "p90": 39.0,
+        "p99": 40.0,
+        "max": 40.0
+      },
+      "payment_method_shift": {
+        "count": 11,
+        "mean": 45.09090909090909,
+        "std": 10.774549136316985,
+        "min": 30.0,
+        "p10": 31.0,
+        "p25": 37.0,
+        "median": 42.0,
+        "p75": 53.5,
+        "p90": 58.0,
+        "p99": 59.8,
+        "max": 60.0
+      },
+      "product_launch": {
+        "count": 10,
+        "mean": 45.5,
+        "std": 8.462334849857402,
+        "min": 36.0,
+        "p10": 36.0,
+        "p25": 38.0,
+        "median": 43.0,
+        "p75": 53.75,
+        "p90": 55.2,
+        "p99": 56.82,
+        "max": 57.0
+      },
+      "refund_shock": {
+        "count": 17,
+        "mean": 11.647058823529411,
+        "std": 4.443269861129698,
+        "min": 5.0,
+        "p10": 6.6,
+        "p25": 8.0,
+        "median": 11.0,
+        "p75": 16.0,
+        "p90": 16.8,
+        "p99": 19.68,
+        "max": 20.0
+      },
+      "viral_campaign": {
+        "count": 13,
+        "mean": 9.692307692307692,
+        "std": 3.4492659940103048,
+        "min": 5.0,
+        "p10": 5.2,
+        "p25": 7.0,
+        "median": 10.0,
+        "p75": 12.0,
+        "p90": 14.600000000000001,
+        "p99": 15.0,
+        "max": 15.0
+      }
+    },
+    "severity_score_by_type": {
+      "chargeback_deterioration": {
+        "count": 18,
+        "mean": 0.49377672370485765,
+        "std": 0.29624409770732296,
+        "min": 0.0439876881794346,
+        "p10": 0.11308615383501615,
+        "p25": 0.2713661170591545,
+        "median": 0.47512633266722004,
+        "p75": 0.7112611474956948,
+        "p90": 0.8977130546608229,
+        "p99": 0.923785290824609,
+        "max": 0.9250896531815176
+      },
+      "compound_risk": {
+        "count": 16,
+        "mean": 0.6364939114916095,
+        "std": 0.2235890407598026,
+        "min": 0.1710586888073307,
+        "p10": 0.39309253741496675,
+        "p25": 0.4402167371196951,
+        "median": 0.6423843552666157,
+        "p75": 0.8412547892598692,
+        "p90": 0.8766353222719601,
+        "p99": 0.9125932352362393,
+        "max": 0.9183090812701036
+      },
+      "customer_mix_shift": {
+        "count": 8,
+        "mean": 0.46247045446022017,
+        "std": 0.26424777917822173,
+        "min": 0.1206814020260894,
+        "p10": 0.15272153129920304,
+        "p25": 0.22564877351234622,
+        "median": 0.5128324200618588,
+        "p75": 0.6038914119375285,
+        "p90": 0.7775217241800638,
+        "p99": 0.8285839748667511,
+        "max": 0.834257558276383
+      },
+      "festival_growth": {
+        "count": 26,
+        "mean": 0.5285291265840756,
+        "std": 0.263657610646754,
+        "min": 0.0517506958813646,
+        "p10": 0.19034448972860724,
+        "p25": 0.3039030517135256,
+        "median": 0.5433037351338714,
+        "p75": 0.7267883257157651,
+        "p90": 0.8737241123673269,
+        "p99": 0.9731679372175158,
+        "max": 0.9960928202445014
+      },
+      "fulfillment_degradation": {
+        "count": 21,
+        "mean": 0.5651856188576698,
+        "std": 0.3552122783959551,
+        "min": 0.0678482676212908,
+        "p10": 0.1232176675684938,
+        "p25": 0.1819397454543467,
+        "median": 0.7071101875876825,
+        "p75": 0.8777738624207369,
+        "p90": 0.9690920410132824,
+        "p99": 0.9934659084728298,
+        "max": 0.9986676029068566
+      },
+      "payment_method_shift": {
+        "count": 11,
+        "mean": 0.5090145679357457,
+        "std": 0.2766003639168668,
+        "min": 0.0174097264384477,
+        "p10": 0.3246349170087605,
+        "p25": 0.3322604200184611,
+        "median": 0.4340512183626062,
+        "p75": 0.6759491142496286,
+        "p90": 0.8152461574831245,
+        "p99": 0.9757154513434294,
+        "max": 0.9935453728834632
+      },
+      "product_launch": {
+        "count": 10,
+        "mean": 0.48048661080892635,
+        "std": 0.2773722244045095,
+        "min": 0.0435891169688031,
+        "p10": 0.0837085882264894,
+        "p25": 0.2682064494670816,
+        "median": 0.5847006847115299,
+        "p75": 0.6189467065267986,
+        "p90": 0.727258697522378,
+        "p99": 0.8553293027445802,
+        "max": 0.8695593699914915
+      },
+      "refund_shock": {
+        "count": 17,
+        "mean": 0.5981067981469569,
+        "std": 0.30311038020561587,
+        "min": 0.0430998009506088,
+        "p10": 0.20561293960207067,
+        "p25": 0.4279768700804154,
+        "median": 0.5602714019297853,
+        "p75": 0.8743663992442205,
+        "p90": 0.9579653754570259,
+        "p99": 0.9839965543120277,
+        "max": 0.9858837013990148
+      },
+      "viral_campaign": {
+        "count": 13,
+        "mean": 0.5043439086846512,
+        "std": 0.2814351363803204,
+        "min": 0.0229888978649535,
+        "p10": 0.08254183593393387,
+        "p25": 0.3424471842678919,
+        "median": 0.500366469917761,
+        "p75": 0.746414238921121,
+        "p90": 0.8404065093432475,
+        "p99": 0.8614921141595893,
+        "max": 0.8626623343917045
+      }
+    },
+    "archetype_x_event_type_crosstab": {
+      "chargeback_deterioration": {
+        "D2C Fashion": 0,
+        "Digital Goods": 4,
+        "Education": 0,
+        "Electronics": 1,
+        "Marketplace": 0,
+        "Quick Commerce": 2,
+        "SaaS": 5,
+        "Travel": 6
+      },
+      "compound_risk": {
+        "D2C Fashion": 1,
+        "Digital Goods": 2,
+        "Education": 0,
+        "Electronics": 4,
+        "Marketplace": 3,
+        "Quick Commerce": 2,
+        "SaaS": 3,
+        "Travel": 1
+      },
+      "customer_mix_shift": {
+        "D2C Fashion": 1,
+        "Digital Goods": 4,
+        "Education": 0,
+        "Electronics": 0,
+        "Marketplace": 0,
+        "Quick Commerce": 1,
+        "SaaS": 2,
+        "Travel": 0
+      },
+      "festival_growth": {
+        "D2C Fashion": 6,
+        "Digital Goods": 1,
+        "Education": 4,
+        "Electronics": 3,
+        "Marketplace": 5,
+        "Quick Commerce": 1,
+        "SaaS": 2,
+        "Travel": 4
+      },
+      "fulfillment_degradation": {
+        "D2C Fashion": 3,
+        "Digital Goods": 2,
+        "Education": 3,
+        "Electronics": 3,
+        "Marketplace": 3,
+        "Quick Commerce": 3,
+        "SaaS": 2,
+        "Travel": 2
+      },
+      "payment_method_shift": {
+        "D2C Fashion": 1,
+        "Digital Goods": 1,
+        "Education": 3,
+        "Electronics": 2,
+        "Marketplace": 2,
+        "Quick Commerce": 1,
+        "SaaS": 0,
+        "Travel": 1
+      },
+      "product_launch": {
+        "D2C Fashion": 2,
+        "Digital Goods": 1,
+        "Education": 1,
+        "Electronics": 2,
+        "Marketplace": 1,
+        "Quick Commerce": 1,
+        "SaaS": 0,
+        "Travel": 2
+      },
+      "refund_shock": {
+        "D2C Fashion": 2,
+        "Digital Goods": 2,
+        "Education": 2,
+        "Electronics": 2,
+        "Marketplace": 3,
+        "Quick Commerce": 5,
+        "SaaS": 1,
+        "Travel": 0
+      },
+      "viral_campaign": {
+        "D2C Fashion": 2,
+        "Digital Goods": 4,
+        "Education": 1,
+        "Electronics": 2,
+        "Marketplace": 0,
+        "Quick Commerce": 1,
+        "SaaS": 2,
+        "Travel": 1
+      }
+    },
+    "concentration_by_type": {
+      "chargeback_deterioration": {
+        "n_events": 18,
+        "n_distinct_merchants": 14,
+        "events_per_merchant_that_has_it": 1.29
+      },
+      "compound_risk": {
+        "n_events": 16,
+        "n_distinct_merchants": 14,
+        "events_per_merchant_that_has_it": 1.14
+      },
+      "customer_mix_shift": {
+        "n_events": 8,
+        "n_distinct_merchants": 7,
+        "events_per_merchant_that_has_it": 1.14
+      },
+      "festival_growth": {
+        "n_events": 26,
+        "n_distinct_merchants": 20,
+        "events_per_merchant_that_has_it": 1.3
+      },
+      "fulfillment_degradation": {
+        "n_events": 21,
+        "n_distinct_merchants": 19,
+        "events_per_merchant_that_has_it": 1.11
+      },
+      "payment_method_shift": {
+        "n_events": 11,
+        "n_distinct_merchants": 11,
+        "events_per_merchant_that_has_it": 1.0
+      },
+      "product_launch": {
+        "n_events": 10,
+        "n_distinct_merchants": 9,
+        "events_per_merchant_that_has_it": 1.11
+      },
+      "refund_shock": {
+        "n_events": 17,
+        "n_distinct_merchants": 17,
+        "events_per_merchant_that_has_it": 1.0
+      },
+      "viral_campaign": {
+        "n_events": 13,
+        "n_distinct_merchants": 13,
+        "events_per_merchant_that_has_it": 1.0
+      }
+    },
+    "archetype_share_of_events_by_type": {
+      "chargeback_deterioration": {
+        "Digital Goods": {
+          "observed_share": 0.222,
+          "expected_share_if_uniform": 0.15
+        },
+        "Electronics": {
+          "observed_share": 0.056,
+          "expected_share_if_uniform": 0.136
+        },
+        "D2C Fashion": {
+          "observed_share": 0.0,
+          "expected_share_if_uniform": 0.129
+        },
+        "SaaS": {
+          "observed_share": 0.278,
+          "expected_share_if_uniform": 0.121
+        },
+        "Travel": {
+          "observed_share": 0.333,
+          "expected_share_if_uniform": 0.121
+        },
+        "Marketplace": {
+          "observed_share": 0.0,
+          "expected_share_if_uniform": 0.121
+        },
+        "Quick Commerce": {
+          "observed_share": 0.111,
+          "expected_share_if_uniform": 0.121
+        },
+        "Education": {
+          "observed_share": 0.0,
+          "expected_share_if_uniform": 0.1
+        }
+      },
+      "compound_risk": {
+        "Digital Goods": {
+          "observed_share": 0.125,
+          "expected_share_if_uniform": 0.15
+        },
+        "Electronics": {
+          "observed_share": 0.25,
+          "expected_share_if_uniform": 0.136
+        },
+        "D2C Fashion": {
+          "observed_share": 0.062,
+          "expected_share_if_uniform": 0.129
+        },
+        "SaaS": {
+          "observed_share": 0.188,
+          "expected_share_if_uniform": 0.121
+        },
+        "Travel": {
+          "observed_share": 0.062,
+          "expected_share_if_uniform": 0.121
+        },
+        "Marketplace": {
+          "observed_share": 0.188,
+          "expected_share_if_uniform": 0.121
+        },
+        "Quick Commerce": {
+          "observed_share": 0.125,
+          "expected_share_if_uniform": 0.121
+        },
+        "Education": {
+          "observed_share": 0.0,
+          "expected_share_if_uniform": 0.1
+        }
+      },
+      "customer_mix_shift": {
+        "Digital Goods": {
+          "observed_share": 0.5,
+          "expected_share_if_uniform": 0.15
+        },
+        "Electronics": {
+          "observed_share": 0.0,
+          "expected_share_if_uniform": 0.136
+        },
+        "D2C Fashion": {
+          "observed_share": 0.125,
+          "expected_share_if_uniform": 0.129
+        },
+        "SaaS": {
+          "observed_share": 0.25,
+          "expected_share_if_uniform": 0.121
+        },
+        "Travel": {
+          "observed_share": 0.0,
+          "expected_share_if_uniform": 0.121
+        },
+        "Marketplace": {
+          "observed_share": 0.0,
+          "expected_share_if_uniform": 0.121
+        },
+        "Quick Commerce": {
+          "observed_share": 0.125,
+          "expected_share_if_uniform": 0.121
+        },
+        "Education": {
+          "observed_share": 0.0,
+          "expected_share_if_uniform": 0.1
+        }
+      },
+      "festival_growth": {
+        "Digital Goods": {
+          "observed_share": 0.038,
+          "expected_share_if_uniform": 0.15
+        },
+        "Electronics": {
+          "observed_share": 0.115,
+          "expected_share_if_uniform": 0.136
+        },
+        "D2C Fashion": {
+          "observed_share": 0.231,
+          "expected_share_if_uniform": 0.129
+        },
+        "SaaS": {
+          "observed_share": 0.077,
+          "expected_share_if_uniform": 0.121
+        },
+        "Travel": {
+          "observed_share": 0.154,
+          "expected_share_if_uniform": 0.121
+        },
+        "Marketplace": {
+          "observed_share": 0.192,
+          "expected_share_if_uniform": 0.121
+        },
+        "Quick Commerce": {
+          "observed_share": 0.038,
+          "expected_share_if_uniform": 0.121
+        },
+        "Education": {
+          "observed_share": 0.154,
+          "expected_share_if_uniform": 0.1
+        }
+      },
+      "fulfillment_degradation": {
+        "Digital Goods": {
+          "observed_share": 0.095,
+          "expected_share_if_uniform": 0.15
+        },
+        "Electronics": {
+          "observed_share": 0.143,
+          "expected_share_if_uniform": 0.136
+        },
+        "D2C Fashion": {
+          "observed_share": 0.143,
+          "expected_share_if_uniform": 0.129
+        },
+        "SaaS": {
+          "observed_share": 0.095,
+          "expected_share_if_uniform": 0.121
+        },
+        "Travel": {
+          "observed_share": 0.095,
+          "expected_share_if_uniform": 0.121
+        },
+        "Marketplace": {
+          "observed_share": 0.143,
+          "expected_share_if_uniform": 0.121
+        },
+        "Quick Commerce": {
+          "observed_share": 0.143,
+          "expected_share_if_uniform": 0.121
+        },
+        "Education": {
+          "observed_share": 0.143,
+          "expected_share_if_uniform": 0.1
+        }
+      },
+      "payment_method_shift": {
+        "Digital Goods": {
+          "observed_share": 0.091,
+          "expected_share_if_uniform": 0.15
+        },
+        "Electronics": {
+          "observed_share": 0.182,
+          "expected_share_if_uniform": 0.136
+        },
+        "D2C Fashion": {
+          "observed_share": 0.091,
+          "expected_share_if_uniform": 0.129
+        },
+        "SaaS": {
+          "observed_share": 0.0,
+          "expected_share_if_uniform": 0.121
+        },
+        "Travel": {
+          "observed_share": 0.091,
+          "expected_share_if_uniform": 0.121
+        },
+        "Marketplace": {
+          "observed_share": 0.182,
+          "expected_share_if_uniform": 0.121
+        },
+        "Quick Commerce": {
+          "observed_share": 0.091,
+          "expected_share_if_uniform": 0.121
+        },
+        "Education": {
+          "observed_share": 0.273,
+          "expected_share_if_uniform": 0.1
+        }
+      },
+      "product_launch": {
+        "Digital Goods": {
+          "observed_share": 0.1,
+          "expected_share_if_uniform": 0.15
+        },
+        "Electronics": {
+          "observed_share": 0.2,
+          "expected_share_if_uniform": 0.136
+        },
+        "D2C Fashion": {
+          "observed_share": 0.2,
+          "expected_share_if_uniform": 0.129
+        },
+        "SaaS": {
+          "observed_share": 0.0,
+          "expected_share_if_uniform": 0.121
+        },
+        "Travel": {
+          "observed_share": 0.2,
+          "expected_share_if_uniform": 0.121
+        },
+        "Marketplace": {
+          "observed_share": 0.1,
+          "expected_share_if_uniform": 0.121
+        },
+        "Quick Commerce": {
+          "observed_share": 0.1,
+          "expected_share_if_uniform": 0.121
+        },
+        "Education": {
+          "observed_share": 0.1,
+          "expected_share_if_uniform": 0.1
+        }
+      },
+      "refund_shock": {
+        "Digital Goods": {
+          "observed_share": 0.118,
+          "expected_share_if_uniform": 0.15
+        },
+        "Electronics": {
+          "observed_share": 0.118,
+          "expected_share_if_uniform": 0.136
+        },
+        "D2C Fashion": {
+          "observed_share": 0.118,
+          "expected_share_if_uniform": 0.129
+        },
+        "SaaS": {
+          "observed_share": 0.059,
+          "expected_share_if_uniform": 0.121
+        },
+        "Travel": {
+          "observed_share": 0.0,
+          "expected_share_if_uniform": 0.121
+        },
+        "Marketplace": {
+          "observed_share": 0.176,
+          "expected_share_if_uniform": 0.121
+        },
+        "Quick Commerce": {
+          "observed_share": 0.294,
+          "expected_share_if_uniform": 0.121
+        },
+        "Education": {
+          "observed_share": 0.118,
+          "expected_share_if_uniform": 0.1
+        }
+      },
+      "viral_campaign": {
+        "Digital Goods": {
+          "observed_share": 0.308,
+          "expected_share_if_uniform": 0.15
+        },
+        "Electronics": {
+          "observed_share": 0.154,
+          "expected_share_if_uniform": 0.136
+        },
+        "D2C Fashion": {
+          "observed_share": 0.154,
+          "expected_share_if_uniform": 0.129
+        },
+        "SaaS": {
+          "observed_share": 0.154,
+          "expected_share_if_uniform": 0.121
+        },
+        "Travel": {
+          "observed_share": 0.077,
+          "expected_share_if_uniform": 0.121
+        },
+        "Marketplace": {
+          "observed_share": 0.0,
+          "expected_share_if_uniform": 0.121
+        },
+        "Quick Commerce": {
+          "observed_share": 0.077,
+          "expected_share_if_uniform": 0.121
+        },
+        "Education": {
+          "observed_share": 0.077,
+          "expected_share_if_uniform": 0.1
+        }
+      }
+    },
+    "fulfillment_degradation_events_on_saas_or_digital_goods": 4,
+    "note_event_assignment_is_archetype_agnostic": "Event types are sampled from one global weight distribution (config.EVENT_TYPE_WEIGHTS) independent of archetype. This means, e.g., fulfillment_degradation can land on a SaaS or Digital Goods merchant whose baseline fulfillment delay is ~0 \u2014 mechanically harmless (values stay bounded) but semantically a weaker fit than for a physical-goods archetype. See fulfillment_degradation_events_on_saas_or_digital_goods above for how often this occurs.",
+    "pooled_effect_table": [
+      {
+        "active_event_type": "festival_growth",
+        "category": "benign_growth",
+        "n_merchant_days": 508,
+        "n_distinct_merchants": 20,
+        "gmv_ratio_vs_baseline": 2.01127197878358,
+        "transaction_count_ratio_vs_baseline": 2.0742764952805444,
+        "new_customer_rate_ratio_vs_baseline": 1.0179388020110867,
+        "chargeback_rate_ratio_vs_baseline": 1.0338576713857068,
+        "refund_rate_ratio_vs_baseline": 0.9861527258294552,
+        "fulfillment_on_time_rate_delta_vs_baseline": 0.001357192791493489
+      },
+      {
+        "active_event_type": "payment_method_shift",
+        "category": "benign_growth",
+        "n_merchant_days": 525,
+        "n_distinct_merchants": 11,
+        "gmv_ratio_vs_baseline": 1.1385582870041313,
+        "transaction_count_ratio_vs_baseline": 1.1285735334143348,
+        "new_customer_rate_ratio_vs_baseline": 0.9682371743506469,
+        "chargeback_rate_ratio_vs_baseline": 1.1702190916542623,
+        "refund_rate_ratio_vs_baseline": 1.0314342243056054,
+        "fulfillment_on_time_rate_delta_vs_baseline": 0.0002705027420731865
+      },
+      {
+        "active_event_type": "product_launch",
+        "category": "benign_growth",
+        "n_merchant_days": 506,
+        "n_distinct_merchants": 9,
+        "gmv_ratio_vs_baseline": 1.8868787140840317,
+        "transaction_count_ratio_vs_baseline": 1.8487732460153494,
+        "new_customer_rate_ratio_vs_baseline": 1.4689713040918813,
+        "chargeback_rate_ratio_vs_baseline": 1.1824660435425605,
+        "refund_rate_ratio_vs_baseline": 1.017754505646606,
+        "fulfillment_on_time_rate_delta_vs_baseline": 0.00033916101497943885
+      },
+      {
+        "active_event_type": "viral_campaign",
+        "category": "benign_growth",
+        "n_merchant_days": 211,
+        "n_distinct_merchants": 13,
+        "gmv_ratio_vs_baseline": 2.7674769971126763,
+        "transaction_count_ratio_vs_baseline": 2.6119090218837013,
+        "new_customer_rate_ratio_vs_baseline": 1.6576889060018192,
+        "chargeback_rate_ratio_vs_baseline": 0.6950784326139613,
+        "refund_rate_ratio_vs_baseline": 1.1250952024888363,
+        "fulfillment_on_time_rate_delta_vs_baseline": -0.002167501820491524
+      },
+      {
+        "active_event_type": "normal",
+        "category": "normal",
+        "n_merchant_days": 4362,
+        "n_distinct_merchants": 50,
+        "gmv_ratio_vs_baseline": 1.185503028412295,
+        "transaction_count_ratio_vs_baseline": 1.1262433580455413,
+        "new_customer_rate_ratio_vs_baseline": 0.9807944763308413,
+        "chargeback_rate_ratio_vs_baseline": 1.059303155859567,
+        "refund_rate_ratio_vs_baseline": 1.0167514695293167,
+        "fulfillment_on_time_rate_delta_vs_baseline": 0.00015615527120693695
+      },
+      {
+        "active_event_type": "chargeback_deterioration",
+        "category": "risk",
+        "n_merchant_days": 733,
+        "n_distinct_merchants": 14,
+        "gmv_ratio_vs_baseline": 1.2033937607413714,
+        "transaction_count_ratio_vs_baseline": 1.1164521648734307,
+        "new_customer_rate_ratio_vs_baseline": 0.8885715755986111,
+        "chargeback_rate_ratio_vs_baseline": 2.0644354193368692,
+        "refund_rate_ratio_vs_baseline": 1.053369446128526,
+        "fulfillment_on_time_rate_delta_vs_baseline": -0.0006529216782298342
+      },
+      {
+        "active_event_type": "compound_risk",
+        "category": "risk",
+        "n_merchant_days": 749,
+        "n_distinct_merchants": 14,
+        "gmv_ratio_vs_baseline": 1.1217417442341195,
+        "transaction_count_ratio_vs_baseline": 1.1067147862224271,
+        "new_customer_rate_ratio_vs_baseline": 0.9288657839391992,
+        "chargeback_rate_ratio_vs_baseline": 1.6734917447546476,
+        "refund_rate_ratio_vs_baseline": 1.6146373677579717,
+        "fulfillment_on_time_rate_delta_vs_baseline": -0.06669938047670398
+      },
+      {
+        "active_event_type": "customer_mix_shift",
+        "category": "risk",
+        "n_merchant_days": 281,
+        "n_distinct_merchants": 7,
+        "gmv_ratio_vs_baseline": 1.1424232980955797,
+        "transaction_count_ratio_vs_baseline": 1.1367566002543306,
+        "new_customer_rate_ratio_vs_baseline": 1.441613304266202,
+        "chargeback_rate_ratio_vs_baseline": 1.0226164232186368,
+        "refund_rate_ratio_vs_baseline": 0.9648065803142628,
+        "fulfillment_on_time_rate_delta_vs_baseline": -0.0005169493199229658
+      },
+      {
+        "active_event_type": "fulfillment_degradation",
+        "category": "risk",
+        "n_merchant_days": 755,
+        "n_distinct_merchants": 19,
+        "gmv_ratio_vs_baseline": 1.15140216401764,
+        "transaction_count_ratio_vs_baseline": 1.0697968476836668,
+        "new_customer_rate_ratio_vs_baseline": 1.0004465623549281,
+        "chargeback_rate_ratio_vs_baseline": 1.0325265002125232,
+        "refund_rate_ratio_vs_baseline": 1.0028032464645629,
+        "fulfillment_on_time_rate_delta_vs_baseline": -0.23717297434348328
+      },
+      {
+        "active_event_type": "refund_shock",
+        "category": "risk",
+        "n_merchant_days": 370,
+        "n_distinct_merchants": 17,
+        "gmv_ratio_vs_baseline": 1.0835786616068475,
+        "transaction_count_ratio_vs_baseline": 1.096339125172373,
+        "new_customer_rate_ratio_vs_baseline": 1.0180556177143996,
+        "chargeback_rate_ratio_vs_baseline": 1.1392745986225816,
+        "refund_rate_ratio_vs_baseline": 2.4495126051916074,
+        "fulfillment_on_time_rate_delta_vs_baseline": 0.0005250447071279973
+      }
+    ]
+  },
+  "5_labels": {
+    "by_horizon": {
+      "7": {
+        "usable_rows": 8650,
+        "positives": 1908,
+        "negatives": 6742,
+        "positive_rate": 0.22057803468208093,
+        "merchant_level_positive_rate": {
+          "min": 0.0,
+          "median": 0.23699421965317918,
+          "max": 0.34104046242774566,
+          "n_merchants_with_zero_positives": 1,
+          "n_merchants_all_positive": 0,
+          "n_merchants_total": 50
+        },
+        "archetype_level_positive_rate": {
+          "D2C Fashion": 0.2353,
+          "Digital Goods": 0.2399,
+          "Education": 0.1956,
+          "Electronics": 0.2246,
+          "Marketplace": 0.2563,
+          "Quick Commerce": 0.2534,
+          "SaaS": 0.1127,
+          "Travel": 0.2437
+        }
+      },
+      "14": {
+        "usable_rows": 8300,
+        "positives": 2126,
+        "negatives": 6174,
+        "positive_rate": 0.256144578313253,
+        "merchant_level_positive_rate": {
+          "min": 0.0,
+          "median": 0.25903614457831325,
+          "max": 0.5120481927710844,
+          "n_merchants_with_zero_positives": 1,
+          "n_merchants_all_positive": 0,
+          "n_merchants_total": 50
+        },
+        "archetype_level_positive_rate": {
+          "D2C Fashion": 0.2014,
+          "Digital Goods": 0.3183,
+          "Education": 0.2761,
+          "Electronics": 0.259,
+          "Marketplace": 0.2239,
+          "Quick Commerce": 0.2701,
+          "SaaS": 0.1777,
+          "Travel": 0.3313
+        }
+      },
+      "30": {
+        "usable_rows": 7500,
+        "positives": 2146,
+        "negatives": 5354,
+        "positive_rate": 0.28613333333333335,
+        "merchant_level_positive_rate": {
+          "min": 0.0,
+          "median": 0.2733333333333333,
+          "max": 0.58,
+          "n_merchants_with_zero_positives": 1,
+          "n_merchants_all_positive": 0,
+          "n_merchants_total": 50
+        },
+        "archetype_level_positive_rate": {
+          "D2C Fashion": 0.1476,
+          "Digital Goods": 0.4,
+          "Education": 0.3189,
+          "Electronics": 0.301,
+          "Marketplace": 0.2456,
+          "Quick Commerce": 0.27,
+          "SaaS": 0.2244,
+          "Travel": 0.4022
+        }
+      }
+    },
+    "imbalance_assessment": "manageable"
+  },
+  "6_horizon_comparison": {
+    "n_rows_with_all_three_horizons_defined": 7500,
+    "prevalence_on_common_subset": {
+      "h7": 0.21533333333333332,
+      "h14": 0.2518666666666667,
+      "h30": 0.28613333333333335
+    },
+    "conditional_probabilities": {
+      "P(h14=1|h7=1)": 0.7455108359133127,
+      "P(h30=1|h7=1)": 0.6099071207430341,
+      "P(h7=1|h14=1)": 0.6373742721016411,
+      "P(h30=1|h14=1)": 0.7458973001588142,
+      "P(h7=1|h30=1)": 0.45899347623485554,
+      "P(h14=1|h30=1)": 0.6565703634669152
+    },
+    "jaccard_overlap_of_positive_sets": {
+      "h7_vs_h14": 0.5234782608695652,
+      "h7_vs_h30": 0.35482708933717577,
+      "h14_vs_h30": 0.5365575019040365
+    },
+    "fraction_all_three_horizons_agree": 0.7264
+  },
+  "7_hard_negative_audit": {
+    "per_event_type": {
+      "festival_growth": {
+        "gmv_ratio_vs_baseline": 2.0113,
+        "transaction_count_ratio_vs_baseline": 2.0743,
+        "chargeback_rate_ratio_vs_baseline": 1.0339,
+        "refund_rate_ratio_vs_baseline": 0.9862,
+        "fulfillment_on_time_rate_delta_vs_baseline": 0.0014
+      },
+      "payment_method_shift": {
+        "gmv_ratio_vs_baseline": 1.1386,
+        "transaction_count_ratio_vs_baseline": 1.1286,
+        "chargeback_rate_ratio_vs_baseline": 1.1702,
+        "refund_rate_ratio_vs_baseline": 1.0314,
+        "fulfillment_on_time_rate_delta_vs_baseline": 0.0003
+      },
+      "product_launch": {
+        "gmv_ratio_vs_baseline": 1.8869,
+        "transaction_count_ratio_vs_baseline": 1.8488,
+        "chargeback_rate_ratio_vs_baseline": 1.1825,
+        "refund_rate_ratio_vs_baseline": 1.0178,
+        "fulfillment_on_time_rate_delta_vs_baseline": 0.0003
+      },
+      "viral_campaign": {
+        "gmv_ratio_vs_baseline": 2.7675,
+        "transaction_count_ratio_vs_baseline": 2.6119,
+        "chargeback_rate_ratio_vs_baseline": 0.6951,
+        "refund_rate_ratio_vs_baseline": 1.1251,
+        "fulfillment_on_time_rate_delta_vs_baseline": -0.0022
+      },
+      "normal": {
+        "gmv_ratio_vs_baseline": 1.1855,
+        "transaction_count_ratio_vs_baseline": 1.1262,
+        "chargeback_rate_ratio_vs_baseline": 1.0593,
+        "refund_rate_ratio_vs_baseline": 1.0168,
+        "fulfillment_on_time_rate_delta_vs_baseline": 0.0002
+      },
+      "chargeback_deterioration": {
+        "gmv_ratio_vs_baseline": 1.2034,
+        "transaction_count_ratio_vs_baseline": 1.1165,
+        "chargeback_rate_ratio_vs_baseline": 2.0644,
+        "refund_rate_ratio_vs_baseline": 1.0534,
+        "fulfillment_on_time_rate_delta_vs_baseline": -0.0007
+      },
+      "compound_risk": {
+        "gmv_ratio_vs_baseline": 1.1217,
+        "transaction_count_ratio_vs_baseline": 1.1067,
+        "chargeback_rate_ratio_vs_baseline": 1.6735,
+        "refund_rate_ratio_vs_baseline": 1.6146,
+        "fulfillment_on_time_rate_delta_vs_baseline": -0.0667
+      },
+      "customer_mix_shift": {
+        "gmv_ratio_vs_baseline": 1.1424,
+        "transaction_count_ratio_vs_baseline": 1.1368,
+        "chargeback_rate_ratio_vs_baseline": 1.0226,
+        "refund_rate_ratio_vs_baseline": 0.9648,
+        "fulfillment_on_time_rate_delta_vs_baseline": -0.0005
+      },
+      "fulfillment_degradation": {
+        "gmv_ratio_vs_baseline": 1.1514,
+        "transaction_count_ratio_vs_baseline": 1.0698,
+        "chargeback_rate_ratio_vs_baseline": 1.0325,
+        "refund_rate_ratio_vs_baseline": 1.0028,
+        "fulfillment_on_time_rate_delta_vs_baseline": -0.2372
+      },
+      "refund_shock": {
+        "gmv_ratio_vs_baseline": 1.0836,
+        "transaction_count_ratio_vs_baseline": 1.0963,
+        "chargeback_rate_ratio_vs_baseline": 1.1393,
+        "refund_rate_ratio_vs_baseline": 2.4495,
+        "fulfillment_on_time_rate_delta_vs_baseline": 0.0005
+      }
+    },
+    "benign_growth_volume_weighted_average": {
+      "gmv_ratio_vs_baseline": 1.804667166638013,
+      "transaction_count_ratio_vs_baseline": 1.790186074712154,
+      "chargeback_rate_ratio_vs_baseline": 1.0768880499980047,
+      "refund_rate_ratio_vs_baseline": 1.0256270971795045,
+      "fulfillment_on_time_rate_delta_vs_baseline": 0.00031185169549885705
+    },
+    "risk_volume_weighted_average": {
+      "gmv_ratio_vs_baseline": 1.1473427556951143,
+      "transaction_count_ratio_vs_baseline": 1.1011286401382396,
+      "chargeback_rate_ratio_vs_baseline": 1.473379779525763,
+      "refund_rate_ratio_vs_baseline": 1.3559660514310519,
+      "fulfillment_on_time_rate_delta_vs_baseline": -0.07945049148676753
+    },
+    "normal_periods_volume_weighted_average": {
+      "gmv_ratio_vs_baseline": 1.185503028412295,
+      "transaction_count_ratio_vs_baseline": 1.1262433580455413,
+      "chargeback_rate_ratio_vs_baseline": 1.059303155859567,
+      "refund_rate_ratio_vs_baseline": 1.0167514695293167,
+      "fulfillment_on_time_rate_delta_vs_baseline": 0.00015615527120693695
+    },
+    "growth_ne_risk_verdict": true
+  },
+  "8_temporal_warning_structure": {
+    "chargeback_deterioration": {
+      "n_instances": 18,
+      "n_instances_with_valid_pre_window": 17,
+      "n_instances_with_detectable_uplift": 15,
+      "fraction_detectable": 0.8823529411764706,
+      "median_detection_offset_days": 12.0,
+      "p25_detection_offset_days": 3.0,
+      "p75_detection_offset_days": 19.0,
+      "mean_rolling_chargeback_rate_by_offset": {
+        "-20": 0.032174795157122564,
+        "-19": 0.029719330724804306,
+        "-18": 0.028035486225141393,
+        "-17": 0.023457914622254075,
+        "-16": 0.021393120442863227,
+        "-15": 0.011160638096871555,
+        "-14": 0.009815795527466007,
+        "-13": 0.006286535303776684,
+        "-12": 0.00806088193058569,
+        "-11": 0.008807042292714312,
+        "-10": 0.008701680880550988,
+        "-9": 0.008936251955441338,
+        "-8": 0.010111759479760295,
+        "-7": 0.00962066450855658,
+        "-6": 0.009514883043252183,
+        "-5": 0.007855532292318808,
+        "-4": 0.006897598820717096,
+        "-3": 0.006319700406449712,
+        "-2": 0.005963611628099646,
+        "-1": 0.002290133545094185,
+        "0": 0.008311718142425484,
+        "1": 0.009623190311248322,
+        "2": 0.011247726701310594,
+        "3": 0.01375787559164825,
+        "4": 0.014767187726480903,
+        "5": 0.016588136573392885,
+        "6": 0.01587933707748777,
+        "7": 0.00830076594435216,
+        "8": 0.0055917749546357375,
+        "9": 0.005929093886628992,
+        "10": 0.0033711139245593937,
+        "11": 0.0029663311852091085,
+        "12": 0.008167334968557937,
+        "13": 0.009161330334158599,
+        "14": 0.015818390885680735,
+        "15": 0.02052423894976067,
+        "16": 0.019251785908720103,
+        "17": 0.020180211283073797,
+        "18": 0.029110287115922003,
+        "19": 0.023324731416748574,
+        "20": 0.022337488792123737,
+        "21": 0.014765512883463975,
+        "22": 0.00991476472245703,
+        "23": 0.010661975633626945,
+        "24": 0.019588012196028855,
+        "25": 0.012239070349840427,
+        "26": 0.014326205951075536,
+        "27": 0.025613999187546917,
+        "28": 0.028792703420209786,
+        "29": 0.03673418484722764,
+        "30": 0.03758050116884629,
+        "31": 0.02947553216078665,
+        "32": 0.023893065579242513,
+        "33": 0.021952890322058678,
+        "34": 0.032749268886592665,
+        "35": 0.032751764009459096,
+        "36": 0.024894812394812393,
+        "37": 0.023203901257843943,
+        "38": 0.027321091606805896,
+        "39": 0.022190768780630532,
+        "40": 0.024568116720372356,
+        "41": 0.011940565699964196,
+        "42": 0.007916392363396972,
+        "43": 0.007993197278911564,
+        "44": 0.01040850975364679,
+        "45": 0.008545399867263978,
+        "46": 0.00863918147904323,
+        "47": 0.008713756481613624,
+        "48": 0.00667075897490644,
+        "49": 0.00667075897490644,
+        "50": 0.01680283599926457,
+        "51": 0.0145578231292517,
+        "52": 0.013775510204081631,
+        "53": 0.015589569160997732,
+        "54": 0.015947607113020647,
+        "55": 0.01743851386708529,
+        "56": 0.01917347141599633,
+        "57": 0.009275248560962845,
+        "58": 0.012448328613742147,
+        "59": 0.012369227205737085,
+        "60": 0.01053726635121984
+      }
+    },
+    "refund_shock": {
+      "n_instances": 17,
+      "n_instances_with_valid_pre_window": 17,
+      "n_instances_with_detectable_uplift": 14,
+      "fraction_detectable": 0.8235294117647058,
+      "median_detection_offset_days": 6.0,
+      "p25_detection_offset_days": 3.0,
+      "p75_detection_offset_days": 18.5,
+      "mean_rolling_chargeback_rate_by_offset": {
+        "-20": 0.0039522162515803925,
+        "-19": 0.004126083057102906,
+        "-18": 0.0029959254765322824,
+        "-17": 0.0033262219941140956,
+        "-16": 0.004142588095255325,
+        "-15": 0.0033422001469342617,
+        "-14": 0.0035285462711992094,
+        "-13": 0.0037770728898234643,
+        "-12": 0.004847742981142688,
+        "-11": 0.006198152991217725,
+        "-10": 0.005583536351771224,
+        "-9": 0.004365301918763468,
+        "-8": 0.004533272647492749,
+        "-7": 0.004224448318244675,
+        "-6": 0.00497162056039735,
+        "-5": 0.003608365419616152,
+        "-4": 0.002850868028259957,
+        "-3": 0.003779827562931894,
+        "-2": 0.006821955733258917,
+        "-1": 0.009430208468232967,
+        "0": 0.009217761728145334,
+        "1": 0.009893477885766019,
+        "2": 0.011244224500878317,
+        "3": 0.010987791652609102,
+        "4": 0.01025221438052514,
+        "5": 0.008589063578457581,
+        "6": 0.007093385388204759,
+        "7": 0.007902812935921565,
+        "8": 0.006643598374802487,
+        "9": 0.004932194752615407,
+        "10": 0.006256423096022362,
+        "11": 0.007566155727837831,
+        "12": 0.006305645731951239,
+        "13": 0.005267367803446967,
+        "14": 0.008507998842553852,
+        "15": 0.008959029263262294,
+        "16": 0.010013722575695418,
+        "17": 0.008104311900736953,
+        "18": 0.008165386381748286,
+        "19": 0.008891666503994387,
+        "20": 0.008823889214771091,
+        "21": 0.007676723791186141,
+        "22": 0.008029894417863122,
+        "23": 0.0068508976951081975,
+        "24": 0.008400928663116996,
+        "25": 0.008922408281858304,
+        "26": 0.008173619940498904,
+        "27": 0.00753049315071981,
+        "28": 0.003734655519941299,
+        "29": 0.0030559751096622357,
+        "30": 0.0032965008923980244,
+        "31": 0.002583186971363986,
+        "32": 0.0015019755998742733,
+        "33": 0.0016039513416403611,
+        "34": 0.009100703823957442,
+        "35": 0.009910361932960089,
+        "36": 0.009324404930034698,
+        "37": 0.010868739047749012,
+        "38": 0.011836409030802717,
+        "39": 0.012129560318337024,
+        "40": 0.012193057443779761,
+        "41": 0.004894057664044249,
+        "42": 0.006759346561409146,
+        "43": 0.006468931146304475,
+        "44": 0.007674574976239602,
+        "45": 0.007398502652293781,
+        "46": 0.006467088885353356,
+        "47": 0.007281520250664438,
+        "48": 0.007623133037301769,
+        "49": 0.005500838603133964,
+        "50": 0.005222520183224311,
+        "51": 0.002800844307803944,
+        "52": 0.0031763858419980497,
+        "53": 0.002855650763699751,
+        "54": 0.0048131825570648995,
+        "55": 0.004851271667996444,
+        "56": 0.004728433616459354,
+        "57": 0.004716906599057237,
+        "58": 0.007255079458123393,
+        "59": 0.00784686114932727,
+        "60": 0.004596697739545818
+      }
+    },
+    "fulfillment_degradation": {
+      "n_instances": 21,
+      "n_instances_with_valid_pre_window": 21,
+      "n_instances_with_detectable_uplift": 16,
+      "fraction_detectable": 0.7619047619047619,
+      "median_detection_offset_days": 6.5,
+      "p25_detection_offset_days": 3.0,
+      "p75_detection_offset_days": 12.25,
+      "mean_rolling_chargeback_rate_by_offset": {
+        "-20": 0.009278892421865045,
+        "-19": 0.008988327881451541,
+        "-18": 0.007870106616673603,
+        "-17": 0.0068274347511655484,
+        "-16": 0.006850097670743965,
+        "-15": 0.006556288185572366,
+        "-14": 0.0037266297369154314,
+        "-13": 0.003009031232894788,
+        "-12": 0.003913291896727745,
+        "-11": 0.004229761110287285,
+        "-10": 0.003819632956709962,
+        "-9": 0.007844565107054977,
+        "-8": 0.0066750057831634875,
+        "-7": 0.005925378735144967,
+        "-6": 0.006985152097856154,
+        "-5": 0.006625886602029088,
+        "-4": 0.0076564190699559805,
+        "-3": 0.00929174893160461,
+        "-2": 0.007736720386382623,
+        "-1": 0.007840617352263523,
+        "0": 0.007451055397411976,
+        "1": 0.006208127004566575,
+        "2": 0.005162603883410386,
+        "3": 0.00486652085823782,
+        "4": 0.005898858415101692,
+        "5": 0.00577709662390951,
+        "6": 0.008284712744213957,
+        "7": 0.00960587082181315,
+        "8": 0.01190528427406318,
+        "9": 0.011848396406559662,
+        "10": 0.011634321118967585,
+        "11": 0.00945138455171789,
+        "12": 0.008592838593276883,
+        "13": 0.00851586112239089,
+        "14": 0.009029218772203425,
+        "15": 0.010651280154136805,
+        "16": 0.011486657525162607,
+        "17": 0.010722387439096145,
+        "18": 0.010325979968574941,
+        "19": 0.009107557761061058,
+        "20": 0.009583295249799001,
+        "21": 0.010261831376005741,
+        "22": 0.006449163638587593,
+        "23": 0.005022121834167249,
+        "24": 0.003994629584252226,
+        "25": 0.005284740720430776,
+        "26": 0.00528008837832657,
+        "27": 0.0028596742868345257,
+        "28": 0.002750087637092716,
+        "29": 0.0028725699601462387,
+        "30": 0.0038088690438914906,
+        "31": 0.0046907946218717475,
+        "32": 0.0034023500533554006,
+        "33": 0.002728522851405731,
+        "34": 0.0048719683150090735,
+        "35": 0.00480004727483545,
+        "36": 0.00474055536697817,
+        "37": 0.004231111951153425,
+        "38": 0.003630685850341227,
+        "39": 0.005289376901100057,
+        "40": 0.005429108555182125,
+        "41": 0.0045890552829853035,
+        "42": 0.004072110437876005,
+        "43": 0.0036072630816213628,
+        "44": 0.005646932730498452,
+        "45": 0.005544333702950177,
+        "46": 0.003901521261742603,
+        "47": 0.003937981601115051,
+        "48": 0.004393698440532201,
+        "49": 0.004314612998330738,
+        "50": 0.00452107692213991,
+        "51": 0.003345984582797827,
+        "52": 0.002973817335852169,
+        "53": 0.0035819203825596304,
+        "54": 0.0034852892513450844,
+        "55": 0.0031757710865297412,
+        "56": 0.0044696706381488985,
+        "57": 0.005258937342946385,
+        "58": 0.005044699937070667,
+        "59": 0.006027540935788632,
+        "60": 0.008925746109960183
+      }
+    },
+    "customer_mix_shift": {
+      "n_instances": 8,
+      "n_instances_with_valid_pre_window": 7,
+      "n_instances_with_detectable_uplift": 4,
+      "fraction_detectable": 0.5714285714285714,
+      "median_detection_offset_days": 6.0,
+      "p25_detection_offset_days": 3.0,
+      "p75_detection_offset_days": 17.75,
+      "mean_rolling_chargeback_rate_by_offset": {
+        "-20": 0.0014492753623188406,
+        "-19": 0.001488095238095238,
+        "-18": 0.0015290519877675841,
+        "-17": 0.0014619883040935672,
+        "-16": 0.0,
+        "-15": 0.005952380952380952,
+        "-14": 0.014519056261343012,
+        "-13": 0.01388888888888889,
+        "-12": 0.01312828207051763,
+        "-11": 0.013709677419354839,
+        "-10": 0.015084194597379181,
+        "-9": 0.015285321708356038,
+        "-8": 0.009054021317829458,
+        "-7": 0.0012722646310432569,
+        "-6": 0.00130718954248366,
+        "-5": 0.0011031439602868175,
+        "-4": 0.0011074197120708748,
+        "-3": 0.0,
+        "-2": 0.0,
+        "-1": 0.0,
+        "0": 0.0,
+        "1": 0.0005411255411255411,
+        "2": 0.0005530973451327434,
+        "3": 0.009523809523809523,
+        "4": 0.013748037676609105,
+        "5": 0.01390913508260447,
+        "6": 0.014270388387913304,
+        "7": 0.014345634626907758,
+        "8": 0.013526340768865686,
+        "9": 0.013605442176870748,
+        "10": 0.005489417989417989,
+        "11": 0.0013550135501355016,
+        "12": 0.0014245014245014246,
+        "13": 0.0014492753623188406,
+        "14": 0.014308608058608058,
+        "15": 0.014282501124606389,
+        "16": 0.014295439074200137,
+        "17": 0.012820512820512822,
+        "18": 0.012683578104138851,
+        "19": 0.012702210070631123,
+        "20": 0.013592117758784425,
+        "21": 0.0007183908045977011,
+        "22": 0.0006915629322268327,
+        "23": 0.0007215007215007215,
+        "24": 0.002205920405734099,
+        "25": 0.001388888888888889,
+        "26": 0.001388888888888889,
+        "27": 0.0013227513227513227,
+        "28": 0.0012437810945273632,
+        "29": 0.002583979328165375,
+        "30": 0.002506265664160401,
+        "31": 0.001282051282051282,
+        "32": 0.0013020833333333333,
+        "33": 0.0012345679012345679,
+        "34": 0.0012165450121654502,
+        "35": 0.0013123359580052493,
+        "36": 0.0,
+        "37": 0.0,
+        "38": 0.0,
+        "39": 0.0,
+        "40": 0.005555555555555555,
+        "41": 0.005555555555555555,
+        "42": 0.008013274640621775,
+        "43": 0.00824455766558592,
+        "44": 0.008318301434472635,
+        "45": 0.010347629024671826,
+        "46": 0.010534979423868312,
+        "47": 0.004716267339218159,
+        "48": 0.004523809523809524,
+        "49": 0.0023218176159352628,
+        "50": 0.00233423111453123,
+        "51": 0.002332285115303983,
+        "52": 0.0,
+        "53": 0.0,
+        "54": 0.0,
+        "55": 0.0,
+        "56": 0.015838369041079166,
+        "57": 0.029207653391152194,
+        "58": 0.029318519719947016,
+        "59": 0.02942105263157895,
+        "60": 0.03218510544713753
+      }
+    },
+    "compound_risk": {
+      "n_instances": 16,
+      "n_instances_with_valid_pre_window": 16,
+      "n_instances_with_detectable_uplift": 13,
+      "fraction_detectable": 0.8125,
+      "median_detection_offset_days": 6.0,
+      "p25_detection_offset_days": 3.0,
+      "p75_detection_offset_days": 19.0,
+      "mean_rolling_chargeback_rate_by_offset": {
+        "-20": 0.018928769166327804,
+        "-19": 0.004252104352835237,
+        "-18": 0.0030097189675462985,
+        "-17": 0.004879758921112304,
+        "-16": 0.005156707141127053,
+        "-15": 0.0050744131791985855,
+        "-14": 0.005320184959224631,
+        "-13": 0.005424771587956711,
+        "-12": 0.007013904867572896,
+        "-11": 0.0075229613633933864,
+        "-10": 0.004462345275851108,
+        "-9": 0.005417267154114464,
+        "-8": 0.011182930395483324,
+        "-7": 0.015383161194522696,
+        "-6": 0.01665567785502127,
+        "-5": 0.015582184708157058,
+        "-4": 0.017928270203789093,
+        "-3": 0.017204032913201474,
+        "-2": 0.016048407898964986,
+        "-1": 0.010621655546725704,
+        "0": 0.00440380843501207,
+        "1": 0.010030570844090776,
+        "2": 0.012057155718256609,
+        "3": 0.01099760841286218,
+        "4": 0.012971385453814828,
+        "5": 0.012852349624682615,
+        "6": 0.015072008520733378,
+        "7": 0.01565669863926159,
+        "8": 0.008540054062534105,
+        "9": 0.007053375381745904,
+        "10": 0.0062751621656134335,
+        "11": 0.006231605030515692,
+        "12": 0.007091362503456923,
+        "13": 0.005131578863147041,
+        "14": 0.005678870596170012,
+        "15": 0.005460329495747856,
+        "16": 0.005047965106787023,
+        "17": 0.006178125407218387,
+        "18": 0.004912195045227141,
+        "19": 0.010703772175592596,
+        "20": 0.010145805627832963,
+        "21": 0.009145865796224428,
+        "22": 0.011111052576113497,
+        "23": 0.012180930868385263,
+        "24": 0.012487044846135267,
+        "25": 0.014661157150102928,
+        "26": 0.011352172836188319,
+        "27": 0.013220482829597617,
+        "28": 0.02418871980149708,
+        "29": 0.0316283057359342,
+        "30": 0.02958622400090925,
+        "31": 0.03356425116042646,
+        "32": 0.03406829042699943,
+        "33": 0.040839877211543994,
+        "34": 0.039797250271818636,
+        "35": 0.030697154990090205,
+        "36": 0.01976727488408195,
+        "37": 0.028733694591240925,
+        "38": 0.02839777450743798,
+        "39": 0.02426572222226162,
+        "40": 0.015471645424451357,
+        "41": 0.017568575977069744,
+        "42": 0.016167604185496814,
+        "43": 0.02111065441813811,
+        "44": 0.014520476903155924,
+        "45": 0.012708715665369408,
+        "46": 0.015149296892875095,
+        "47": 0.012265678011434163,
+        "48": 0.00969676389016614,
+        "49": 0.010377752538383894,
+        "50": 0.009311047970265846,
+        "51": 0.009044835490201568,
+        "52": 0.009699430781599296,
+        "53": 0.008195696354834057,
+        "54": 0.019173348232113172,
+        "55": 0.020363188707251147,
+        "56": 0.01917795466182563,
+        "57": 0.018814562475347456,
+        "58": 0.015873043503015622,
+        "59": 0.015385162715799722,
+        "60": 0.015916640868274025
+      }
+    }
+  },
+  "9_leakage_audit": {
+    "daily_observations_columns_matching_label_terms": [],
+    "forbidden_feature_sources": {
+      "merchants.csv": {
+        "columns": [
+          "baseline_daily_gmv",
+          "baseline_daily_txn_count",
+          "baseline_aov",
+          "baseline_refund_rate",
+          "baseline_chargeback_rate",
+          "baseline_fulfillment_delay_days",
+          "baseline_on_time_rate",
+          "baseline_new_customer_rate",
+          "baseline_pct_pay_card",
+          "baseline_pct_pay_upi",
+          "baseline_pct_pay_netbanking",
+          "baseline_pct_pay_wallet",
+          "baseline_pct_pay_bnpl",
+          "annual_growth_rate",
+          "volatility_factor"
+        ],
+        "reason": "Generator ground-truth parameters, not observable to a real merchant-risk system. Strongly correlated with the label by construction (they parametrize its generation)."
+      },
+      "events.csv": {
+        "columns": [
+          "event_id",
+          "merchant_id",
+          "event_type",
+          "category",
+          "hard_negative",
+          "shape",
+          "start_date",
+          "end_date",
+          "recovery_end_date",
+          "duration_days",
+          "severity_score",
+          "affects",
+          "description"
+        ],
+        "reason": "Ground-truth scenario identity/timing/severity. Joining ANY column from this table onto a feature matrix is direct label leakage \u2014 it tells the model exactly when a risk episode is happening."
+      },
+      "labels.csv (columns beyond the join keys and the target itself)": {
+        "columns": [
+          "future_chargeback_amount",
+          "future_chargeback_rate",
+          "future_transaction_count",
+          "elevation_ratio_amount",
+          "elevation_ratio_rate",
+          "baseline_daily_gmv_trailing",
+          "baseline_daily_chargeback_amount_trailing",
+          "baseline_chargeback_rate_trailing"
+        ],
+        "reason": "future_* and elevation_ratio_* are target-adjacent by construction. The baseline_*_trailing columns are individually leakage-free (past-only) but sit in the same table as the target \u2014 feature engineering should recompute trailing baselines directly from daily_observations, not import them from here."
+      }
+    },
+    "diagnostic_auc_if_ground_truth_baseline_chargeback_rate_used_as_a_feature": {
+      "7": 0.5458330301554696,
+      "14": 0.5220558948840478,
+      "30": 0.5229249124693073
+    },
+    "diagnostic_auc_if_ground_truth_risk_event_flag_used_as_a_feature": {
+      "7": 0.5123555085396653,
+      "14": 0.5074913583226598,
+      "30": 0.5013130909431451
+    },
+    "interpretation": "Both diagnostic AUCs above are expected to be well above what any legitimate feature achieves (see check_difficulty_audit). That gap is the point: it demonstrates concretely what leakage would buy, as a warning for the feature-engineering stage, not a proposal to use these columns."
+  },
+  "10_difficulty_audit": {
+    "single_feature_auc_by_horizon": {
+      "7": {
+        "same_day_raw_chargeback_rate": 0.4834192803708036,
+        "same_day_raw_gmv": 0.5645776623525234,
+        "trailing_28d_chargeback_rate (legitimate, causal)": 0.40328746640944746,
+        "trailing_28d_mean_gmv (legitimate, causal)": 0.5515489434795614
+      },
+      "14": {
+        "same_day_raw_chargeback_rate": 0.4694004780158715,
+        "same_day_raw_gmv": 0.5196861569516935,
+        "trailing_28d_chargeback_rate (legitimate, causal)": 0.31934795599913574,
+        "trailing_28d_mean_gmv (legitimate, causal)": 0.5031088097112248
+      },
+      "30": {
+        "same_day_raw_chargeback_rate": 0.45889987052733566,
+        "same_day_raw_gmv": 0.4563062830970808,
+        "trailing_28d_chargeback_rate (legitimate, causal)": 0.2148705743343333,
+        "trailing_28d_mean_gmv (legitimate, causal)": 0.443438914420971
+      }
+    },
+    "fraction_labels_within_10pct_of_elevation_ratio_threshold": 0.04768916155419223,
+    "assessment": [
+      "legitimate features show weak signal on at least one horizon \u2014 label may be hard to learn at that horizon"
+    ]
+  },
+  "11_archetype_bias": {
+    "by_horizon": {
+      "7": {
+        "positive_rate_by_archetype": {
+          "D2C Fashion": 0.2353,
+          "Digital Goods": 0.2399,
+          "Education": 0.1956,
+          "Electronics": 0.2246,
+          "Marketplace": 0.2563,
+          "Quick Commerce": 0.2534,
+          "SaaS": 0.1127,
+          "Travel": 0.2437
+        },
+        "max_over_min_ratio": 2.2735042735042734,
+        "archetype_mean_encoded_auc": 0.5600818844540963
+      },
+      "14": {
+        "positive_rate_by_archetype": {
+          "D2C Fashion": 0.2014,
+          "Digital Goods": 0.3183,
+          "Education": 0.2761,
+          "Electronics": 0.259,
+          "Marketplace": 0.2239,
+          "Quick Commerce": 0.2701,
+          "SaaS": 0.1777,
+          "Travel": 0.3313
+        },
+        "max_over_min_ratio": 1.864406779661017,
+        "archetype_mean_encoded_auc": 0.574331148039559
+      },
+      "30": {
+        "positive_rate_by_archetype": {
+          "D2C Fashion": 0.1476,
+          "Digital Goods": 0.4,
+          "Education": 0.3189,
+          "Electronics": 0.301,
+          "Marketplace": 0.2456,
+          "Quick Commerce": 0.27,
+          "SaaS": 0.2244,
+          "Travel": 0.4022
+        },
+        "max_over_min_ratio": 2.724731182795699,
+        "archetype_mean_encoded_auc": 0.6125292044585386
+      }
+    },
+    "archetype_alone_is_a_meaningful_shortcut": false,
+    "max_auc_across_horizons": 0.6125292044585386
+  },
+  "12_financial_consistency": {
+    "chargeback_amount_to_gmv_ratio": {
+      "count": 9000,
+      "mean": 0.009433635509107445,
+      "std": 0.05461434984261046,
+      "min": 0.0,
+      "p10": 0.0,
+      "p25": 0.0,
+      "median": 0.0,
+      "p75": 0.0,
+      "p90": 0.006212195641821912,
+      "p99": 0.1801519426946629,
+      "max": 1.1304770320780255
+    },
+    "refund_amount_to_gmv_ratio": {
+      "count": 9000,
+      "mean": 0.06714174158485227,
+      "std": 0.12071297649691018,
+      "min": 0.0,
+      "p10": 0.0,
+      "p25": 0.0,
+      "median": 0.0,
+      "p75": 0.09491721369697143,
+      "p90": 0.1937957720681693,
+      "p99": 0.5379269947181889,
+      "max": 1.0
+    },
+    "days_chargeback_amount_exceeds_same_day_gmv": 10,
+    "pending_settlement_to_expected_scale_ratio": {
+      "count": 9000,
+      "mean": 0.9503708347129475,
+      "std": 0.18619400516937581,
+      "min": 0.062250839608080144,
+      "p10": 0.7401670609201105,
+      "p25": 0.8403315776356197,
+      "median": 0.9539957410339235,
+      "p75": 1.032080080243523,
+      "p90": 1.1654031800865359,
+      "p99": 1.4853516748700917,
+      "max": 2.9039488937817954
+    },
+    "mean_normalized_daily_liquidity_change_by_active_event_category": {
+      "benign_growth": 0.021651,
+      "normal": -0.004339,
+      "risk": -0.001108
+    },
+    "note_chargeback_same_day_gmv_comparison": "chargeback_amount(t) is modeled against transactions dated t in this simplified generator; in reality chargebacks reference historical orders, so exceeding same-day GMV is not 'impossible' in the real world, only a simplification here. Frequency above should still be low."
+  }
+}

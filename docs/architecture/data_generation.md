@@ -83,7 +83,7 @@ mix, weekly pattern, and seasonal participation (`archetypes.py:ARCHETYPE_PARAMS
 | SaaS | Near-zero refunds/chargebacks, near-instant fulfillment, weekday-heavy, no strong seasonality |
 | Travel | High AOV, cancellation-driven refunds, summer-travel seasonal peak |
 | Marketplace | Large scale, moderate everything, broad festive participation |
-| Education | Low chargebacks, admission-cycle seasonal peak, weekday-heavy |
+| Education | Low chargebacks, admission-cycle seasonal peak, weekday-heavy, moderate-frequency recurring purchases (see Revision history) |
 | Quick Commerce | Low AOV/high frequency, near-instant fulfillment, monsoon dip |
 | Digital Goods | Very low refunds/chargebacks, instant fulfillment, New Year sales lift |
 
@@ -152,6 +152,19 @@ same pooling methodology. A model trained on this benchmark that just
 predicts "risk whenever GMV/volume grows" should score poorly on the
 benign-growth cases and is exactly the failure mode this benchmark is meant
 to expose.
+
+**`payment_method_shift` is a payment-mix/operational-transition scenario
+first, a GMV-growth scenario only secondarily.** Its GMV multiplier
+(`gmv_mult_peak`, range 1.02–1.15×) is deliberately small and is **not**
+guaranteed to show up as net growth for any individual instance — ordinary
+trend/seasonality/noise (volatility up to 0.24) routinely dominates a peak
+multiplier this small, and per-instance validation against each merchant's
+own pre-event baseline found roughly 40% of instances show a net GMV
+*decline* over the event window despite the designed positive multiplier.
+The reliable, designed signal for this scenario is the payment-mix share
+delta itself (`pct_pay_*` columns), not GMV. Do not tune `gmv_mult_peak`
+upward to make this scenario "look like" the other three hard negatives —
+see Revision history.
 
 ## Schema
 
@@ -262,6 +275,43 @@ stats, deviations from merchant baseline, velocity/acceleration, etc.),
 built from this raw table in a later stage — not generated here. Adding
 more raw columns now would just shift meaningless width earlier in the
 pipeline.
+
+## Revision history
+
+**2026-08 — Education archetype transaction-volume fix.** Dataset
+validation (`docs/research/dataset_validation_report.md`) found Education's
+positive label rate was 4–9× lower than other archetypes. Root cause,
+confirmed by Monte Carlo over the sampling distribution: the original
+`daily_gmv_range=(4_000, 20_000)` / `aov_range=(1200, 8000)` combination,
+crossed with the shared small-tier 0.55× multiplier, could put a merchant's
+AOV *above* its own daily GMV target. The generator floors
+`baseline_daily_txn_count` at 1.0 in that case (`merchants.py`), and this
+was not a rare tail case — simulated median txn/day was 1.71, with 73% of
+draws below 3/day. At that volume, chargeback-count outcomes are
+essentially unobservable regardless of injected risk severity (validation
+found 4 of 5 real Education risk events, including one at severity 0.95,
+produced zero chargebacks in any outcome window).
+
+Fix: `daily_gmv_range` raised to `(9_000, 25_000)`, `aov_range` cut to
+`(500, 2_000)` (`archetypes.py`). `refund_rate_range` and
+`chargeback_rate_range` were **not** touched — this corrects transaction
+volume only, not risk level, per the explicit instruction not to make
+Education "artificially high-risk." Re-run Monte Carlo: median ~10 txn/day,
+~1% of draws below 3/day. The archetype now reads as higher-frequency,
+smaller-ticket recurring purchases (course modules / session fees) rather
+than infrequent large one-off certifications — a narrower but still
+plausible characterization, not a real-world statistic. See the validation
+report for full before/after numbers.
+
+**2026-08 — `payment_method_shift` self-shift bug fix.** The event's
+`from_method_idx`/`to_method_idx` were drawn independently
+(`events.py:_sample_severity_params`), so ~1-in-5 instances had identical
+source and destination — a silent no-op recorded as a real scenario with
+nonzero severity and `affects=payment_mix,gmv` despite zero actual
+payment-mix change. Fixed by resampling `to_method_idx` until it differs
+from `from_method_idx`. `gmv_mult_peak`'s range was deliberately left
+unchanged (see the growth≠risk section above) — this was a logic bug fix,
+not a recalibration.
 
 ## Known limitations / assumptions to keep in mind
 

@@ -1,8 +1,7 @@
 event_id,merchant_id,event_type,category,hard_negative,shape,start_date,end_date,recovery_end_date,duration_days,severity_score,affects,description
 E0000000,M0000,payment_method_shift,benign_growth,True,gradual,2024-01-27,2024-02-27,2024-03-05,31,0.36567945591008527,"payment_mix,gmv","payment method shift (gradual onset, benign growth (hard negative))"
-E0000001,M0000,payment_method_shift,benign_growth,True,gradual,2024-03-26,2024-04-28,2024-05-08,33,0.8977463926828824,"payment_mix,gmv","payment method shift (gradual onset, benign growth (hard negative))"
-E0000002,M0000,viral_campaign,benign_growth,True,sudden,2024-05-14,2024-05-22,2024-05-30,8,0.7992409051227549,"gmv,transaction_count,new_customer_rate","viral campaign (sudden onset, benign growth (hard negative))"
-E0000003,M0000,compound_risk,risk,False,sudden,2024-06-20,2024-06-28,2024-06-28,50,0.6524901434497129,"refund_rate,chargeback_rate,fulfillment_on_time_rate","compound risk (sudden onset, risk)"
+E0000001,M0000,festival_growth,benign_growth,True,sudden,2024-03-24,2024-04-10,2024-04-18,17,0.5194446037203839,"gmv,transaction_count","festival growth (sudden onset, benign growth (hard negative))"
+E0000002,M0000,refund_shock,risk,False,sudden,2024-04-30,2024-05-05,2024-05-17,5,0.9740890321053456,refund_rate,"refund shock (sudden onset, risk)"
 E0001000,M0001,compound_risk,risk,False,gradual,2024-02-21,2024-04-05,2024-04-23,44,0.6509499239914298,"refund_rate,chargeback_rate,fulfillment_on_time_rate","compound risk (gradual onset, risk)"
 E0001001,M0001,festival_growth,benign_growth,True,sudden,2024-05-10,2024-05-31,2024-06-06,21,0.6781899130733972,"gmv,transaction_count","festival growth (sudden onset, benign growth (hard negative))"
 E0001002,M0001,viral_campaign,benign_growth,True,sudden,2024-06-08,2024-06-23,2024-06-28,15,0.30547622442789313,"gmv,transaction_count,new_customer_rate","viral campaign (sudden onset, benign growth (hard negative))"

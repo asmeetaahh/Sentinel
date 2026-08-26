@@ -1,6 +1,6 @@
 {
   "generator_version": "0.1.0",
-  "generated_at_utc": "2026-08-26T04:58:24.401719+00:00",
+  "generated_at_utc": "2026-08-26T14:50:35.590848+00:00",
   "seed": 42,
   "n_merchants": 50,
   "n_days": 180,
@@ -34,17 +34,17 @@
   "row_counts": {
     "merchants": 50,
     "daily_observations": 9000,
-    "events": 141,
+    "events": 140,
     "labels": 24450
   },
   "event_type_counts": {
-    "festival_growth": 25,
+    "festival_growth": 26,
     "fulfillment_degradation": 21,
     "chargeback_deterioration": 18,
-    "compound_risk": 17,
-    "refund_shock": 16,
-    "viral_campaign": 14,
-    "payment_method_shift": 12,
+    "refund_shock": 17,
+    "compound_risk": 16,
+    "viral_campaign": 13,
+    "payment_method_shift": 11,
     "product_launch": 10,
     "customer_mix_shift": 8
   },

@@ -126,8 +126,24 @@ ARCHETYPE_PARAMS: dict[str, ArchetypeParams] = {
         seasonal_weights={"festive_autumn": 0.8, "new_year_sales": 0.5, "summer_travel": 0.05, "edu_admission": 0.02, "monsoon_dip": 0.08},
     ),
     "Education": ArchetypeParams(
-        daily_gmv_range=(4_000, 20_000),
-        aov_range=(1200, 8000),
+        # Revised 2026-08 (see docs/architecture/data_generation.md "Revision
+        # history"): the original (4_000, 20_000) / (1200, 8000) combination,
+        # crossed with the shared small-tier 0.55x multiplier, could put a
+        # merchant's AOV *above* its entire daily GMV target — producing
+        # ~1 transaction/day and making chargeback-count outcomes
+        # essentially unobservable regardless of injected risk severity.
+        # Monte Carlo across the full (gmv, aov, tier) sampling distribution
+        # showed this was not a rare tail case: median simulated txn/day was
+        # 1.71, with 73% of draws below 3/day. The floor is raised and the
+        # AOV ceiling is cut so the archetype now reads as higher-frequency,
+        # smaller-ticket recurring purchases (course modules / session fees)
+        # rather than infrequent large one-off certifications — a narrower
+        # but still plausible characterization, not a real-world statistic.
+        # Re-run Monte Carlo: median ~10 txn/day, only ~1% of draws below
+        # 3/day. chargeback_rate_range and refund_rate_range are UNCHANGED —
+        # this fixes transaction volume only, not risk level.
+        daily_gmv_range=(9_000, 25_000),
+        aov_range=(500, 2_000),
         refund_rate_range=(0.02, 0.08),
         chargeback_rate_range=(0.001, 0.006),
         fulfillment_delay_days_range=(0.0, 0.5),
