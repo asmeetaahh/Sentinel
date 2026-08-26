@@ -25,10 +25,10 @@ apps/dashboard/src/hooks/         useAsync-based data hooks, per resource
 apps/dashboard/src/context/       MerchantContext (selected merchant + list)
         │
         ▼
-apps/dashboard/src/components/    presentational components (layout, common, overview)
+apps/dashboard/src/components/    presentational components (layout, common, overview, simulator)
         │
         ▼
-apps/dashboard/src/pages/         OverviewPage composes hooks + components
+apps/dashboard/src/pages/         OverviewPage / SimulatorPage compose hooks + components
 ```
 
 ## Stack
@@ -43,9 +43,10 @@ template) for linting. **Vitest + @testing-library/react + jsdom** for
 tests, since it shares Vite's config/transform pipeline and needs no
 separate bundler setup.
 
-No routing library: only one screen (Overview) is implemented, and the
-other nav items are disabled placeholders, so a router would be
-speculative infrastructure for screens that don't exist yet.
+**react-router-dom** for real page routing (`/` Overview, `/simulator`
+Simulator) — added once a second real screen (the What-If Simulator,
+see `docs/architecture/simulator.md`) existed; before that, one screen
+didn't justify a router.
 
 ## Directory layout
 
@@ -60,18 +61,23 @@ apps/dashboard/src/
     useMerchants.ts, useMerchantProfile.ts, useObservations.ts,
     useRisk.ts, useExplanation.ts        thin wrappers around useAsync + an endpoint
     useRiskTrend.ts    derives a real 7-day-prior comparison via a second /risk call
+    useSimulationControls.ts   useAsync wrapper around GET .../simulation/controls
+    useSimulation.ts   imperative (button-triggered) POST .../simulation, not auto-run
   context/
     MerchantContext.tsx   selected merchant + full merchant list, app-wide
   lib/
     format.ts          number/date/percent formatting (no currency symbol — see below)
     provenance.ts        observed/modeled/derived labels + colors, driver-direction styling
     chartUtils.ts         trailing moving average (display-only smoothing of real data)
+    simulationRequest.ts  builds the simulation POST body from slider state (changed controls only)
   components/
-    layout/            Sidebar, Header, AppShell, icons.tsx
+    layout/            Sidebar, Header, AppShell, icons.tsx, navigation.ts (shared NAV_ITEMS)
     common/             ProvenanceTag, LoadingState, ErrorState, EmptyState, MetricCard, MerchantSelector
     overview/            RiskSummary, ExposureCard, LiquidityCard, TrajectoryChart, RiskDrivers
+    simulator/           SimulatorIntro, ControlSlider, ControlsPanel, SimulationResult
   pages/
     OverviewPage.tsx    composes the above for the Overview screen
+    SimulatorPage.tsx    composes the above for the Simulator screen
   test/
     setup.ts, fixtures.ts, noHardcodedData.test.ts
 ```
@@ -100,12 +106,16 @@ in one place and makes components testable with mocked hook data.
 ## Application shell
 
 `AppShell` = `Sidebar` (branding, merchant context, nav) + `Header`
-(selected merchant's archetype/tier + `MerchantSelector`) + a scrollable
-`<main>`. Of the seven nav items, only **Overview** is enabled; Risk,
-Explainability, Simulator, Incident Response, Evidence, and Settings
-render as disabled with a "Soon" badge — real, visibly-inert
-placeholders, not fake-functional links, per the task's explicit scope
-(those modules are not built).
+(current page title + selected merchant's archetype/tier +
+`MerchantSelector`) + a scrollable `<main>` routed by `react-router-dom`.
+Both `Sidebar` and `Header` read the same `NAV_ITEMS` list
+(`components/layout/navigation.ts`) — the sidebar to render links, the
+header to look up the active route's label — so the page title can never
+drift out of sync with the current route. Of the seven nav items,
+**Overview** and **Simulator** are enabled; Risk, Explainability,
+Incident Response, Evidence, and Settings render as disabled with a
+"Soon" badge — real, visibly-inert placeholders, not fake-functional
+links, per the task's explicit scope (those modules are not built).
 
 ## Overview screen
 
@@ -140,12 +150,30 @@ the Risk Drivers card without blocking the rest of the page.
   causality disclaimer footer. Shows an explicit empty state if a
   merchant has no drivers rather than fabricating any.
 
+## Simulator screen
+
+See `docs/architecture/simulator.md` for the full design rationale
+(control selection, why sibling features aren't cascade-updated, the
+exposure-scaling formula). In brief: `SimulatorPage` loads the three
+controls' bounds/baseline via `useSimulationControls`, renders a slider
+per control (`ControlSlider`, with a tick mark at the observed baseline),
+and only includes a control in the POST body if its value differs from
+baseline (`lib/simulationRequest.ts`) — "Run simulation" stays disabled
+until at least one control has actually moved. `SimulationResult` shows a
+prominent "MODELED IMPACT" badge, a risk-state comparison, a
+current/simulated/change table, the changed controls, and the API's own
+disclaimer text verbatim (never re-worded or LLM-generated). "Reset to
+observed values" restores every slider to baseline and clears any prior
+result; switching merchants (via the same shared `MerchantContext`) does
+the same automatically.
+
 ## Backend endpoints consumed
 
 `/health`, `/merchants`, `/merchants/{id}`, `/merchants/{id}/observations`,
-`/merchants/{id}/risk`, `/merchants/{id}/explanation`. (`/metadata` and
-`/merchants/{id}/features` are typed in `api/types.ts` for
-completeness but not yet called from any screen.)
+`/merchants/{id}/risk`, `/merchants/{id}/explanation`,
+`/merchants/{id}/simulation/controls`, `/merchants/{id}/simulation`.
+(`/metadata` and `/merchants/{id}/features` are typed in `api/types.ts`
+for completeness but not yet called from any screen.)
 
 ## Design system
 
@@ -210,13 +238,11 @@ npm run build
 - **No codegen**: `api/types.ts` is hand-maintained against the backend
   schemas; a backend response-shape change requires a matching manual
   edit here.
-- **Single screen**: only Overview is implemented; the other six nav
-  destinations are intentionally inert placeholders.
-- **No router**: adding a second real screen will need a routing
-  decision this codebase doesn't yet make.
-- **Bundle size**: the production build is ~581 KB (~172 KB gzipped),
-  mostly `recharts`; acceptable for a single-screen internal tool, but
-  would want code-splitting before adding more chart-heavy screens.
+- **Two screens**: Overview and Simulator are implemented; the other five
+  nav destinations are intentionally inert placeholders.
+- **Bundle size**: the production build is ~630 KB (~188 KB gzipped),
+  mostly `recharts`; acceptable for a two-screen internal tool, but would
+  want code-splitting before adding more chart-heavy screens.
 - **This is a UI over a synthetic-benchmark research prototype** — see
   `docs/architecture/backend.md`'s limitations for what the underlying
   model/data can and cannot claim; the frontend does not add any
