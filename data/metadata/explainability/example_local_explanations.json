@@ -1,0 +1,2098 @@
+{
+  "artifact_path": "data/metadata/modeling/artifacts/random_forest_calibrated_30d.joblib",
+  "horizon_days": 30,
+  "generated_at_utc": "2026-08-26T17:03:15.662506+00:00",
+  "examples": {
+    "highest_confidence_true_positive": {
+      "merchant_id": "M0008",
+      "as_of_date": "2024-03-07",
+      "day_index": 66,
+      "horizon_days": 30,
+      "prediction": {
+        "model_probability_calibrated": 0.9351731006858137,
+        "model_probability_raw_rf": 0.9072237667091497,
+        "decision_threshold": 0.6417933766429295,
+        "predicted_positive": true,
+        "note": "model_probability_calibrated is the artifact's official output (used against decision_threshold). SHAP explains model_probability_raw_rf, the pre-calibration Random Forest score \u2014 see docs/architecture/explainability.md."
+      },
+      "faithfulness": {
+        "shap_base_value": 0.4999999999999977,
+        "shap_reconstructed_probability": 0.9072237667091475,
+        "reconstruction_error": 2.220446049250313e-15,
+        "faithful": true
+      },
+      "drivers": {
+        "top_positive_contributors": [
+          {
+            "feature": "chargeback_rate_28d",
+            "group": "chargeback_behavior",
+            "definition": "Volume-weighted chargeback rate over trailing 28d: sum(chargeback_count)/sum(transaction_count).",
+            "window": "28d",
+            "kind": "level",
+            "value": 0.0,
+            "shap_value": 0.07808513716365197,
+            "direction": "increases_risk"
+          },
+          {
+            "feature": "chargeback_amount_to_gmv_28d",
+            "group": "chargeback_behavior",
+            "definition": "Dollar-weighted chargeback exposure: sum(chargeback_amount)/sum(gmv) over trailing 28d.",
+            "window": "28d",
+            "kind": "ratio",
+            "value": 0.0,
+            "shap_value": 0.06668212067833508,
+            "direction": "increases_risk"
+          },
+          {
+            "feature": "chargeback_count_28d",
+            "group": "chargeback_behavior",
+            "definition": "Raw chargeback count over trailing 28d \u2014 exposure/confidence context for chargeback_rate_28d.",
+            "window": "28d",
+            "kind": "level",
+            "value": 0.0,
+            "shap_value": 0.04360555843584849,
+            "direction": "increases_risk"
+          },
+          {
+            "feature": "days_since_last_chargeback",
+            "group": "chargeback_behavior",
+            "definition": "Days since the most recent day (<=t) with chargeback_count>0 for this merchant, capped at 90. A recency signal that doesn't collapse to 0 on days with no observed chargebacks yet.",
+            "window": "expanding (capped)",
+            "kind": "level",
+            "value": 41.0,
+            "shap_value": 0.038014396295139495,
+            "direction": "increases_risk"
+          },
+          {
+            "feature": "chargeback_rate_velocity_28v60",
+            "group": "temporal_velocity",
+            "definition": "chargeback_rate(28d) - chargeback_rate(60d) \u2014 medium-term momentum (percentage points).",
+            "window": "28d vs 60d",
+            "kind": "velocity",
+            "value": -0.0093457943925233,
+            "shap_value": 0.024386521721634295,
+            "direction": "increases_risk"
+          },
+          {
+            "feature": "chargeback_rate_7d",
+            "group": "chargeback_behavior",
+            "definition": "Volume-weighted chargeback rate over trailing 7d: sum(chargeback_count)/sum(transaction_count).",
+            "window": "7d",
+            "kind": "level",
+            "value": 0.0,
+            "shap_value": 0.014888433236114789,
+            "direction": "increases_risk"
+          }
+        ],
+        "top_negative_contributors": [
+          {
+            "feature": "chargeback_rate_60d",
+            "group": "chargeback_behavior",
+            "definition": "Volume-weighted chargeback rate over trailing 60d: sum(chargeback_count)/sum(transaction_count).",
+            "window": "60d",
+            "kind": "level",
+            "value": 0.0093457943925233,
+            "shap_value": -0.005840520019907471,
+            "direction": "decreases_risk"
+          },
+          {
+            "feature": "day_of_year_cos",
+            "group": "merchant_behavior",
+            "definition": "cos(2*pi*day_of_year/365.25) \u2014 paired with day_of_year_sin for a non-discontinuous yearly cycle encoding.",
+            "window": "n/a (point-in-time)",
+            "kind": "level",
+            "value": 0.4061472386305789,
+            "shap_value": -0.0017677587085204252,
+            "direction": "decreases_risk"
+          },
+          {
+            "feature": "refund_rate_deviation_z",
+            "group": "deviation_from_baseline",
+            "definition": "(current 7d refund_rate - this merchant's own expanding-history mean of its 28d refund_rate) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+            "window": "7d vs expanding(28d-smoothed)",
+            "kind": "deviation",
+            "value": 2.7139314554136313,
+            "shap_value": -0.0016772147492176708,
+            "direction": "decreases_risk"
+          },
+          {
+            "feature": "day_of_year_sin",
+            "group": "merchant_behavior",
+            "definition": "sin(2*pi*day_of_year/365.25) \u2014 cyclical calendar position, lets a model account for seasonality explicitly.",
+            "window": "n/a (point-in-time)",
+            "kind": "level",
+            "value": 0.9138076496466616,
+            "shap_value": -0.0011048114169857487,
+            "direction": "decreases_risk"
+          },
+          {
+            "feature": "gmv_velocity_28v60",
+            "group": "temporal_velocity",
+            "definition": "mean(gmv,28d)/mean(gmv,60d) - 1 \u2014 relative GMV growth, medium vs long term.",
+            "window": "28d vs 60d",
+            "kind": "velocity",
+            "value": -0.0801061121044668,
+            "shap_value": -0.0009001328605123849,
+            "direction": "decreases_risk"
+          },
+          {
+            "feature": "fulfillment_on_time_rate_acceleration",
+            "group": "temporal_velocity",
+            "definition": "velocity_7v28 - velocity_28v60 \u2014 is short-term momentum itself increasing (acceleration) or fading?",
+            "window": "7d/28d/60d composite",
+            "kind": "acceleration",
+            "value": -0.0030057662730905,
+            "shap_value": -0.00065906822775863,
+            "direction": "decreases_risk"
+          }
+        ]
+      },
+      "all_contributors": [
+        {
+          "feature": "chargeback_rate_28d",
+          "group": "chargeback_behavior",
+          "definition": "Volume-weighted chargeback rate over trailing 28d: sum(chargeback_count)/sum(transaction_count).",
+          "window": "28d",
+          "kind": "level",
+          "value": 0.0,
+          "shap_value": 0.07808513716365197,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "chargeback_amount_to_gmv_28d",
+          "group": "chargeback_behavior",
+          "definition": "Dollar-weighted chargeback exposure: sum(chargeback_amount)/sum(gmv) over trailing 28d.",
+          "window": "28d",
+          "kind": "ratio",
+          "value": 0.0,
+          "shap_value": 0.06668212067833508,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "chargeback_count_28d",
+          "group": "chargeback_behavior",
+          "definition": "Raw chargeback count over trailing 28d \u2014 exposure/confidence context for chargeback_rate_28d.",
+          "window": "28d",
+          "kind": "level",
+          "value": 0.0,
+          "shap_value": 0.04360555843584849,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "days_since_last_chargeback",
+          "group": "chargeback_behavior",
+          "definition": "Days since the most recent day (<=t) with chargeback_count>0 for this merchant, capped at 90. A recency signal that doesn't collapse to 0 on days with no observed chargebacks yet.",
+          "window": "expanding (capped)",
+          "kind": "level",
+          "value": 41.0,
+          "shap_value": 0.038014396295139495,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "chargeback_rate_velocity_28v60",
+          "group": "temporal_velocity",
+          "definition": "chargeback_rate(28d) - chargeback_rate(60d) \u2014 medium-term momentum (percentage points).",
+          "window": "28d vs 60d",
+          "kind": "velocity",
+          "value": -0.0093457943925233,
+          "shap_value": 0.024386521721634295,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "chargeback_rate_7d",
+          "group": "chargeback_behavior",
+          "definition": "Volume-weighted chargeback rate over trailing 7d: sum(chargeback_count)/sum(transaction_count).",
+          "window": "7d",
+          "kind": "level",
+          "value": 0.0,
+          "shap_value": 0.014888433236114789,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "merchant_tenure_days",
+          "group": "merchant_behavior",
+          "definition": "date - signup_date, in days. A real business-facing attribute (account age), not a generator ground-truth risk parameter \u2014 the only merchants.csv-derived feature in this pipeline.",
+          "window": "n/a (point-in-time)",
+          "kind": "level",
+          "value": 1383.0,
+          "shap_value": 0.010433296265250705,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "chargeback_rate_acceleration",
+          "group": "temporal_velocity",
+          "definition": "velocity_7v28 - velocity_28v60 \u2014 is short-term momentum itself increasing (acceleration) or fading?",
+          "window": "7d/28d/60d composite",
+          "kind": "acceleration",
+          "value": 0.0093457943925233,
+          "shap_value": 0.010337407369280948,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "transaction_count_level_28d",
+          "group": "merchant_behavior",
+          "definition": "Mean daily transaction_count over trailing 28d.",
+          "window": "28d",
+          "kind": "level",
+          "value": 1.6785714285714286,
+          "shap_value": 0.009693966549772328,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "chargeback_rate_velocity_7v28",
+          "group": "temporal_velocity",
+          "definition": "chargeback_rate(7d) - chargeback_rate(28d) \u2014 short-term momentum (percentage points).",
+          "window": "7d vs 28d",
+          "kind": "velocity",
+          "value": 0.0,
+          "shap_value": 0.008984994704505771,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "liquidity_to_gmv_ratio_28d",
+          "group": "financial_state",
+          "definition": "liquidity_balance_28d / mean(gmv, 28d) \u2014 buffer expressed as 'days of current GMV', directly interpretable.",
+          "window": "28d",
+          "kind": "ratio",
+          "value": 4.634716801456455,
+          "shap_value": 0.008815728425276238,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "payment_mix_hhi_60d",
+          "group": "payment_behavior",
+          "definition": "Herfindahl-Hirschman index (sum of squared GMV-weighted payment-method shares) over trailing 60d. Higher = more concentrated in one method.",
+          "window": "60d",
+          "kind": "level",
+          "value": 0.2682198177208574,
+          "shap_value": 0.008213612902256433,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "gmv_coefficient_of_variation_28d",
+          "group": "merchant_behavior",
+          "definition": "std(gmv, 28d) / mean(gmv, 28d) \u2014 the merchant's own day-to-day noisiness, context for interpreting other deviations.",
+          "window": "28d",
+          "kind": "ratio",
+          "value": 0.1432459313499128,
+          "shap_value": 0.007948601356838973,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "payment_mix_hhi_28d",
+          "group": "payment_behavior",
+          "definition": "Herfindahl-Hirschman index (sum of squared GMV-weighted payment-method shares) over trailing 28d. Higher = more concentrated in one method.",
+          "window": "28d",
+          "kind": "level",
+          "value": 0.2700307545185843,
+          "shap_value": 0.007887811212878421,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "customer_count_28d",
+          "group": "customer_mix",
+          "definition": "Mean daily distinct customer count over trailing 28d \u2014 activity scale context.",
+          "window": "28d",
+          "kind": "level",
+          "value": 1.6785714285714286,
+          "shap_value": 0.00781668539148004,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "chargeback_rate_deviation_z",
+          "group": "deviation_from_baseline",
+          "definition": "(current 7d chargeback_rate - this merchant's own expanding-history mean of its 28d chargeback_rate) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+          "window": "7d vs expanding(28d-smoothed)",
+          "kind": "deviation",
+          "value": -0.8394986165623576,
+          "shap_value": 0.007759590211031735,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "pending_settlement_to_gmv_28d",
+          "group": "financial_state",
+          "definition": "mean(pending_settlement_amount, 28d) / mean(gmv, 28d) \u2014 settlement pipeline scale relative to volume.",
+          "window": "28d",
+          "kind": "ratio",
+          "value": 1.9561147245172472,
+          "shap_value": 0.006032728944107348,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "payment_mix_hhi_7d",
+          "group": "payment_behavior",
+          "definition": "Herfindahl-Hirschman index (sum of squared GMV-weighted payment-method shares) over trailing 7d. Higher = more concentrated in one method.",
+          "window": "7d",
+          "kind": "level",
+          "value": 0.267327028673767,
+          "shap_value": 0.005900143454101722,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "chargeback_rate_60d",
+          "group": "chargeback_behavior",
+          "definition": "Volume-weighted chargeback rate over trailing 60d: sum(chargeback_count)/sum(transaction_count).",
+          "window": "60d",
+          "kind": "level",
+          "value": 0.0093457943925233,
+          "shap_value": -0.005840520019907471,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "fulfillment_delay_avg_days_28d",
+          "group": "fulfillment",
+          "definition": "Transaction-volume-weighted mean fulfillment delay (days) over trailing 28d.",
+          "window": "28d",
+          "kind": "level",
+          "value": 1.458019416971164,
+          "shap_value": 0.005671024083612306,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "new_customer_rate_60d",
+          "group": "customer_mix",
+          "definition": "Volume-weighted new-customer share over trailing 60d: sum(new_customers)/sum(customer_count).",
+          "window": "60d",
+          "kind": "level",
+          "value": 0.4299065420560747,
+          "shap_value": 0.005450997911249659,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "liquidity_coefficient_of_variation_28d",
+          "group": "financial_state",
+          "definition": "std(liquidity_balance, 28d) / mean(liquidity_balance, 28d) \u2014 how stable the buffer has been recently.",
+          "window": "28d",
+          "kind": "ratio",
+          "value": 0.0178323560821058,
+          "shap_value": 0.00529766117790276,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "payment_mix_l1_drift_28v60",
+          "group": "payment_behavior",
+          "definition": "Sum of |share_i(28d) - share_i(60d)| across payment methods \u2014 medium-term vs. long-term mix drift.",
+          "window": "28d vs 60d",
+          "kind": "ratio",
+          "value": 0.0080349437075893,
+          "shap_value": 0.005238899658119386,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "refund_rate_60d",
+          "group": "refund_behavior",
+          "definition": "Volume-weighted refund rate over trailing 60d: sum(refund_count)/sum(transaction_count). Not a mean of daily rates, to avoid low-count distortion.",
+          "window": "60d",
+          "kind": "level",
+          "value": 0.0467289719626168,
+          "shap_value": 0.003956728042602201,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "fulfillment_on_time_rate_60d",
+          "group": "fulfillment",
+          "definition": "Transaction-volume-weighted mean of fulfillment_on_time_rate over trailing 60d.",
+          "window": "60d",
+          "kind": "level",
+          "value": 0.8498841522297393,
+          "shap_value": 0.0037317650830853083,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "fulfillment_on_time_rate_28d",
+          "group": "fulfillment",
+          "definition": "Transaction-volume-weighted mean of fulfillment_on_time_rate over trailing 28d.",
+          "window": "28d",
+          "kind": "level",
+          "value": 0.8484538475935905,
+          "shap_value": 0.003643240203728458,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "new_customer_rate_28d",
+          "group": "customer_mix",
+          "definition": "Volume-weighted new-customer share over trailing 28d: sum(new_customers)/sum(customer_count).",
+          "window": "28d",
+          "kind": "level",
+          "value": 0.4042553191489361,
+          "shap_value": 0.0033157370924354235,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "refund_rate_28d",
+          "group": "refund_behavior",
+          "definition": "Volume-weighted refund rate over trailing 28d: sum(refund_count)/sum(transaction_count). Not a mean of daily rates, to avoid low-count distortion.",
+          "window": "28d",
+          "kind": "level",
+          "value": 0.0425531914893617,
+          "shap_value": 0.002766599959767276,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "new_customer_rate_7d",
+          "group": "customer_mix",
+          "definition": "Volume-weighted new-customer share over trailing 7d: sum(new_customers)/sum(customer_count).",
+          "window": "7d",
+          "kind": "level",
+          "value": 0.3636363636363636,
+          "shap_value": 0.002532792678415252,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "liquidity_balance_28d",
+          "group": "financial_state",
+          "definition": "Mean daily liquidity_balance over trailing 28d (same units as gmv).",
+          "window": "28d",
+          "kind": "level",
+          "value": 45314.157028777096,
+          "shap_value": 0.002304462850823448,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "fulfillment_on_time_rate_velocity_28v60",
+          "group": "temporal_velocity",
+          "definition": "fulfillment_on_time_rate(28d) - fulfillment_on_time_rate(60d) \u2014 medium-term momentum (percentage points).",
+          "window": "28d vs 60d",
+          "kind": "velocity",
+          "value": -0.0014303046361487,
+          "shap_value": 0.0020526357300268056,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "fulfillment_on_time_rate_7d",
+          "group": "fulfillment",
+          "definition": "Transaction-volume-weighted mean of fulfillment_on_time_rate over trailing 7d.",
+          "window": "7d",
+          "kind": "level",
+          "value": 0.8440177766843512,
+          "shap_value": 0.0019903946367577662,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "day_of_year_cos",
+          "group": "merchant_behavior",
+          "definition": "cos(2*pi*day_of_year/365.25) \u2014 paired with day_of_year_sin for a non-discontinuous yearly cycle encoding.",
+          "window": "n/a (point-in-time)",
+          "kind": "level",
+          "value": 0.4061472386305789,
+          "shap_value": -0.0017677587085204252,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "gmv_level_28d",
+          "group": "merchant_behavior",
+          "definition": "Mean daily gmv over trailing 28d.",
+          "window": "28d",
+          "kind": "level",
+          "value": 9777.114540102464,
+          "shap_value": 0.0017326007158669442,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "refund_rate_deviation_z",
+          "group": "deviation_from_baseline",
+          "definition": "(current 7d refund_rate - this merchant's own expanding-history mean of its 28d refund_rate) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+          "window": "7d vs expanding(28d-smoothed)",
+          "kind": "deviation",
+          "value": 2.7139314554136313,
+          "shap_value": -0.0016772147492176708,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "refund_count_28d",
+          "group": "refund_behavior",
+          "definition": "Raw refund count over trailing 28d \u2014 exposure/confidence context for refund_rate_28d (a rate from 2 refunds is far less reliable than one from 50).",
+          "window": "28d",
+          "kind": "level",
+          "value": 2.0,
+          "shap_value": 0.0011680351620005846,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "day_of_year_sin",
+          "group": "merchant_behavior",
+          "definition": "sin(2*pi*day_of_year/365.25) \u2014 cyclical calendar position, lets a model account for seasonality explicitly.",
+          "window": "n/a (point-in-time)",
+          "kind": "level",
+          "value": 0.9138076496466616,
+          "shap_value": -0.0011048114169857487,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "refund_rate_velocity_28v60",
+          "group": "temporal_velocity",
+          "definition": "refund_rate(28d) - refund_rate(60d) \u2014 medium-term momentum (percentage points).",
+          "window": "28d vs 60d",
+          "kind": "velocity",
+          "value": -0.0041757804732551,
+          "shap_value": 0.0010462828272232332,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "refund_rate_7d",
+          "group": "refund_behavior",
+          "definition": "Volume-weighted refund rate over trailing 7d: sum(refund_count)/sum(transaction_count). Not a mean of daily rates, to avoid low-count distortion.",
+          "window": "7d",
+          "kind": "level",
+          "value": 0.0909090909090909,
+          "shap_value": 0.001012795591598764,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "gmv_velocity_28v60",
+          "group": "temporal_velocity",
+          "definition": "mean(gmv,28d)/mean(gmv,60d) - 1 \u2014 relative GMV growth, medium vs long term.",
+          "window": "28d vs 60d",
+          "kind": "velocity",
+          "value": -0.0801061121044668,
+          "shap_value": -0.0009001328605123849,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "refund_rate_acceleration",
+          "group": "temporal_velocity",
+          "definition": "velocity_7v28 - velocity_28v60 \u2014 is short-term momentum itself increasing (acceleration) or fading?",
+          "window": "7d/28d/60d composite",
+          "kind": "acceleration",
+          "value": 0.0525316798929843,
+          "shap_value": 0.0008571190608770993,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "gmv_acceleration",
+          "group": "temporal_velocity",
+          "definition": "gmv_velocity_7v28 - gmv_velocity_28v60 \u2014 is GMV growth speeding up or slowing down?",
+          "window": "7d/28d/60d composite",
+          "kind": "acceleration",
+          "value": 0.057264662859487,
+          "shap_value": 0.0007220886459129385,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "fulfillment_on_time_rate_acceleration",
+          "group": "temporal_velocity",
+          "definition": "velocity_7v28 - velocity_28v60 \u2014 is short-term momentum itself increasing (acceleration) or fading?",
+          "window": "7d/28d/60d composite",
+          "kind": "acceleration",
+          "value": -0.0030057662730905,
+          "shap_value": -0.00065906822775863,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "fulfillment_on_time_rate_velocity_7v28",
+          "group": "temporal_velocity",
+          "definition": "fulfillment_on_time_rate(7d) - fulfillment_on_time_rate(28d) \u2014 short-term momentum (percentage points).",
+          "window": "7d vs 28d",
+          "kind": "velocity",
+          "value": -0.0044360709092393,
+          "shap_value": -0.0005848864740118776,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "new_customer_rate_velocity_7v28",
+          "group": "temporal_velocity",
+          "definition": "new_customer_rate(7d) - new_customer_rate(28d).",
+          "window": "7d vs 28d",
+          "kind": "velocity",
+          "value": -0.0406189555125725,
+          "shap_value": -0.0005722973141269753,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "new_customer_rate_deviation_z",
+          "group": "deviation_from_baseline",
+          "definition": "(current 7d new_customer_rate - this merchant's own expanding-history mean of its 28d new_customer_rate) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+          "window": "7d vs expanding(28d-smoothed)",
+          "kind": "deviation",
+          "value": -2.7015980946340017,
+          "shap_value": 0.00032776556050299703,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "gmv_velocity_7v28",
+          "group": "temporal_velocity",
+          "definition": "mean(gmv,7d)/mean(gmv,28d) - 1 \u2014 relative GMV growth, short vs medium term.",
+          "window": "7d vs 28d",
+          "kind": "velocity",
+          "value": -0.0228414492449797,
+          "shap_value": 0.0003015745938551869,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "gmv_deviation_z",
+          "group": "deviation_from_baseline",
+          "definition": "(current 7d gmv - this merchant's own expanding-history mean of its 28d gmv) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+          "window": "7d vs expanding(28d-smoothed)",
+          "kind": "deviation",
+          "value": -1.3788531486650233,
+          "shap_value": -0.00028178368809068124,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "refund_rate_velocity_7v28",
+          "group": "temporal_velocity",
+          "definition": "refund_rate(7d) - refund_rate(28d) \u2014 short-term momentum (percentage points).",
+          "window": "7d vs 28d",
+          "kind": "velocity",
+          "value": 0.0483558994197292,
+          "shap_value": 0.00020763674469208182,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "fulfillment_on_time_rate_deviation_z",
+          "group": "deviation_from_baseline",
+          "definition": "(current 7d fulfillment_on_time_rate - this merchant's own expanding-history mean of its 28d fulfillment_on_time_rate) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+          "window": "7d vs expanding(28d-smoothed)",
+          "kind": "deviation",
+          "value": -1.3996233635435174,
+          "shap_value": -0.00018950318079824873,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "refund_amount_to_gmv_28d",
+          "group": "refund_behavior",
+          "definition": "Dollar-weighted refund burden: sum(refund_amount)/sum(gmv) over trailing 28d.",
+          "window": "28d",
+          "kind": "ratio",
+          "value": 0.0350254517872263,
+          "shap_value": -0.0001239179711604383,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "payment_mix_l1_drift_7v28",
+          "group": "payment_behavior",
+          "definition": "Sum of |share_i(7d) - share_i(28d)| across payment methods \u2014 how much the mix has moved recently vs. the medium-term.",
+          "window": "7d vs 28d",
+          "kind": "ratio",
+          "value": 0.0171169656129087,
+          "shap_value": 6.904132436353949e-05,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "liquidity_deviation_z",
+          "group": "deviation_from_baseline",
+          "definition": "(current 7d liquidity_balance - this merchant's own expanding-history mean of its 28d liquidity_balance) / expanding std, clipped to [-10,10].",
+          "window": "7d vs expanding(28d-smoothed)",
+          "kind": "deviation",
+          "value": -1.7328249948673626,
+          "shap_value": 5.516312514850707e-05,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "transaction_count_velocity_7v28",
+          "group": "temporal_velocity",
+          "definition": "mean(transaction_count,7d)/mean(transaction_count,28d) - 1.",
+          "window": "7d vs 28d",
+          "kind": "velocity",
+          "value": -0.0638297872340425,
+          "shap_value": -1.4115457832340444e-05,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "is_weekend",
+          "group": "merchant_behavior",
+          "definition": "1 if the observation date is Saturday/Sunday, else 0.",
+          "window": "n/a (point-in-time)",
+          "kind": "level",
+          "value": 0.0,
+          "shap_value": 0.0,
+          "direction": "neutral"
+        }
+      ]
+    },
+    "highest_confidence_false_positive": {
+      "merchant_id": "M0033",
+      "as_of_date": "2024-04-27",
+      "day_index": 117,
+      "horizon_days": 30,
+      "prediction": {
+        "model_probability_calibrated": 0.9138087453096752,
+        "model_probability_raw_rf": 0.8617564957784456,
+        "decision_threshold": 0.6417933766429295,
+        "predicted_positive": true,
+        "note": "model_probability_calibrated is the artifact's official output (used against decision_threshold). SHAP explains model_probability_raw_rf, the pre-calibration Random Forest score \u2014 see docs/architecture/explainability.md."
+      },
+      "faithfulness": {
+        "shap_base_value": 0.4999999999999977,
+        "shap_reconstructed_probability": 0.8617564957784436,
+        "reconstruction_error": 1.9984014443252818e-15,
+        "faithful": true
+      },
+      "drivers": {
+        "top_positive_contributors": [
+          {
+            "feature": "chargeback_rate_28d",
+            "group": "chargeback_behavior",
+            "definition": "Volume-weighted chargeback rate over trailing 28d: sum(chargeback_count)/sum(transaction_count).",
+            "window": "28d",
+            "kind": "level",
+            "value": 0.0,
+            "shap_value": 0.07047904370185198,
+            "direction": "increases_risk"
+          },
+          {
+            "feature": "chargeback_amount_to_gmv_28d",
+            "group": "chargeback_behavior",
+            "definition": "Dollar-weighted chargeback exposure: sum(chargeback_amount)/sum(gmv) over trailing 28d.",
+            "window": "28d",
+            "kind": "ratio",
+            "value": 0.0,
+            "shap_value": 0.0601840108112002,
+            "direction": "increases_risk"
+          },
+          {
+            "feature": "chargeback_count_28d",
+            "group": "chargeback_behavior",
+            "definition": "Raw chargeback count over trailing 28d \u2014 exposure/confidence context for chargeback_rate_28d.",
+            "window": "28d",
+            "kind": "level",
+            "value": 0.0,
+            "shap_value": 0.04723632853208516,
+            "direction": "increases_risk"
+          },
+          {
+            "feature": "days_since_last_chargeback",
+            "group": "chargeback_behavior",
+            "definition": "Days since the most recent day (<=t) with chargeback_count>0 for this merchant, capped at 90. A recency signal that doesn't collapse to 0 on days with no observed chargebacks yet.",
+            "window": "expanding (capped)",
+            "kind": "level",
+            "value": 90.0,
+            "shap_value": 0.03576809388753659,
+            "direction": "increases_risk"
+          },
+          {
+            "feature": "chargeback_rate_60d",
+            "group": "chargeback_behavior",
+            "definition": "Volume-weighted chargeback rate over trailing 60d: sum(chargeback_count)/sum(transaction_count).",
+            "window": "60d",
+            "kind": "level",
+            "value": 0.0,
+            "shap_value": 0.02599572477927069,
+            "direction": "increases_risk"
+          },
+          {
+            "feature": "chargeback_rate_7d",
+            "group": "chargeback_behavior",
+            "definition": "Volume-weighted chargeback rate over trailing 7d: sum(chargeback_count)/sum(transaction_count).",
+            "window": "7d",
+            "kind": "level",
+            "value": 0.0,
+            "shap_value": 0.016256257516931674,
+            "direction": "increases_risk"
+          }
+        ],
+        "top_negative_contributors": [
+          {
+            "feature": "pending_settlement_to_gmv_28d",
+            "group": "financial_state",
+            "definition": "mean(pending_settlement_amount, 28d) / mean(gmv, 28d) \u2014 settlement pipeline scale relative to volume.",
+            "window": "28d",
+            "kind": "ratio",
+            "value": 1.7575541168967823,
+            "shap_value": -0.014611486876439893,
+            "direction": "decreases_risk"
+          },
+          {
+            "feature": "liquidity_to_gmv_ratio_28d",
+            "group": "financial_state",
+            "definition": "liquidity_balance_28d / mean(gmv, 28d) \u2014 buffer expressed as 'days of current GMV', directly interpretable.",
+            "window": "28d",
+            "kind": "ratio",
+            "value": 14.78123882873898,
+            "shap_value": -0.004947625808373388,
+            "direction": "decreases_risk"
+          },
+          {
+            "feature": "day_of_year_cos",
+            "group": "merchant_behavior",
+            "definition": "cos(2*pi*day_of_year/365.25) \u2014 paired with day_of_year_sin for a non-discontinuous yearly cycle encoding.",
+            "window": "n/a (point-in-time)",
+            "kind": "level",
+            "value": -0.4431322341826345,
+            "shap_value": -0.002460565708289987,
+            "direction": "decreases_risk"
+          },
+          {
+            "feature": "gmv_coefficient_of_variation_28d",
+            "group": "merchant_behavior",
+            "definition": "std(gmv, 28d) / mean(gmv, 28d) \u2014 the merchant's own day-to-day noisiness, context for interpreting other deviations.",
+            "window": "28d",
+            "kind": "ratio",
+            "value": 0.2237808242528326,
+            "shap_value": -0.0017910898821617257,
+            "direction": "decreases_risk"
+          },
+          {
+            "feature": "gmv_velocity_28v60",
+            "group": "temporal_velocity",
+            "definition": "mean(gmv,28d)/mean(gmv,60d) - 1 \u2014 relative GMV growth, medium vs long term.",
+            "window": "28d vs 60d",
+            "kind": "velocity",
+            "value": 0.0193351326487842,
+            "shap_value": -0.0011637417568025944,
+            "direction": "decreases_risk"
+          },
+          {
+            "feature": "day_of_year_sin",
+            "group": "merchant_behavior",
+            "definition": "sin(2*pi*day_of_year/365.25) \u2014 cyclical calendar position, lets a model account for seasonality explicitly.",
+            "window": "n/a (point-in-time)",
+            "kind": "level",
+            "value": 0.8964562582905575,
+            "shap_value": -0.0010364772357935538,
+            "direction": "decreases_risk"
+          }
+        ]
+      },
+      "all_contributors": [
+        {
+          "feature": "chargeback_rate_28d",
+          "group": "chargeback_behavior",
+          "definition": "Volume-weighted chargeback rate over trailing 28d: sum(chargeback_count)/sum(transaction_count).",
+          "window": "28d",
+          "kind": "level",
+          "value": 0.0,
+          "shap_value": 0.07047904370185198,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "chargeback_amount_to_gmv_28d",
+          "group": "chargeback_behavior",
+          "definition": "Dollar-weighted chargeback exposure: sum(chargeback_amount)/sum(gmv) over trailing 28d.",
+          "window": "28d",
+          "kind": "ratio",
+          "value": 0.0,
+          "shap_value": 0.0601840108112002,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "chargeback_count_28d",
+          "group": "chargeback_behavior",
+          "definition": "Raw chargeback count over trailing 28d \u2014 exposure/confidence context for chargeback_rate_28d.",
+          "window": "28d",
+          "kind": "level",
+          "value": 0.0,
+          "shap_value": 0.04723632853208516,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "days_since_last_chargeback",
+          "group": "chargeback_behavior",
+          "definition": "Days since the most recent day (<=t) with chargeback_count>0 for this merchant, capped at 90. A recency signal that doesn't collapse to 0 on days with no observed chargebacks yet.",
+          "window": "expanding (capped)",
+          "kind": "level",
+          "value": 90.0,
+          "shap_value": 0.03576809388753659,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "chargeback_rate_60d",
+          "group": "chargeback_behavior",
+          "definition": "Volume-weighted chargeback rate over trailing 60d: sum(chargeback_count)/sum(transaction_count).",
+          "window": "60d",
+          "kind": "level",
+          "value": 0.0,
+          "shap_value": 0.02599572477927069,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "chargeback_rate_7d",
+          "group": "chargeback_behavior",
+          "definition": "Volume-weighted chargeback rate over trailing 7d: sum(chargeback_count)/sum(transaction_count).",
+          "window": "7d",
+          "kind": "level",
+          "value": 0.0,
+          "shap_value": 0.016256257516931674,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "pending_settlement_to_gmv_28d",
+          "group": "financial_state",
+          "definition": "mean(pending_settlement_amount, 28d) / mean(gmv, 28d) \u2014 settlement pipeline scale relative to volume.",
+          "window": "28d",
+          "kind": "ratio",
+          "value": 1.7575541168967823,
+          "shap_value": -0.014611486876439893,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "chargeback_rate_velocity_28v60",
+          "group": "temporal_velocity",
+          "definition": "chargeback_rate(28d) - chargeback_rate(60d) \u2014 medium-term momentum (percentage points).",
+          "window": "28d vs 60d",
+          "kind": "velocity",
+          "value": 0.0,
+          "shap_value": 0.013242520453627551,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "customer_count_28d",
+          "group": "customer_mix",
+          "definition": "Mean daily distinct customer count over trailing 28d \u2014 activity scale context.",
+          "window": "28d",
+          "kind": "level",
+          "value": 3.25,
+          "shap_value": 0.010268620879334946,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "chargeback_rate_acceleration",
+          "group": "temporal_velocity",
+          "definition": "velocity_7v28 - velocity_28v60 \u2014 is short-term momentum itself increasing (acceleration) or fading?",
+          "window": "7d/28d/60d composite",
+          "kind": "acceleration",
+          "value": 0.0,
+          "shap_value": 0.010166598746306904,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "payment_mix_hhi_60d",
+          "group": "payment_behavior",
+          "definition": "Herfindahl-Hirschman index (sum of squared GMV-weighted payment-method shares) over trailing 60d. Higher = more concentrated in one method.",
+          "window": "60d",
+          "kind": "level",
+          "value": 0.2667222831443699,
+          "shap_value": 0.00901915176430995,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "chargeback_rate_velocity_7v28",
+          "group": "temporal_velocity",
+          "definition": "chargeback_rate(7d) - chargeback_rate(28d) \u2014 short-term momentum (percentage points).",
+          "window": "7d vs 28d",
+          "kind": "velocity",
+          "value": 0.0,
+          "shap_value": 0.008781369638403152,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "merchant_tenure_days",
+          "group": "merchant_behavior",
+          "definition": "date - signup_date, in days. A real business-facing attribute (account age), not a generator ground-truth risk parameter \u2014 the only merchants.csv-derived feature in this pipeline.",
+          "window": "n/a (point-in-time)",
+          "kind": "level",
+          "value": 1586.0,
+          "shap_value": 0.008459630494728233,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "new_customer_rate_60d",
+          "group": "customer_mix",
+          "definition": "Volume-weighted new-customer share over trailing 60d: sum(new_customers)/sum(customer_count).",
+          "window": "60d",
+          "kind": "level",
+          "value": 0.3092783505154639,
+          "shap_value": 0.007917189204430554,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "refund_rate_60d",
+          "group": "refund_behavior",
+          "definition": "Volume-weighted refund rate over trailing 60d: sum(refund_count)/sum(transaction_count). Not a mean of daily rates, to avoid low-count distortion.",
+          "window": "60d",
+          "kind": "level",
+          "value": 0.1701030927835051,
+          "shap_value": 0.007324529108032304,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "transaction_count_level_28d",
+          "group": "merchant_behavior",
+          "definition": "Mean daily transaction_count over trailing 28d.",
+          "window": "28d",
+          "kind": "level",
+          "value": 3.25,
+          "shap_value": 0.006762668838264342,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "chargeback_rate_deviation_z",
+          "group": "deviation_from_baseline",
+          "definition": "(current 7d chargeback_rate - this merchant's own expanding-history mean of its 28d chargeback_rate) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+          "window": "7d vs expanding(28d-smoothed)",
+          "kind": "deviation",
+          "value": -0.5327227793609705,
+          "shap_value": 0.006420647296027064,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "payment_mix_hhi_7d",
+          "group": "payment_behavior",
+          "definition": "Herfindahl-Hirschman index (sum of squared GMV-weighted payment-method shares) over trailing 7d. Higher = more concentrated in one method.",
+          "window": "7d",
+          "kind": "level",
+          "value": 0.2675067060065216,
+          "shap_value": 0.0063564297842665235,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "payment_mix_hhi_28d",
+          "group": "payment_behavior",
+          "definition": "Herfindahl-Hirschman index (sum of squared GMV-weighted payment-method shares) over trailing 28d. Higher = more concentrated in one method.",
+          "window": "28d",
+          "kind": "level",
+          "value": 0.2680286689288738,
+          "shap_value": 0.005714429696055743,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "liquidity_balance_28d",
+          "group": "financial_state",
+          "definition": "Mean daily liquidity_balance over trailing 28d (same units as gmv).",
+          "window": "28d",
+          "kind": "level",
+          "value": 87258.95606359917,
+          "shap_value": 0.005519332739940177,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "liquidity_to_gmv_ratio_28d",
+          "group": "financial_state",
+          "definition": "liquidity_balance_28d / mean(gmv, 28d) \u2014 buffer expressed as 'days of current GMV', directly interpretable.",
+          "window": "28d",
+          "kind": "ratio",
+          "value": 14.78123882873898,
+          "shap_value": -0.004947625808373388,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "new_customer_rate_28d",
+          "group": "customer_mix",
+          "definition": "Volume-weighted new-customer share over trailing 28d: sum(new_customers)/sum(customer_count).",
+          "window": "28d",
+          "kind": "level",
+          "value": 0.3076923076923077,
+          "shap_value": 0.0048345994730991685,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "fulfillment_delay_avg_days_28d",
+          "group": "fulfillment",
+          "definition": "Transaction-volume-weighted mean fulfillment delay (days) over trailing 28d.",
+          "window": "28d",
+          "kind": "level",
+          "value": 0.3674458359076437,
+          "shap_value": 0.004143082061146045,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "new_customer_rate_7d",
+          "group": "customer_mix",
+          "definition": "Volume-weighted new-customer share over trailing 7d: sum(new_customers)/sum(customer_count).",
+          "window": "7d",
+          "kind": "level",
+          "value": 0.3043478260869565,
+          "shap_value": 0.0034690939900986224,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "refund_count_28d",
+          "group": "refund_behavior",
+          "definition": "Raw refund count over trailing 28d \u2014 exposure/confidence context for refund_rate_28d (a rate from 2 refunds is far less reliable than one from 50).",
+          "window": "28d",
+          "kind": "level",
+          "value": 10.0,
+          "shap_value": 0.0031496144263887236,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "day_of_year_cos",
+          "group": "merchant_behavior",
+          "definition": "cos(2*pi*day_of_year/365.25) \u2014 paired with day_of_year_sin for a non-discontinuous yearly cycle encoding.",
+          "window": "n/a (point-in-time)",
+          "kind": "level",
+          "value": -0.4431322341826345,
+          "shap_value": -0.002460565708289987,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "refund_amount_to_gmv_28d",
+          "group": "refund_behavior",
+          "definition": "Dollar-weighted refund burden: sum(refund_amount)/sum(gmv) over trailing 28d.",
+          "window": "28d",
+          "kind": "ratio",
+          "value": 0.1107517751213944,
+          "shap_value": 0.0021242450280276747,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "refund_rate_28d",
+          "group": "refund_behavior",
+          "definition": "Volume-weighted refund rate over trailing 28d: sum(refund_count)/sum(transaction_count). Not a mean of daily rates, to avoid low-count distortion.",
+          "window": "28d",
+          "kind": "level",
+          "value": 0.1098901098901098,
+          "shap_value": 0.0018254236225307737,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "gmv_coefficient_of_variation_28d",
+          "group": "merchant_behavior",
+          "definition": "std(gmv, 28d) / mean(gmv, 28d) \u2014 the merchant's own day-to-day noisiness, context for interpreting other deviations.",
+          "window": "28d",
+          "kind": "ratio",
+          "value": 0.2237808242528326,
+          "shap_value": -0.0017910898821617257,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "refund_rate_velocity_28v60",
+          "group": "temporal_velocity",
+          "definition": "refund_rate(28d) - refund_rate(60d) \u2014 medium-term momentum (percentage points).",
+          "window": "28d vs 60d",
+          "kind": "velocity",
+          "value": -0.0602129828933952,
+          "shap_value": 0.001667383048126513,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "gmv_level_28d",
+          "group": "merchant_behavior",
+          "definition": "Mean daily gmv over trailing 28d.",
+          "window": "28d",
+          "kind": "level",
+          "value": 5903.358783023156,
+          "shap_value": 0.0015877270632095619,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "fulfillment_on_time_rate_60d",
+          "group": "fulfillment",
+          "definition": "Transaction-volume-weighted mean of fulfillment_on_time_rate over trailing 60d.",
+          "window": "60d",
+          "kind": "level",
+          "value": 0.9533257781522364,
+          "shap_value": 0.0013593564399143588,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "fulfillment_on_time_rate_velocity_28v60",
+          "group": "temporal_velocity",
+          "definition": "fulfillment_on_time_rate(28d) - fulfillment_on_time_rate(60d) \u2014 medium-term momentum (percentage points).",
+          "window": "28d vs 60d",
+          "kind": "velocity",
+          "value": 0.0020949399390308,
+          "shap_value": 0.0012926697136352524,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "gmv_velocity_28v60",
+          "group": "temporal_velocity",
+          "definition": "mean(gmv,28d)/mean(gmv,60d) - 1 \u2014 relative GMV growth, medium vs long term.",
+          "window": "28d vs 60d",
+          "kind": "velocity",
+          "value": 0.0193351326487842,
+          "shap_value": -0.0011637417568025944,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "day_of_year_sin",
+          "group": "merchant_behavior",
+          "definition": "sin(2*pi*day_of_year/365.25) \u2014 cyclical calendar position, lets a model account for seasonality explicitly.",
+          "window": "n/a (point-in-time)",
+          "kind": "level",
+          "value": 0.8964562582905575,
+          "shap_value": -0.0010364772357935538,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "fulfillment_on_time_rate_acceleration",
+          "group": "temporal_velocity",
+          "definition": "velocity_7v28 - velocity_28v60 \u2014 is short-term momentum itself increasing (acceleration) or fading?",
+          "window": "7d/28d/60d composite",
+          "kind": "acceleration",
+          "value": -0.000118572912449,
+          "shap_value": -0.0008466859391089356,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "refund_rate_deviation_z",
+          "group": "deviation_from_baseline",
+          "definition": "(current 7d refund_rate - this merchant's own expanding-history mean of its 28d refund_rate) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+          "window": "7d vs expanding(28d-smoothed)",
+          "kind": "deviation",
+          "value": -0.3270379283973622,
+          "shap_value": -0.0008361548894565515,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "fulfillment_on_time_rate_28d",
+          "group": "fulfillment",
+          "definition": "Transaction-volume-weighted mean of fulfillment_on_time_rate over trailing 28d.",
+          "window": "28d",
+          "kind": "level",
+          "value": 0.9554207180912674,
+          "shap_value": 0.0007502702405653276,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "fulfillment_on_time_rate_deviation_z",
+          "group": "deviation_from_baseline",
+          "definition": "(current 7d fulfillment_on_time_rate - this merchant's own expanding-history mean of its 28d fulfillment_on_time_rate) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+          "window": "7d vs expanding(28d-smoothed)",
+          "kind": "deviation",
+          "value": 0.81901832126979,
+          "shap_value": -0.0006394597227697263,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "payment_mix_l1_drift_28v60",
+          "group": "payment_behavior",
+          "definition": "Sum of |share_i(28d) - share_i(60d)| across payment methods \u2014 medium-term vs. long-term mix drift.",
+          "window": "28d vs 60d",
+          "kind": "ratio",
+          "value": 0.0054488961672341,
+          "shap_value": 0.0006333889104444665,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "fulfillment_on_time_rate_velocity_7v28",
+          "group": "temporal_velocity",
+          "definition": "fulfillment_on_time_rate(7d) - fulfillment_on_time_rate(28d) \u2014 short-term momentum (percentage points).",
+          "window": "7d vs 28d",
+          "kind": "velocity",
+          "value": 0.0019763670265817,
+          "shap_value": 0.0005453134406728134,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "gmv_acceleration",
+          "group": "temporal_velocity",
+          "definition": "gmv_velocity_7v28 - gmv_velocity_28v60 \u2014 is GMV growth speeding up or slowing down?",
+          "window": "7d/28d/60d composite",
+          "kind": "acceleration",
+          "value": -0.0186221009713138,
+          "shap_value": 0.0004695662390262636,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "new_customer_rate_deviation_z",
+          "group": "deviation_from_baseline",
+          "definition": "(current 7d new_customer_rate - this merchant's own expanding-history mean of its 28d new_customer_rate) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+          "window": "7d vs expanding(28d-smoothed)",
+          "kind": "deviation",
+          "value": -0.5620026107889435,
+          "shap_value": 0.00044113638092838916,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "refund_rate_7d",
+          "group": "refund_behavior",
+          "definition": "Volume-weighted refund rate over trailing 7d: sum(refund_count)/sum(transaction_count). Not a mean of daily rates, to avoid low-count distortion.",
+          "window": "7d",
+          "kind": "level",
+          "value": 0.0869565217391304,
+          "shap_value": 0.000431921057351614,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "payment_mix_l1_drift_7v28",
+          "group": "payment_behavior",
+          "definition": "Sum of |share_i(7d) - share_i(28d)| across payment methods \u2014 how much the mix has moved recently vs. the medium-term.",
+          "window": "7d vs 28d",
+          "kind": "ratio",
+          "value": 0.0197388266434583,
+          "shap_value": -0.0004060949156253723,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "liquidity_coefficient_of_variation_28d",
+          "group": "financial_state",
+          "definition": "std(liquidity_balance, 28d) / mean(liquidity_balance, 28d) \u2014 how stable the buffer has been recently.",
+          "window": "28d",
+          "kind": "ratio",
+          "value": 0.0360645519320003,
+          "shap_value": 0.00036576245160289505,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "gmv_deviation_z",
+          "group": "deviation_from_baseline",
+          "definition": "(current 7d gmv - this merchant's own expanding-history mean of its 28d gmv) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+          "window": "7d vs expanding(28d-smoothed)",
+          "kind": "deviation",
+          "value": -0.7385053334319306,
+          "shap_value": -0.00031243966820916033,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "gmv_velocity_7v28",
+          "group": "temporal_velocity",
+          "definition": "mean(gmv,7d)/mean(gmv,28d) - 1 \u2014 relative GMV growth, short vs medium term.",
+          "window": "7d vs 28d",
+          "kind": "velocity",
+          "value": 0.0007130316774703,
+          "shap_value": -0.00030716131722473045,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "transaction_count_velocity_7v28",
+          "group": "temporal_velocity",
+          "definition": "mean(transaction_count,7d)/mean(transaction_count,28d) - 1.",
+          "window": "7d vs 28d",
+          "kind": "velocity",
+          "value": 0.0109890109890109,
+          "shap_value": 0.0002454736871309244,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "refund_rate_velocity_7v28",
+          "group": "temporal_velocity",
+          "definition": "refund_rate(7d) - refund_rate(28d) \u2014 short-term momentum (percentage points).",
+          "window": "7d vs 28d",
+          "kind": "velocity",
+          "value": -0.0229335881509794,
+          "shap_value": -8.648752303626424e-05,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "refund_rate_acceleration",
+          "group": "temporal_velocity",
+          "definition": "velocity_7v28 - velocity_28v60 \u2014 is short-term momentum itself increasing (acceleration) or fading?",
+          "window": "7d/28d/60d composite",
+          "kind": "acceleration",
+          "value": 0.0372793947424158,
+          "shap_value": 4.359946512928796e-05,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "fulfillment_on_time_rate_7d",
+          "group": "fulfillment",
+          "definition": "Transaction-volume-weighted mean of fulfillment_on_time_rate over trailing 7d.",
+          "window": "7d",
+          "kind": "level",
+          "value": 0.9573970851178492,
+          "shap_value": -2.9966951686614318e-05,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "liquidity_deviation_z",
+          "group": "deviation_from_baseline",
+          "definition": "(current 7d liquidity_balance - this merchant's own expanding-history mean of its 28d liquidity_balance) / expanding std, clipped to [-10,10].",
+          "window": "7d vs expanding(28d-smoothed)",
+          "kind": "deviation",
+          "value": -0.9838950015458624,
+          "shap_value": -1.3306173455539832e-05,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "new_customer_rate_velocity_7v28",
+          "group": "temporal_velocity",
+          "definition": "new_customer_rate(7d) - new_customer_rate(28d).",
+          "window": "7d vs 28d",
+          "kind": "velocity",
+          "value": -0.0033444816053511,
+          "shap_value": -6.964464752525421e-06,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "is_weekend",
+          "group": "merchant_behavior",
+          "definition": "1 if the observation date is Saturday/Sunday, else 0.",
+          "window": "n/a (point-in-time)",
+          "kind": "level",
+          "value": 1.0,
+          "shap_value": 0.0,
+          "direction": "neutral"
+        }
+      ]
+    },
+    "borderline_case": {
+      "merchant_id": "M0018",
+      "as_of_date": "2024-03-05",
+      "day_index": 64,
+      "horizon_days": 30,
+      "prediction": {
+        "model_probability_calibrated": 0.6428199987400162,
+        "model_probability_raw_rf": 0.5999259755511753,
+        "decision_threshold": 0.6417933766429295,
+        "predicted_positive": true,
+        "note": "model_probability_calibrated is the artifact's official output (used against decision_threshold). SHAP explains model_probability_raw_rf, the pre-calibration Random Forest score \u2014 see docs/architecture/explainability.md."
+      },
+      "faithfulness": {
+        "shap_base_value": 0.4999999999999977,
+        "shap_reconstructed_probability": 0.5999259755511734,
+        "reconstruction_error": 1.887379141862766e-15,
+        "faithful": true
+      },
+      "drivers": {
+        "top_positive_contributors": [
+          {
+            "feature": "chargeback_rate_28d",
+            "group": "chargeback_behavior",
+            "definition": "Volume-weighted chargeback rate over trailing 28d: sum(chargeback_count)/sum(transaction_count).",
+            "window": "28d",
+            "kind": "level",
+            "value": 0.0,
+            "shap_value": 0.06826874798318998,
+            "direction": "increases_risk"
+          },
+          {
+            "feature": "chargeback_amount_to_gmv_28d",
+            "group": "chargeback_behavior",
+            "definition": "Dollar-weighted chargeback exposure: sum(chargeback_amount)/sum(gmv) over trailing 28d.",
+            "window": "28d",
+            "kind": "ratio",
+            "value": 0.0,
+            "shap_value": 0.056946986604726545,
+            "direction": "increases_risk"
+          },
+          {
+            "feature": "chargeback_count_28d",
+            "group": "chargeback_behavior",
+            "definition": "Raw chargeback count over trailing 28d \u2014 exposure/confidence context for chargeback_rate_28d.",
+            "window": "28d",
+            "kind": "level",
+            "value": 0.0,
+            "shap_value": 0.028289681870810553,
+            "direction": "increases_risk"
+          },
+          {
+            "feature": "days_since_last_chargeback",
+            "group": "chargeback_behavior",
+            "definition": "Days since the most recent day (<=t) with chargeback_count>0 for this merchant, capped at 90. A recency signal that doesn't collapse to 0 on days with no observed chargebacks yet.",
+            "window": "expanding (capped)",
+            "kind": "level",
+            "value": 90.0,
+            "shap_value": 0.02572531575761084,
+            "direction": "increases_risk"
+          },
+          {
+            "feature": "chargeback_rate_60d",
+            "group": "chargeback_behavior",
+            "definition": "Volume-weighted chargeback rate over trailing 60d: sum(chargeback_count)/sum(transaction_count).",
+            "window": "60d",
+            "kind": "level",
+            "value": 0.0,
+            "shap_value": 0.022561467211194893,
+            "direction": "increases_risk"
+          },
+          {
+            "feature": "chargeback_rate_7d",
+            "group": "chargeback_behavior",
+            "definition": "Volume-weighted chargeback rate over trailing 7d: sum(chargeback_count)/sum(transaction_count).",
+            "window": "7d",
+            "kind": "level",
+            "value": 0.0,
+            "shap_value": 0.01313873738722738,
+            "direction": "increases_risk"
+          }
+        ],
+        "top_negative_contributors": [
+          {
+            "feature": "payment_mix_hhi_7d",
+            "group": "payment_behavior",
+            "definition": "Herfindahl-Hirschman index (sum of squared GMV-weighted payment-method shares) over trailing 7d. Higher = more concentrated in one method.",
+            "window": "7d",
+            "kind": "level",
+            "value": 0.3837563779116707,
+            "shap_value": -0.05385572888508684,
+            "direction": "decreases_risk"
+          },
+          {
+            "feature": "payment_mix_hhi_60d",
+            "group": "payment_behavior",
+            "definition": "Herfindahl-Hirschman index (sum of squared GMV-weighted payment-method shares) over trailing 60d. Higher = more concentrated in one method.",
+            "window": "60d",
+            "kind": "level",
+            "value": 0.3835501608808822,
+            "shap_value": -0.04742333889094355,
+            "direction": "decreases_risk"
+          },
+          {
+            "feature": "pending_settlement_to_gmv_28d",
+            "group": "financial_state",
+            "definition": "mean(pending_settlement_amount, 28d) / mean(gmv, 28d) \u2014 settlement pipeline scale relative to volume.",
+            "window": "28d",
+            "kind": "ratio",
+            "value": 0.9833374156596004,
+            "shap_value": -0.015974078806039103,
+            "direction": "decreases_risk"
+          },
+          {
+            "feature": "refund_rate_60d",
+            "group": "refund_behavior",
+            "definition": "Volume-weighted refund rate over trailing 60d: sum(refund_count)/sum(transaction_count). Not a mean of daily rates, to avoid low-count distortion.",
+            "window": "60d",
+            "kind": "level",
+            "value": 0.0153256704980842,
+            "shap_value": -0.010711238104308574,
+            "direction": "decreases_risk"
+          },
+          {
+            "feature": "refund_rate_28d",
+            "group": "refund_behavior",
+            "definition": "Volume-weighted refund rate over trailing 28d: sum(refund_count)/sum(transaction_count). Not a mean of daily rates, to avoid low-count distortion.",
+            "window": "28d",
+            "kind": "level",
+            "value": 0.0168067226890756,
+            "shap_value": -0.009334775253931012,
+            "direction": "decreases_risk"
+          },
+          {
+            "feature": "refund_rate_deviation_z",
+            "group": "deviation_from_baseline",
+            "definition": "(current 7d refund_rate - this merchant's own expanding-history mean of its 28d refund_rate) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+            "window": "7d vs expanding(28d-smoothed)",
+            "kind": "deviation",
+            "value": 1.5820727138869777,
+            "shap_value": -0.007189427916392659,
+            "direction": "decreases_risk"
+          }
+        ]
+      },
+      "all_contributors": [
+        {
+          "feature": "chargeback_rate_28d",
+          "group": "chargeback_behavior",
+          "definition": "Volume-weighted chargeback rate over trailing 28d: sum(chargeback_count)/sum(transaction_count).",
+          "window": "28d",
+          "kind": "level",
+          "value": 0.0,
+          "shap_value": 0.06826874798318998,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "chargeback_amount_to_gmv_28d",
+          "group": "chargeback_behavior",
+          "definition": "Dollar-weighted chargeback exposure: sum(chargeback_amount)/sum(gmv) over trailing 28d.",
+          "window": "28d",
+          "kind": "ratio",
+          "value": 0.0,
+          "shap_value": 0.056946986604726545,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "payment_mix_hhi_7d",
+          "group": "payment_behavior",
+          "definition": "Herfindahl-Hirschman index (sum of squared GMV-weighted payment-method shares) over trailing 7d. Higher = more concentrated in one method.",
+          "window": "7d",
+          "kind": "level",
+          "value": 0.3837563779116707,
+          "shap_value": -0.05385572888508684,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "payment_mix_hhi_60d",
+          "group": "payment_behavior",
+          "definition": "Herfindahl-Hirschman index (sum of squared GMV-weighted payment-method shares) over trailing 60d. Higher = more concentrated in one method.",
+          "window": "60d",
+          "kind": "level",
+          "value": 0.3835501608808822,
+          "shap_value": -0.04742333889094355,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "chargeback_count_28d",
+          "group": "chargeback_behavior",
+          "definition": "Raw chargeback count over trailing 28d \u2014 exposure/confidence context for chargeback_rate_28d.",
+          "window": "28d",
+          "kind": "level",
+          "value": 0.0,
+          "shap_value": 0.028289681870810553,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "days_since_last_chargeback",
+          "group": "chargeback_behavior",
+          "definition": "Days since the most recent day (<=t) with chargeback_count>0 for this merchant, capped at 90. A recency signal that doesn't collapse to 0 on days with no observed chargebacks yet.",
+          "window": "expanding (capped)",
+          "kind": "level",
+          "value": 90.0,
+          "shap_value": 0.02572531575761084,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "chargeback_rate_60d",
+          "group": "chargeback_behavior",
+          "definition": "Volume-weighted chargeback rate over trailing 60d: sum(chargeback_count)/sum(transaction_count).",
+          "window": "60d",
+          "kind": "level",
+          "value": 0.0,
+          "shap_value": 0.022561467211194893,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "pending_settlement_to_gmv_28d",
+          "group": "financial_state",
+          "definition": "mean(pending_settlement_amount, 28d) / mean(gmv, 28d) \u2014 settlement pipeline scale relative to volume.",
+          "window": "28d",
+          "kind": "ratio",
+          "value": 0.9833374156596004,
+          "shap_value": -0.015974078806039103,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "chargeback_rate_7d",
+          "group": "chargeback_behavior",
+          "definition": "Volume-weighted chargeback rate over trailing 7d: sum(chargeback_count)/sum(transaction_count).",
+          "window": "7d",
+          "kind": "level",
+          "value": 0.0,
+          "shap_value": 0.01313873738722738,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "chargeback_rate_velocity_28v60",
+          "group": "temporal_velocity",
+          "definition": "chargeback_rate(28d) - chargeback_rate(60d) \u2014 medium-term momentum (percentage points).",
+          "window": "28d vs 60d",
+          "kind": "velocity",
+          "value": 0.0,
+          "shap_value": 0.01295512161582785,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "refund_rate_60d",
+          "group": "refund_behavior",
+          "definition": "Volume-weighted refund rate over trailing 60d: sum(refund_count)/sum(transaction_count). Not a mean of daily rates, to avoid low-count distortion.",
+          "window": "60d",
+          "kind": "level",
+          "value": 0.0153256704980842,
+          "shap_value": -0.010711238104308574,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "chargeback_rate_acceleration",
+          "group": "temporal_velocity",
+          "definition": "velocity_7v28 - velocity_28v60 \u2014 is short-term momentum itself increasing (acceleration) or fading?",
+          "window": "7d/28d/60d composite",
+          "kind": "acceleration",
+          "value": 0.0,
+          "shap_value": 0.009960242864776382,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "refund_rate_28d",
+          "group": "refund_behavior",
+          "definition": "Volume-weighted refund rate over trailing 28d: sum(refund_count)/sum(transaction_count). Not a mean of daily rates, to avoid low-count distortion.",
+          "window": "28d",
+          "kind": "level",
+          "value": 0.0168067226890756,
+          "shap_value": -0.009334775253931012,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "liquidity_balance_28d",
+          "group": "financial_state",
+          "definition": "Mean daily liquidity_balance over trailing 28d (same units as gmv).",
+          "window": "28d",
+          "kind": "level",
+          "value": 89297.08213807915,
+          "shap_value": 0.008091419543920935,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "chargeback_rate_deviation_z",
+          "group": "deviation_from_baseline",
+          "definition": "(current 7d chargeback_rate - this merchant's own expanding-history mean of its 28d chargeback_rate) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+          "window": "7d vs expanding(28d-smoothed)",
+          "kind": "deviation",
+          "value": 0.0,
+          "shap_value": 0.007986062730976884,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "merchant_tenure_days",
+          "group": "merchant_behavior",
+          "definition": "date - signup_date, in days. A real business-facing attribute (account age), not a generator ground-truth risk parameter \u2014 the only merchants.csv-derived feature in this pipeline.",
+          "window": "n/a (point-in-time)",
+          "kind": "level",
+          "value": 1292.0,
+          "shap_value": 0.007625084927728272,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "chargeback_rate_velocity_7v28",
+          "group": "temporal_velocity",
+          "definition": "chargeback_rate(7d) - chargeback_rate(28d) \u2014 short-term momentum (percentage points).",
+          "window": "7d vs 28d",
+          "kind": "velocity",
+          "value": 0.0,
+          "shap_value": 0.007564655728954028,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "refund_rate_deviation_z",
+          "group": "deviation_from_baseline",
+          "definition": "(current 7d refund_rate - this merchant's own expanding-history mean of its 28d refund_rate) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+          "window": "7d vs expanding(28d-smoothed)",
+          "kind": "deviation",
+          "value": 1.5820727138869777,
+          "shap_value": -0.007189427916392659,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "payment_mix_hhi_28d",
+          "group": "payment_behavior",
+          "definition": "Herfindahl-Hirschman index (sum of squared GMV-weighted payment-method shares) over trailing 28d. Higher = more concentrated in one method.",
+          "window": "28d",
+          "kind": "level",
+          "value": 0.3812628475094776,
+          "shap_value": -0.006963933425568913,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "refund_amount_to_gmv_28d",
+          "group": "refund_behavior",
+          "definition": "Dollar-weighted refund burden: sum(refund_amount)/sum(gmv) over trailing 28d.",
+          "window": "28d",
+          "kind": "ratio",
+          "value": 0.0166625843403995,
+          "shap_value": -0.00682401950423031,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "transaction_count_level_28d",
+          "group": "merchant_behavior",
+          "definition": "Mean daily transaction_count over trailing 28d.",
+          "window": "28d",
+          "kind": "level",
+          "value": 4.25,
+          "shap_value": -0.006344761530521784,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "new_customer_rate_60d",
+          "group": "customer_mix",
+          "definition": "Volume-weighted new-customer share over trailing 60d: sum(new_customers)/sum(customer_count).",
+          "window": "60d",
+          "kind": "level",
+          "value": 0.2796934865900383,
+          "shap_value": 0.004324234534505,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "customer_count_28d",
+          "group": "customer_mix",
+          "definition": "Mean daily distinct customer count over trailing 28d \u2014 activity scale context.",
+          "window": "28d",
+          "kind": "level",
+          "value": 4.25,
+          "shap_value": -0.004128152928054429,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "gmv_coefficient_of_variation_28d",
+          "group": "merchant_behavior",
+          "definition": "std(gmv, 28d) / mean(gmv, 28d) \u2014 the merchant's own day-to-day noisiness, context for interpreting other deviations.",
+          "window": "28d",
+          "kind": "ratio",
+          "value": 0.168420256192438,
+          "shap_value": 0.003812971649331095,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "day_of_year_sin",
+          "group": "merchant_behavior",
+          "definition": "sin(2*pi*day_of_year/365.25) \u2014 cyclical calendar position, lets a model account for seasonality explicitly.",
+          "window": "n/a (point-in-time)",
+          "kind": "level",
+          "value": 0.8992961915530253,
+          "shap_value": -0.0037064023553082057,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "day_of_year_cos",
+          "group": "merchant_behavior",
+          "definition": "cos(2*pi*day_of_year/365.25) \u2014 paired with day_of_year_sin for a non-discontinuous yearly cycle encoding.",
+          "window": "n/a (point-in-time)",
+          "kind": "level",
+          "value": 0.4373400963303323,
+          "shap_value": -0.0034977324740726266,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "fulfillment_on_time_rate_velocity_7v28",
+          "group": "temporal_velocity",
+          "definition": "fulfillment_on_time_rate(7d) - fulfillment_on_time_rate(28d) \u2014 short-term momentum (percentage points).",
+          "window": "7d vs 28d",
+          "kind": "velocity",
+          "value": -0.0144487805226394,
+          "shap_value": 0.0034201482887218364,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "refund_rate_velocity_28v60",
+          "group": "temporal_velocity",
+          "definition": "refund_rate(28d) - refund_rate(60d) \u2014 medium-term momentum (percentage points).",
+          "window": "28d vs 60d",
+          "kind": "velocity",
+          "value": 0.0014810521909913,
+          "shap_value": -0.0027504310259384387,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "fulfillment_delay_avg_days_28d",
+          "group": "fulfillment",
+          "definition": "Transaction-volume-weighted mean fulfillment delay (days) over trailing 28d.",
+          "window": "28d",
+          "kind": "level",
+          "value": 0.1479038245964384,
+          "shap_value": 0.0025405964114054366,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "liquidity_to_gmv_ratio_28d",
+          "group": "financial_state",
+          "definition": "liquidity_balance_28d / mean(gmv, 28d) \u2014 buffer expressed as 'days of current GMV', directly interpretable.",
+          "window": "28d",
+          "kind": "ratio",
+          "value": 8.244439388098016,
+          "shap_value": -0.002123404747278381,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "refund_rate_7d",
+          "group": "refund_behavior",
+          "definition": "Volume-weighted refund rate over trailing 7d: sum(refund_count)/sum(transaction_count). Not a mean of daily rates, to avoid low-count distortion.",
+          "window": "7d",
+          "kind": "level",
+          "value": 0.032258064516129,
+          "shap_value": -0.0019713816630182197,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "gmv_velocity_28v60",
+          "group": "temporal_velocity",
+          "definition": "mean(gmv,28d)/mean(gmv,60d) - 1 \u2014 relative GMV growth, medium vs long term.",
+          "window": "28d vs 60d",
+          "kind": "velocity",
+          "value": -0.0181115601374842,
+          "shap_value": 0.0019368527528281958,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "fulfillment_on_time_rate_60d",
+          "group": "fulfillment",
+          "definition": "Transaction-volume-weighted mean of fulfillment_on_time_rate over trailing 60d.",
+          "window": "60d",
+          "kind": "level",
+          "value": 0.9625332768056334,
+          "shap_value": -0.00190840451516824,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "liquidity_deviation_z",
+          "group": "deviation_from_baseline",
+          "definition": "(current 7d liquidity_balance - this merchant's own expanding-history mean of its 28d liquidity_balance) / expanding std, clipped to [-10,10].",
+          "window": "7d vs expanding(28d-smoothed)",
+          "kind": "deviation",
+          "value": -1.1251404855885965,
+          "shap_value": 0.001614316669804369,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "fulfillment_on_time_rate_28d",
+          "group": "fulfillment",
+          "definition": "Transaction-volume-weighted mean of fulfillment_on_time_rate over trailing 28d.",
+          "window": "28d",
+          "kind": "level",
+          "value": 0.9578853621578376,
+          "shap_value": 0.0014795746447136089,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "refund_count_28d",
+          "group": "refund_behavior",
+          "definition": "Raw refund count over trailing 28d \u2014 exposure/confidence context for refund_rate_28d (a rate from 2 refunds is far less reliable than one from 50).",
+          "window": "28d",
+          "kind": "level",
+          "value": 2.0,
+          "shap_value": -0.0013886703476600258,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "payment_mix_l1_drift_28v60",
+          "group": "payment_behavior",
+          "definition": "Sum of |share_i(28d) - share_i(60d)| across payment methods \u2014 medium-term vs. long-term mix drift.",
+          "window": "28d vs 60d",
+          "kind": "ratio",
+          "value": 0.0068876640118364,
+          "shap_value": 0.0012836947924025467,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "fulfillment_on_time_rate_deviation_z",
+          "group": "deviation_from_baseline",
+          "definition": "(current 7d fulfillment_on_time_rate - this merchant's own expanding-history mean of its 28d fulfillment_on_time_rate) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+          "window": "7d vs expanding(28d-smoothed)",
+          "kind": "deviation",
+          "value": -2.9370501353020493,
+          "shap_value": -0.0012236673690803682,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "refund_rate_velocity_7v28",
+          "group": "temporal_velocity",
+          "definition": "refund_rate(7d) - refund_rate(28d) \u2014 short-term momentum (percentage points).",
+          "window": "7d vs 28d",
+          "kind": "velocity",
+          "value": 0.0154513418270534,
+          "shap_value": -0.0011726137378986728,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "fulfillment_on_time_rate_acceleration",
+          "group": "temporal_velocity",
+          "definition": "velocity_7v28 - velocity_28v60 \u2014 is short-term momentum itself increasing (acceleration) or fading?",
+          "window": "7d/28d/60d composite",
+          "kind": "acceleration",
+          "value": -0.0098008658748437,
+          "shap_value": 0.0009668822654220702,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "new_customer_rate_28d",
+          "group": "customer_mix",
+          "definition": "Volume-weighted new-customer share over trailing 28d: sum(new_customers)/sum(customer_count).",
+          "window": "28d",
+          "kind": "level",
+          "value": 0.2352941176470588,
+          "shap_value": -0.0009536295620553029,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "refund_rate_acceleration",
+          "group": "temporal_velocity",
+          "definition": "velocity_7v28 - velocity_28v60 \u2014 is short-term momentum itself increasing (acceleration) or fading?",
+          "window": "7d/28d/60d composite",
+          "kind": "acceleration",
+          "value": 0.013970289636062,
+          "shap_value": -0.0008510056816404449,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "liquidity_coefficient_of_variation_28d",
+          "group": "financial_state",
+          "definition": "std(liquidity_balance, 28d) / mean(liquidity_balance, 28d) \u2014 how stable the buffer has been recently.",
+          "window": "28d",
+          "kind": "ratio",
+          "value": 0.0266024964768095,
+          "shap_value": -0.00033224117898597024,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "fulfillment_on_time_rate_velocity_28v60",
+          "group": "temporal_velocity",
+          "definition": "fulfillment_on_time_rate(28d) - fulfillment_on_time_rate(60d) \u2014 medium-term momentum (percentage points).",
+          "window": "28d vs 60d",
+          "kind": "velocity",
+          "value": -0.0046479146477956,
+          "shap_value": -0.0002107705557596649,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "new_customer_rate_velocity_7v28",
+          "group": "temporal_velocity",
+          "definition": "new_customer_rate(7d) - new_customer_rate(28d).",
+          "window": "7d vs 28d",
+          "kind": "velocity",
+          "value": -0.0094876660341556,
+          "shap_value": -0.00018190113434033502,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "transaction_count_velocity_7v28",
+          "group": "temporal_velocity",
+          "definition": "mean(transaction_count,7d)/mean(transaction_count,28d) - 1.",
+          "window": "7d vs 28d",
+          "kind": "velocity",
+          "value": 0.0420168067226891,
+          "shap_value": 0.00018134632456102016,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "gmv_velocity_7v28",
+          "group": "temporal_velocity",
+          "definition": "mean(gmv,7d)/mean(gmv,28d) - 1 \u2014 relative GMV growth, short vs medium term.",
+          "window": "7d vs 28d",
+          "kind": "velocity",
+          "value": 0.0005877074084628,
+          "shap_value": 0.00015832338486550322,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "new_customer_rate_7d",
+          "group": "customer_mix",
+          "definition": "Volume-weighted new-customer share over trailing 7d: sum(new_customers)/sum(customer_count).",
+          "window": "7d",
+          "kind": "level",
+          "value": 0.2258064516129032,
+          "shap_value": -0.00014968803295175022,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "fulfillment_on_time_rate_7d",
+          "group": "fulfillment",
+          "definition": "Transaction-volume-weighted mean of fulfillment_on_time_rate over trailing 7d.",
+          "window": "7d",
+          "kind": "level",
+          "value": 0.9434365816351984,
+          "shap_value": 0.00013706327868423477,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "gmv_deviation_z",
+          "group": "deviation_from_baseline",
+          "definition": "(current 7d gmv - this merchant's own expanding-history mean of its 28d gmv) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+          "window": "7d vs expanding(28d-smoothed)",
+          "kind": "deviation",
+          "value": -0.8857460531046343,
+          "shap_value": 9.319479322440348e-05,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "gmv_acceleration",
+          "group": "temporal_velocity",
+          "definition": "gmv_velocity_7v28 - gmv_velocity_28v60 \u2014 is GMV growth speeding up or slowing down?",
+          "window": "7d/28d/60d composite",
+          "kind": "acceleration",
+          "value": 0.018699267545947,
+          "shap_value": -5.238670759960885e-05,
+          "direction": "decreases_risk"
+        },
+        {
+          "feature": "new_customer_rate_deviation_z",
+          "group": "deviation_from_baseline",
+          "definition": "(current 7d new_customer_rate - this merchant's own expanding-history mean of its 28d new_customer_rate) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+          "window": "7d vs expanding(28d-smoothed)",
+          "kind": "deviation",
+          "value": -0.8580386396463187,
+          "shap_value": 4.736384350011652e-05,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "payment_mix_l1_drift_7v28",
+          "group": "payment_behavior",
+          "definition": "Sum of |share_i(7d) - share_i(28d)| across payment methods \u2014 how much the mix has moved recently vs. the medium-term.",
+          "window": "7d vs 28d",
+          "kind": "ratio",
+          "value": 0.0120316605465366,
+          "shap_value": 3.489285220614973e-05,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "gmv_level_28d",
+          "group": "merchant_behavior",
+          "definition": "Mean daily gmv over trailing 28d.",
+          "window": "28d",
+          "kind": "level",
+          "value": 10831.189112384256,
+          "shap_value": 4.781171888988406e-06,
+          "direction": "increases_risk"
+        },
+        {
+          "feature": "is_weekend",
+          "group": "merchant_behavior",
+          "definition": "1 if the observation date is Saturday/Sunday, else 0.",
+          "window": "n/a (point-in-time)",
+          "kind": "level",
+          "value": 0.0,
+          "shap_value": 0.0,
+          "direction": "neutral"
+        }
+      ]
+    }
+  }
+}

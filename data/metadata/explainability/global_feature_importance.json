@@ -1,0 +1,433 @@
+{
+  "artifact_path": "data/metadata/modeling/artifacts/random_forest_calibrated_30d.joblib",
+  "horizon_days": 30,
+  "evaluation_sample": "merchant-level normal test split (held out, temporal early period)",
+  "n_rows_explained": 960,
+  "feature_ranking": [
+    {
+      "feature": "chargeback_rate_28d",
+      "group": "chargeback_behavior",
+      "mean_abs_shap": 0.07906606725932079,
+      "mean_signed_shap": -0.013173585157496332,
+      "rank": 1
+    },
+    {
+      "feature": "chargeback_amount_to_gmv_28d",
+      "group": "chargeback_behavior",
+      "mean_abs_shap": 0.06605842413214903,
+      "mean_signed_shap": -0.01572049505820926,
+      "rank": 2
+    },
+    {
+      "feature": "chargeback_count_28d",
+      "group": "chargeback_behavior",
+      "mean_abs_shap": 0.04340376299122646,
+      "mean_signed_shap": -0.0009724290447011771,
+      "rank": 3
+    },
+    {
+      "feature": "days_since_last_chargeback",
+      "group": "chargeback_behavior",
+      "mean_abs_shap": 0.02878297475653799,
+      "mean_signed_shap": -0.007054923363179006,
+      "rank": 4
+    },
+    {
+      "feature": "chargeback_rate_velocity_28v60",
+      "group": "temporal_velocity",
+      "mean_abs_shap": 0.021189448111506196,
+      "mean_signed_shap": -0.0019352366446044064,
+      "rank": 5
+    },
+    {
+      "feature": "chargeback_rate_7d",
+      "group": "chargeback_behavior",
+      "mean_abs_shap": 0.020193396572036348,
+      "mean_signed_shap": -0.00343453571140889,
+      "rank": 6
+    },
+    {
+      "feature": "chargeback_rate_60d",
+      "group": "chargeback_behavior",
+      "mean_abs_shap": 0.016157565893651,
+      "mean_signed_shap": -0.003997274870385895,
+      "rank": 7
+    },
+    {
+      "feature": "chargeback_rate_acceleration",
+      "group": "temporal_velocity",
+      "mean_abs_shap": 0.012403467758023078,
+      "mean_signed_shap": -0.002085920010732698,
+      "rank": 8
+    },
+    {
+      "feature": "pending_settlement_to_gmv_28d",
+      "group": "financial_state",
+      "mean_abs_shap": 0.01221226693907967,
+      "mean_signed_shap": -0.00948908912098485,
+      "rank": 9
+    },
+    {
+      "feature": "payment_mix_hhi_60d",
+      "group": "payment_behavior",
+      "mean_abs_shap": 0.0102152152474452,
+      "mean_signed_shap": -0.0019965629215600487,
+      "rank": 10
+    },
+    {
+      "feature": "payment_mix_hhi_28d",
+      "group": "payment_behavior",
+      "mean_abs_shap": 0.010113791073670579,
+      "mean_signed_shap": -0.0034868463631250487,
+      "rank": 11
+    },
+    {
+      "feature": "new_customer_rate_60d",
+      "group": "customer_mix",
+      "mean_abs_shap": 0.008940619333310609,
+      "mean_signed_shap": -0.003965662183186244,
+      "rank": 12
+    },
+    {
+      "feature": "chargeback_rate_deviation_z",
+      "group": "deviation_from_baseline",
+      "mean_abs_shap": 0.00873432214198797,
+      "mean_signed_shap": -0.0004786385521775472,
+      "rank": 13
+    },
+    {
+      "feature": "chargeback_rate_velocity_7v28",
+      "group": "temporal_velocity",
+      "mean_abs_shap": 0.008534851764137963,
+      "mean_signed_shap": -0.0014509314449526742,
+      "rank": 14
+    },
+    {
+      "feature": "new_customer_rate_28d",
+      "group": "customer_mix",
+      "mean_abs_shap": 0.007096574195936617,
+      "mean_signed_shap": -0.0044618443412081385,
+      "rank": 15
+    },
+    {
+      "feature": "payment_mix_hhi_7d",
+      "group": "payment_behavior",
+      "mean_abs_shap": 0.007085944102797669,
+      "mean_signed_shap": -0.0023712910173215055,
+      "rank": 16
+    },
+    {
+      "feature": "liquidity_to_gmv_ratio_28d",
+      "group": "financial_state",
+      "mean_abs_shap": 0.006130363363846382,
+      "mean_signed_shap": 0.004102621801157217,
+      "rank": 17
+    },
+    {
+      "feature": "fulfillment_delay_avg_days_28d",
+      "group": "fulfillment",
+      "mean_abs_shap": 0.0058097121925975775,
+      "mean_signed_shap": -0.0016691172404437666,
+      "rank": 18
+    },
+    {
+      "feature": "refund_rate_60d",
+      "group": "refund_behavior",
+      "mean_abs_shap": 0.005709466477322082,
+      "mean_signed_shap": 0.0006111187685731027,
+      "rank": 19
+    },
+    {
+      "feature": "transaction_count_level_28d",
+      "group": "merchant_behavior",
+      "mean_abs_shap": 0.005519982831349728,
+      "mean_signed_shap": -0.0023893907933350577,
+      "rank": 20
+    },
+    {
+      "feature": "fulfillment_on_time_rate_60d",
+      "group": "fulfillment",
+      "mean_abs_shap": 0.005109709860265418,
+      "mean_signed_shap": -0.002401907718647803,
+      "rank": 21
+    },
+    {
+      "feature": "customer_count_28d",
+      "group": "customer_mix",
+      "mean_abs_shap": 0.0049994353552938325,
+      "mean_signed_shap": -0.002222700726734673,
+      "rank": 22
+    },
+    {
+      "feature": "gmv_coefficient_of_variation_28d",
+      "group": "merchant_behavior",
+      "mean_abs_shap": 0.004985406421648958,
+      "mean_signed_shap": -0.0005305550638983815,
+      "rank": 23
+    },
+    {
+      "feature": "merchant_tenure_days",
+      "group": "merchant_behavior",
+      "mean_abs_shap": 0.004917887066532188,
+      "mean_signed_shap": 0.004259594019527624,
+      "rank": 24
+    },
+    {
+      "feature": "fulfillment_on_time_rate_28d",
+      "group": "fulfillment",
+      "mean_abs_shap": 0.004775878038931472,
+      "mean_signed_shap": -0.001902062436117992,
+      "rank": 25
+    },
+    {
+      "feature": "liquidity_balance_28d",
+      "group": "financial_state",
+      "mean_abs_shap": 0.0044229472668268315,
+      "mean_signed_shap": 0.004341768437725418,
+      "rank": 26
+    },
+    {
+      "feature": "new_customer_rate_7d",
+      "group": "customer_mix",
+      "mean_abs_shap": 0.004404367959553739,
+      "mean_signed_shap": -0.0024934085360514982,
+      "rank": 27
+    },
+    {
+      "feature": "day_of_year_cos",
+      "group": "merchant_behavior",
+      "mean_abs_shap": 0.003971610399024776,
+      "mean_signed_shap": -0.001732513531053655,
+      "rank": 28
+    },
+    {
+      "feature": "gmv_level_28d",
+      "group": "merchant_behavior",
+      "mean_abs_shap": 0.0037535432675457215,
+      "mean_signed_shap": -0.001305293549341256,
+      "rank": 29
+    },
+    {
+      "feature": "fulfillment_on_time_rate_velocity_28v60",
+      "group": "temporal_velocity",
+      "mean_abs_shap": 0.003493850214590972,
+      "mean_signed_shap": -0.002264321835315293,
+      "rank": 30
+    },
+    {
+      "feature": "refund_count_28d",
+      "group": "refund_behavior",
+      "mean_abs_shap": 0.003167462241829837,
+      "mean_signed_shap": -0.0013373407228404826,
+      "rank": 31
+    },
+    {
+      "feature": "fulfillment_on_time_rate_velocity_7v28",
+      "group": "temporal_velocity",
+      "mean_abs_shap": 0.003007593608301908,
+      "mean_signed_shap": -0.0011950011092237488,
+      "rank": 32
+    },
+    {
+      "feature": "refund_rate_28d",
+      "group": "refund_behavior",
+      "mean_abs_shap": 0.0029281483741342125,
+      "mean_signed_shap": -0.00047797095390404807,
+      "rank": 33
+    },
+    {
+      "feature": "refund_amount_to_gmv_28d",
+      "group": "refund_behavior",
+      "mean_abs_shap": 0.002644478169671585,
+      "mean_signed_shap": -0.0008182150788522213,
+      "rank": 34
+    },
+    {
+      "feature": "payment_mix_l1_drift_28v60",
+      "group": "payment_behavior",
+      "mean_abs_shap": 0.0026276117645135408,
+      "mean_signed_shap": 4.2256150889205885e-05,
+      "rank": 35
+    },
+    {
+      "feature": "gmv_velocity_28v60",
+      "group": "temporal_velocity",
+      "mean_abs_shap": 0.00253107343785037,
+      "mean_signed_shap": -0.0013719640746410499,
+      "rank": 36
+    },
+    {
+      "feature": "day_of_year_sin",
+      "group": "merchant_behavior",
+      "mean_abs_shap": 0.0021528995598021636,
+      "mean_signed_shap": -0.0007740358504383377,
+      "rank": 37
+    },
+    {
+      "feature": "refund_rate_deviation_z",
+      "group": "deviation_from_baseline",
+      "mean_abs_shap": 0.0020244638713067795,
+      "mean_signed_shap": -0.0005329227727698652,
+      "rank": 38
+    },
+    {
+      "feature": "liquidity_coefficient_of_variation_28d",
+      "group": "financial_state",
+      "mean_abs_shap": 0.001957026501069914,
+      "mean_signed_shap": -0.0007573542050705555,
+      "rank": 39
+    },
+    {
+      "feature": "fulfillment_on_time_rate_7d",
+      "group": "fulfillment",
+      "mean_abs_shap": 0.0018771186095158938,
+      "mean_signed_shap": 0.00010511876532337248,
+      "rank": 40
+    },
+    {
+      "feature": "fulfillment_on_time_rate_deviation_z",
+      "group": "deviation_from_baseline",
+      "mean_abs_shap": 0.0018051287293628245,
+      "mean_signed_shap": -0.0008584586599877542,
+      "rank": 41
+    },
+    {
+      "feature": "fulfillment_on_time_rate_acceleration",
+      "group": "temporal_velocity",
+      "mean_abs_shap": 0.0015389367375068463,
+      "mean_signed_shap": -0.00039668242841508074,
+      "rank": 42
+    },
+    {
+      "feature": "refund_rate_velocity_28v60",
+      "group": "temporal_velocity",
+      "mean_abs_shap": 0.001451965105857813,
+      "mean_signed_shap": -0.0006167916882597296,
+      "rank": 43
+    },
+    {
+      "feature": "gmv_acceleration",
+      "group": "temporal_velocity",
+      "mean_abs_shap": 0.0009971463050993308,
+      "mean_signed_shap": -0.0001717240603123752,
+      "rank": 44
+    },
+    {
+      "feature": "liquidity_deviation_z",
+      "group": "deviation_from_baseline",
+      "mean_abs_shap": 0.0009958849333905526,
+      "mean_signed_shap": -4.496630169742646e-05,
+      "rank": 45
+    },
+    {
+      "feature": "gmv_deviation_z",
+      "group": "deviation_from_baseline",
+      "mean_abs_shap": 0.0008503698464711627,
+      "mean_signed_shap": -0.0004000377264807962,
+      "rank": 46
+    },
+    {
+      "feature": "gmv_velocity_7v28",
+      "group": "temporal_velocity",
+      "mean_abs_shap": 0.0006655404192698558,
+      "mean_signed_shap": -3.204590035728273e-05,
+      "rank": 47
+    },
+    {
+      "feature": "refund_rate_7d",
+      "group": "refund_behavior",
+      "mean_abs_shap": 0.0005774023426907023,
+      "mean_signed_shap": 8.57253871617804e-06,
+      "rank": 48
+    },
+    {
+      "feature": "refund_rate_acceleration",
+      "group": "temporal_velocity",
+      "mean_abs_shap": 0.000498687322552075,
+      "mean_signed_shap": -7.781634912041712e-05,
+      "rank": 49
+    },
+    {
+      "feature": "transaction_count_velocity_7v28",
+      "group": "temporal_velocity",
+      "mean_abs_shap": 0.00045396241172614203,
+      "mean_signed_shap": -2.739862672147911e-05,
+      "rank": 50
+    },
+    {
+      "feature": "new_customer_rate_velocity_7v28",
+      "group": "temporal_velocity",
+      "mean_abs_shap": 0.00044341079505428736,
+      "mean_signed_shap": -0.0002502010055937013,
+      "rank": 51
+    },
+    {
+      "feature": "new_customer_rate_deviation_z",
+      "group": "deviation_from_baseline",
+      "mean_abs_shap": 0.0004355652470987721,
+      "mean_signed_shap": -0.00011562536028429291,
+      "rank": 52
+    },
+    {
+      "feature": "payment_mix_l1_drift_7v28",
+      "group": "payment_behavior",
+      "mean_abs_shap": 0.0004037891569309456,
+      "mean_signed_shap": -4.416232008279828e-05,
+      "rank": 53
+    },
+    {
+      "feature": "refund_rate_velocity_7v28",
+      "group": "temporal_velocity",
+      "mean_abs_shap": 0.00037551808429373695,
+      "mean_signed_shap": -0.00013135745166209216,
+      "rank": 54
+    },
+    {
+      "feature": "is_weekend",
+      "group": "merchant_behavior",
+      "mean_abs_shap": 0.0,
+      "mean_signed_shap": 0.0,
+      "rank": 55
+    }
+  ],
+  "group_ranking": [
+    {
+      "group": "chargeback_behavior",
+      "summed_mean_abs_shap": 0.2536621916049216
+    },
+    {
+      "group": "temporal_velocity",
+      "summed_mean_abs_shap": 0.057585452075770566
+    },
+    {
+      "group": "payment_behavior",
+      "summed_mean_abs_shap": 0.030446351345357933
+    },
+    {
+      "group": "customer_mix",
+      "summed_mean_abs_shap": 0.025440996844094798
+    },
+    {
+      "group": "merchant_behavior",
+      "summed_mean_abs_shap": 0.025301329545903535
+    },
+    {
+      "group": "financial_state",
+      "summed_mean_abs_shap": 0.024722604070822798
+    },
+    {
+      "group": "fulfillment",
+      "summed_mean_abs_shap": 0.017572418701310363
+    },
+    {
+      "group": "refund_behavior",
+      "summed_mean_abs_shap": 0.015026957605648419
+    },
+    {
+      "group": "deviation_from_baseline",
+      "summed_mean_abs_shap": 0.014845734769618061
+    }
+  ],
+  "max_reconstruction_error": 2.9976021664879227e-15,
+  "faithful": true
+}
