@@ -424,6 +424,110 @@ export interface IncidentEvidenceResponse {
 }
 
 // ---------------------------------------------------------------------------
+// AI Orchestrator
+// ---------------------------------------------------------------------------
+
+export interface MerchantAIContext {
+  merchant_id: string
+  archetype: string
+  business_tier: string
+  signup_date: string
+  provenance: Provenance
+}
+
+export interface ObservedStateAIContext {
+  as_of_date: string
+  gmv: number
+  transaction_count: number
+  chargeback_rate: number
+  refund_rate: number
+  fulfillment_on_time_rate: number
+  provenance: Provenance
+}
+
+export interface RiskAIContext {
+  as_of_date: string
+  horizon_days: number
+  probability_calibrated: number
+  risk_state: 'elevated' | 'normal'
+  decision_threshold: number
+  disclaimer: string
+  provenance: Provenance
+}
+
+export interface ExposureAIContext {
+  value: number
+  method: string
+  provenance: Provenance
+}
+
+export interface LiquidityAIContext {
+  available_liquidity: number
+  liquidity_stress: number | null
+  note: string
+  provenance: Provenance
+}
+
+export interface SimulationAIContext {
+  controls_changed: Record<string, number>
+  current_probability: number
+  simulated_probability: number
+  probability_delta_absolute: number
+  exposure_current: number
+  exposure_simulated: number
+  liquidity_stress_current: number | null
+  liquidity_stress_simulated: number | null
+  disclaimer: string
+  provenance: Provenance
+}
+
+export interface IncidentAIContext {
+  incident_id: string
+  event_type: string
+  status: IncidentStatus
+  priority: IncidentPriority
+  priority_reasons: string[]
+  reason_code: string
+  reason_code_label: string
+  reason_code_taxonomy_disclaimer: string
+  evidence_readiness_status: EvidenceReadinessStatus
+  missing_evidence: string[]
+  estimated_case_count: number
+  provenance: Provenance
+}
+
+export interface SentinelAIContext {
+  merchant: MerchantAIContext
+  observed_state: ObservedStateAIContext | null
+  risk: RiskAIContext | null
+  exposure: ExposureAIContext | null
+  liquidity: LiquidityAIContext | null
+  drivers: Driver[]
+  simulation: SimulationAIContext | null
+  incident: IncidentAIContext | null
+  standing_limitations: string[]
+}
+
+export interface AssistantRequestBody {
+  question: string
+  as_of_date?: string
+  incident_id?: string
+  simulation?: SimulationRequestBody
+}
+
+export interface AssistantResponse {
+  merchant_id: string
+  answer: string
+  cited_context: SentinelAIContext
+  provenance: Record<string, Provenance>
+  limitations: string[]
+  disclaimer: string
+  suggested_next_actions: string[]
+  provider: string
+  guardrail_triggered: boolean
+}
+
+// ---------------------------------------------------------------------------
 // Errors
 // ---------------------------------------------------------------------------
 

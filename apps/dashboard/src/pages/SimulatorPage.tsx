@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 
+import { AssistantPanel } from '@/components/assistant/AssistantPanel'
 import { EmptyState } from '@/components/common/EmptyState'
 import { ErrorState } from '@/components/common/ErrorState'
 import { LoadingState } from '@/components/common/LoadingState'
@@ -10,7 +11,7 @@ import { useMerchantContext } from '@/context/MerchantContext'
 import { useMerchantProfile } from '@/hooks/useMerchantProfile'
 import { useSimulation } from '@/hooks/useSimulation'
 import { useSimulationControls } from '@/hooks/useSimulationControls'
-import { baselineValues, buildSimulationRequestBody, hasChangedControls } from '@/lib/simulationRequest'
+import { baselineValues, buildSimulationRequestBody, hasChangedControls, simulationRequestFromResult } from '@/lib/simulationRequest'
 
 export function SimulatorPage() {
   const { merchantsLoading, merchantsError, selectedMerchantId } = useMerchantContext()
@@ -99,6 +100,18 @@ function SimulatorContent({ merchantId }: { merchantId: string }) {
           </div>
         </div>
       )}
+
+      <AssistantPanel
+        key={merchantId}
+        merchantId={merchantId}
+        asOfDate={asOfDate}
+        simulation={simulation.data ? simulationRequestFromResult(simulation.data) : null}
+        suggestedPrompts={
+          simulation.data
+            ? ['Explain the modeled impact of my simulation.', 'Why is my risk elevated?', 'What does this mean for liquidity?']
+            : ['Why is my risk elevated?', 'What does this mean for liquidity?']
+        }
+      />
     </div>
   )
 }

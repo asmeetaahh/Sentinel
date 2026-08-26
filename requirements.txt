@@ -12,3 +12,10 @@ shap>=0.45
 fastapi>=0.110
 uvicorn[standard]>=0.29
 httpx>=0.27
+
+# AI Orchestrator (backend/ai/) — optional real provider. The app starts and
+# every other Sentinel feature works with this package absent or with no API
+# key configured; backend/ai/providers/openai_provider.py imports it lazily
+# and the assistant falls back to a clear "provider unavailable" response
+# rather than crashing. See docs/architecture/ai_orchestrator.md.
+openai>=1.0

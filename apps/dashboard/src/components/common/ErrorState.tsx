@@ -1,6 +1,6 @@
 import { ApiError, ApiUnavailableError } from '@/api/client'
 
-function describeError(error: unknown): { title: string; detail: string } {
+export function describeError(error: unknown): { title: string; detail: string } {
   if (error instanceof ApiUnavailableError) {
     return {
       title: 'Backend unavailable',
@@ -13,6 +13,12 @@ function describeError(error: unknown): { title: string; detail: string } {
     }
     if (error.status === 400) {
       return { title: 'Request not supported', detail: error.detail }
+    }
+    if (error.status === 503) {
+      return { title: 'Provider unavailable', detail: error.detail }
+    }
+    if (error.status === 422) {
+      return { title: 'Invalid request', detail: error.detail }
     }
     return { title: `Request failed (${error.status})`, detail: error.detail }
   }

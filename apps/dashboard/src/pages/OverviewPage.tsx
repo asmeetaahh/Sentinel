@@ -1,3 +1,4 @@
+import { AssistantPanel } from '@/components/assistant/AssistantPanel'
 import { ErrorState } from '@/components/common/ErrorState'
 import { LoadingState } from '@/components/common/LoadingState'
 import { EmptyState } from '@/components/common/EmptyState'
@@ -92,6 +93,13 @@ function OverviewContent({ merchantId }: { merchantId: string }) {
           causalityDisclaimer={explanation.data.causality_disclaimer}
         />
       )}
+
+      <AssistantPanel
+        key={merchantId}
+        merchantId={merchantId}
+        asOfDate={asOfDate}
+        suggestedPrompts={['Why is my risk elevated?', 'What is driving the current risk?', 'What does this mean for liquidity?']}
+      />
     </div>
   )
 }

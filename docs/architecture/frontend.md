@@ -75,9 +75,12 @@ apps/dashboard/src/
     common/             ProvenanceTag, LoadingState, ErrorState, EmptyState, MetricCard, MerchantSelector
     overview/            RiskSummary, ExposureCard, LiquidityCard, TrajectoryChart, RiskDrivers
     simulator/           SimulatorIntro, ControlSlider, ControlsPanel, SimulationResult
+    incidents/           IncidentModeIntro, IncidentList, IncidentHeader, CaseSummaryCard, EvidenceChecklist, ResponsePreparation
+    assistant/           AssistantPanel, SuggestedPrompts, AssistantAnswer — see docs/architecture/ai_orchestrator.md
   pages/
-    OverviewPage.tsx    composes the above for the Overview screen
-    SimulatorPage.tsx    composes the above for the Simulator screen
+    OverviewPage.tsx           composes the above for the Overview screen
+    SimulatorPage.tsx           composes the above for the Simulator screen
+    IncidentResponsePage.tsx     composes the above for the Incident Response screen
   test/
     setup.ts, fixtures.ts, noHardcodedData.test.ts
 ```
@@ -112,10 +115,13 @@ Both `Sidebar` and `Header` read the same `NAV_ITEMS` list
 (`components/layout/navigation.ts`) — the sidebar to render links, the
 header to look up the active route's label — so the page title can never
 drift out of sync with the current route. Of the seven nav items,
-**Overview** and **Simulator** are enabled; Risk, Explainability,
-Incident Response, Evidence, and Settings render as disabled with a
-"Soon" badge — real, visibly-inert placeholders, not fake-functional
-links, per the task's explicit scope (those modules are not built).
+**Overview**, **Simulator**, and **Incident Response** are enabled; Risk,
+Explainability, Evidence, and Settings render as disabled with a "Soon"
+badge — real, visibly-inert placeholders, not fake-functional links, per
+each task's explicit scope (those modules are not built). There is no
+separate "AI" nav item — the assistant (`docs/architecture/ai_orchestrator.md`)
+is embedded directly on the three enabled screens instead, since no
+existing placeholder for a standalone AI screen exists.
 
 ## Overview screen
 
@@ -149,6 +155,8 @@ the Risk Drivers card without blocking the rest of the page.
   modeled risk" / "Reducing modeled risk"), plus the backend's
   causality disclaimer footer. Shows an explicit empty state if a
   merchant has no drivers rather than fabricating any.
+- **AssistantPanel** — embedded at the bottom of the screen; see
+  "Assistant panel" below.
 
 ## Simulator screen
 
@@ -165,15 +173,53 @@ current/simulated/change table, the changed controls, and the API's own
 disclaimer text verbatim (never re-worded or LLM-generated). "Reset to
 observed values" restores every slider to baseline and clears any prior
 result; switching merchants (via the same shared `MerchantContext`) does
-the same automatically.
+the same automatically. `AssistantPanel` is embedded below the result,
+receiving the currently-run simulation (reconstructed from the result via
+`lib/simulationRequest.ts:simulationRequestFromResult`, never a raw client
+number the backend has to trust) so the assistant can explain it.
+
+## Incident Response screen
+
+See `docs/architecture/incident_response.md` for the full design. In
+brief: `IncidentResponsePage` is a master/detail layout — `IncidentList` on
+the left, and on the right, the **same** `RiskSummary`/`ExposureCard`/
+`LiquidityCard`/`RiskDrivers` components from `components/overview/`
+(via a thin `IncidentDetail -> RiskResponse` type adapter, not a
+reimplementation) followed by `IncidentHeader`, `CaseSummaryCard`,
+`EvidenceChecklist`, `ResponsePreparation`, and `AssistantPanel` (with the
+selected incident threaded in as context). `ResponsePreparation` and
+`AssistantPanel` are both keyed by the incident id so switching incidents
+resets their local state — an early bug caught here during live
+verification was two sibling elements keyed with the *same* string
+(`data.incident_id`) instead of two distinct ones, which produces a silent
+React "duplicate key" warning even though only one instance of each was
+rendered.
+
+## Assistant panel
+
+`components/assistant/AssistantPanel.tsx`, embedded on Overview, Simulator,
+and Incident Response with page-appropriate suggested prompts and context
+(`merchantId` always; `asOfDate` on Overview/Simulator; `incidentId` on
+Incident Response; `simulation` on Simulator only, and only once a result
+exists). States: suggested prompts + free-form input, loading, answer
+(provenance-tag row, collapsible limitations/disclaimer, follow-up chips),
+a distinct "Provider unavailable" error (mapped from the API's 503 via
+`ErrorState.tsx`'s now-exported `describeError`), and a generic error
+state. The response's `provider` field is always rendered — a prominent
+amber "MOCK PROVIDER — not a real AI response" badge whenever it's
+`"mock"` — so mock and real output can never be visually confused. See
+`docs/architecture/ai_orchestrator.md` for the full backend design this
+panel is a thin client for.
 
 ## Backend endpoints consumed
 
 `/health`, `/merchants`, `/merchants/{id}`, `/merchants/{id}/observations`,
 `/merchants/{id}/risk`, `/merchants/{id}/explanation`,
-`/merchants/{id}/simulation/controls`, `/merchants/{id}/simulation`.
-(`/metadata` and `/merchants/{id}/features` are typed in `api/types.ts`
-for completeness but not yet called from any screen.)
+`/merchants/{id}/simulation/controls`, `/merchants/{id}/simulation`,
+`/merchants/{id}/incidents`, `/incidents/{id}`, `/merchants/{id}/assistant`.
+(`/metadata`, `/merchants/{id}/features`, and `/incidents/{id}/evidence`
+are typed in `api/types.ts` for completeness but not yet called from any
+screen.)
 
 ## Design system
 
@@ -238,11 +284,12 @@ npm run build
 - **No codegen**: `api/types.ts` is hand-maintained against the backend
   schemas; a backend response-shape change requires a matching manual
   edit here.
-- **Two screens**: Overview and Simulator are implemented; the other five
-  nav destinations are intentionally inert placeholders.
-- **Bundle size**: the production build is ~630 KB (~188 KB gzipped),
-  mostly `recharts`; acceptable for a two-screen internal tool, but would
-  want code-splitting before adding more chart-heavy screens.
+- **Three screens**: Overview, Simulator, and Incident Response are
+  implemented; the other four nav destinations are intentionally inert
+  placeholders.
+- **Bundle size**: the production build is ~650 KB (~192 KB gzipped),
+  mostly `recharts`; acceptable for this tool's size, but would want
+  code-splitting before adding more chart-heavy screens.
 - **This is a UI over a synthetic-benchmark research prototype** — see
   `docs/architecture/backend.md`'s limitations for what the underlying
   model/data can and cannot claim; the frontend does not add any

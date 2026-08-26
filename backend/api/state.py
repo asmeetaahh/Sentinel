@@ -38,6 +38,7 @@ class AppState:
     feature_metadata_by_name: dict
     artifact: artifact_module.LoadedArtifact
     explainer: object  # shap.TreeExplainer
+    ai_provider: object  # backend.ai.providers.base.LLMProvider — built once, never raises on build
 
 
 _STATE: AppState | None = None
@@ -77,6 +78,13 @@ def load_state() -> AppState:
     explainer = shap_engine.build_explainer(loaded_artifact.base_random_forest)
     metadata_by_name = load_feature_metadata()
 
+    # backend.ai.providers.factory.build_provider() never raises — an
+    # absent/misconfigured AI provider must never prevent the rest of
+    # Sentinel from starting. See docs/architecture/ai_orchestrator.md.
+    from backend.ai.providers.factory import build_provider
+
+    ai_provider = build_provider()
+
     _STATE = AppState(
         merchants=merchants_full,
         daily_observations=daily_observations,
@@ -87,6 +95,7 @@ def load_state() -> AppState:
         feature_metadata_by_name=metadata_by_name,
         artifact=loaded_artifact,
         explainer=explainer,
+        ai_provider=ai_provider,
     )
     return _STATE
 

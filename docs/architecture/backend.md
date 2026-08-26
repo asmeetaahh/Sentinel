@@ -50,7 +50,7 @@ backend/
     main.py            FastAPI app, CORS, lifespan (loads state once at startup)
     state.py            AppState: tables + artifact + SHAP explainer + events, loaded once
     dependencies.py      FastAPI Depends() wiring to AppState
-    routers/             health.py, merchants.py, risk.py, simulator.py, incidents.py — thin HTTP adapters only
+    routers/             health.py, merchants.py, risk.py, simulator.py, incidents.py, ai.py — thin HTTP adapters only
     schemas/              Pydantic request/response models
   services/
     merchant_service.py  merchant list/profile/observations/feature vector
@@ -67,7 +67,12 @@ backend/
     evidence_service.py     deterministic evidence-readiness engine
   incidents/
     incident_service.py     incident selection/assembly — see docs/architecture/incident_response.md
-  ai/   untouched — out of scope for this task
+  ai/
+    context_builder.py      assembles the one authoritative SentinelAIContext from existing services only
+    guardrails.py            prompt-injection pre-filter + deterministic provenance/limitations/disclaimer
+    prompt.py, response_parser.py, orchestrator.py
+    providers/               provider-agnostic interface, mock (default) and OpenAI (lazy-imported) implementations
+    — see docs/architecture/ai_orchestrator.md — the LLM is an explainer over verified context, never the risk engine
 ```
 
 Routers contain no business logic — they call a service, catch its domain
@@ -92,6 +97,7 @@ FastAPI.
 | GET | `/merchants/{id}/incidents` | Summary list of this merchant's incidents — see `docs/architecture/incident_response.md` |
 | GET | `/incidents/{incident_id}` | Full incident detail (risk/exposure/liquidity/drivers/evidence) |
 | GET | `/incidents/{incident_id}/evidence` | Just the evidence-readiness section of an incident |
+| POST | `/merchants/{id}/assistant` | Bounded AI assistant over verified context — see `docs/architecture/ai_orchestrator.md` |
 
 Full request/response shapes are in `backend/api/schemas/` and enforced by
 FastAPI at runtime (a malformed request → `422`, not a silent bad response).

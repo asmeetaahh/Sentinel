@@ -6,6 +6,7 @@
  */
 
 import type {
+  AssistantResponse,
   ControlsListResponse,
   ExplanationResponse,
   IncidentDetail,
@@ -389,4 +390,62 @@ export const mockIncidentDetail: IncidentDetail = {
     note: "This is the synthetic benchmark generator's own ground-truth scenario parameter.",
   },
   workflow_stage: 'evidence_check',
+}
+
+export const mockAssistantResponse: AssistantResponse = {
+  merchant_id: 'M0001',
+  answer:
+    '(Mock assistant response — for local development and testing, not a real AI-generated answer.) As of 2024-06-28, ' +
+    "the modeled 30-day probability is 42.0%, which the model classifies as 'normal' against its decision threshold of 64.2%.",
+  cited_context: {
+    merchant: { merchant_id: 'M0001', archetype: 'SaaS', business_tier: 'mid', signup_date: '2022-01-01', provenance: 'observed' },
+    observed_state: {
+      as_of_date: '2024-06-28',
+      gmv: 12345.6,
+      transaction_count: 42,
+      chargeback_rate: 0.01,
+      refund_rate: 0.02,
+      fulfillment_on_time_rate: 0.95,
+      provenance: 'observed',
+    },
+    risk: {
+      as_of_date: '2024-06-28',
+      horizon_days: 30,
+      probability_calibrated: 0.42,
+      risk_state: 'normal',
+      decision_threshold: 0.6418,
+      disclaimer: 'This is a synthetic-benchmark model output, not a validated real-world probability.',
+      provenance: 'modeled',
+    },
+    exposure: { value: 1500, method: 'trailing 28-day mean daily chargeback_amount baseline.', provenance: 'derived' },
+    liquidity: { available_liquidity: 98765.4, liquidity_stress: 0.0152, note: 'Transparent derived ratio.', provenance: 'derived' },
+    drivers: [
+      {
+        feature: 'chargeback_rate_28d',
+        group: 'chargeback_behavior',
+        definition: 'Volume-weighted chargeback rate over trailing 28d.',
+        window: '28d',
+        kind: 'level',
+        value: 0.02,
+        shap_value: 0.08,
+        direction: 'increases_risk',
+      },
+    ],
+    simulation: null,
+    incident: null,
+    standing_limitations: [
+      'Sentinel is a synthetic-benchmark research prototype. It has no access to real Razorpay systems, proprietary data, settlement decisions, or enforcement decisions.',
+      'The modeled probability is a synthetic-benchmark model output, not a validated real-world probability.',
+    ],
+  },
+  provenance: { merchant: 'observed', observed_state: 'observed', risk: 'modeled', exposure: 'derived', liquidity: 'derived', drivers: 'modeled' },
+  limitations: [
+    'Sentinel is a synthetic-benchmark research prototype. It has no access to real Razorpay systems, proprietary data, settlement decisions, or enforcement decisions.',
+    'The modeled probability is a synthetic-benchmark model output, not a validated real-world probability.',
+  ],
+  disclaimer:
+    "Sentinel's assistant explains verified model, exposure, liquidity, simulator, and incident outputs that were already computed by deterministic backend services.",
+  suggested_next_actions: ['Why is my risk elevated?', 'What does this mean for liquidity?'],
+  provider: 'mock',
+  guardrail_triggered: false,
 }

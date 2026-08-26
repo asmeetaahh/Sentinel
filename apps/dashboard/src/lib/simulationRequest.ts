@@ -1,4 +1,4 @@
-import type { ControlMeta, SimulationRequestBody } from '@/api/types'
+import type { ControlMeta, SimulationRequestBody, SimulationResponse } from '@/api/types'
 
 /** Builds the POST body from the current slider values, including ONLY the
  * controls whose value differs from its observed baseline — an untouched
@@ -41,4 +41,26 @@ export function baselineValues(controls: ControlMeta[]): Record<string, number> 
   const values: Record<string, number> = {}
   for (const control of controls) values[control.control_id] = control.baseline_value
   return values
+}
+
+/** Reconstructs the request body that produced a given simulation result —
+ * used to hand the assistant the SAME simulation to recompute/explain
+ * (backend/ai/context_builder.py re-runs it via simulation_service.simulate,
+ * it never trusts a client-supplied computed result). */
+export function simulationRequestFromResult(result: SimulationResponse): SimulationRequestBody {
+  const body: SimulationRequestBody = { as_of_date: result.as_of_date, horizon_days: result.horizon_days }
+  for (const control of result.controls) {
+    switch (control.control_id) {
+      case 'refund_rate_28d':
+        body.refund_rate_28d = control.simulated_value
+        break
+      case 'fulfillment_on_time_rate_28d':
+        body.fulfillment_on_time_rate_28d = control.simulated_value
+        break
+      case 'new_customer_rate_28d':
+        body.new_customer_rate_28d = control.simulated_value
+        break
+    }
+  }
+  return body
 }

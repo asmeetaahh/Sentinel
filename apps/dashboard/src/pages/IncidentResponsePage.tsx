@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import type { RiskResponse } from '@/api/types'
+import { AssistantPanel } from '@/components/assistant/AssistantPanel'
 import { EmptyState } from '@/components/common/EmptyState'
 import { ErrorState } from '@/components/common/ErrorState'
 import { LoadingState } from '@/components/common/LoadingState'
@@ -112,7 +113,18 @@ function IncidentDetailPane({ incidentId }: { incidentId: string }) {
         <CaseSummaryCard caseSummary={data.case_summary} />
         <EvidenceChecklist evidence={data.evidence_readiness} />
       </div>
-      <ResponsePreparation incident={data} key={data.incident_id} />
+      <ResponsePreparation incident={data} key={`response-prep-${data.incident_id}`} />
+
+      <AssistantPanel
+        key={`assistant-${data.incident_id}`}
+        merchantId={data.merchant_id}
+        incidentId={data.incident_id}
+        suggestedPrompts={[
+          'Summarize this incident for review.',
+          'What evidence is still missing?',
+          'Draft internal preparation notes for this incident.',
+        ]}
+      />
     </div>
   )
 }

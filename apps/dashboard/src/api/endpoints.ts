@@ -5,6 +5,8 @@
 
 import { apiClient } from './client'
 import type {
+  AssistantRequestBody,
+  AssistantResponse,
   ControlsListResponse,
   ExplanationResponse,
   HealthResponse,
@@ -78,4 +80,11 @@ export function getIncident(incidentId: string): Promise<IncidentDetail> {
 
 export function getIncidentEvidence(incidentId: string): Promise<IncidentEvidenceResponse> {
   return apiClient.request(`/incidents/${encodeURIComponent(incidentId)}/evidence`)
+}
+
+export function askAssistant(merchantId: string, body: AssistantRequestBody): Promise<AssistantResponse> {
+  return apiClient.request(`/merchants/${encodeURIComponent(merchantId)}/assistant`, {
+    method: 'POST',
+    body,
+  })
 }
