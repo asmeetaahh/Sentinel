@@ -1,0 +1,342 @@
+{
+  "run_metadata": {
+    "timestamp_utc": "2026-08-26T16:30:05.800387+00:00",
+    "horizon": 30,
+    "seed": 42,
+    "temporal_cutoff_day_index": 120,
+    "calibration_method": "sigmoid",
+    "val_calibration_fraction": 0.5,
+    "input_file_hashes_sha256_16": {
+      "features.csv": "316a1ae25de3c530",
+      "labels.csv": "2e0e164747463262",
+      "merchants.csv": "fef12a440a582dec"
+    },
+    "environment": {
+      "python": "3.12.14",
+      "sklearn": "1.9.0",
+      "joblib": "1.5.3"
+    }
+  },
+  "sample_sizes": {
+    "n_train": 3840,
+    "n_val": 1200,
+    "n_val_calibration": 600,
+    "n_val_threshold": 600,
+    "n_test": 960,
+    "n_stress_test": 240
+  },
+  "uncalibrated": {
+    "name": "random_forest_uncalibrated",
+    "threshold": 0.5992662484115578,
+    "test": {
+      "threshold": 0.5992662484115578,
+      "n_positive": 241,
+      "n_negative": 719,
+      "n_total": 960,
+      "precision": 0.5018867924528302,
+      "recall": 0.5518672199170125,
+      "f1": 0.525691699604743,
+      "pr_auc": 0.6033362594448903,
+      "roc_auc_secondary": 0.7705896271331205,
+      "confusion_matrix": {
+        "tn": 587,
+        "fp": 132,
+        "fn": 108,
+        "tp": 133
+      }
+    },
+    "calibration": {
+      "brier_score": 0.18785575700374177,
+      "mean_predicted_minus_observed": 0.15701077393235674,
+      "verdict": "overconfident (predicted probabilities systematically higher than observed frequency)",
+      "reliability_curve": {
+        "mean_predicted": [
+          0.08863244708565732,
+          0.11523394099345913,
+          0.14470079035813066,
+          0.20312001342611027,
+          0.2881269716570325,
+          0.4294557092782401,
+          0.5415089154999139,
+          0.6300832091318326,
+          0.7758735087439171,
+          0.8637888998159408
+        ],
+        "observed_frequency": [
+          0.07291666666666667,
+          0.09375,
+          0.07291666666666667,
+          0.21875,
+          0.03125,
+          0.10416666666666667,
+          0.4479166666666667,
+          0.4166666666666667,
+          0.375,
+          0.6770833333333334
+        ]
+      }
+    },
+    "false_positive_cost": {
+      "assumed_cost_per_false_positive": 1.0,
+      "n_false_positives": 132,
+      "n_true_positives": 133,
+      "total_fp_cost_units": 132.0,
+      "false_positives_per_true_positive": 0.9924812030075187,
+      "net_value_sensitivity": [
+        {
+          "assumed_benefit_per_true_positive": 2.0,
+          "net_value_units": 134.0
+        },
+        {
+          "assumed_benefit_per_true_positive": 5.0,
+          "net_value_units": 533.0
+        },
+        {
+          "assumed_benefit_per_true_positive": 10.0,
+          "net_value_units": 1198.0
+        }
+      ],
+      "disclaimer": "assumed_cost_per_false_positive and the benefit-per-true-positive sweep are illustrative synthetic modeling assumptions chosen to demonstrate the trade-off, not real Razorpay costs."
+    },
+    "warning_lead_time": {
+      "n_episodes_total": 25,
+      "n_early_warning": 3,
+      "n_detected_at_or_after_onset": 9,
+      "n_missed": 13,
+      "median_warning_lead_time_days": 7.0,
+      "warning_lead_time_percentiles_days": {
+        "10": 2.2,
+        "25": 4.0,
+        "50": 7.0,
+        "75": 7.5,
+        "90": 7.8
+      },
+      "fraction_episodes_with_early_warning": 0.12
+    },
+    "stress_test": {
+      "threshold": 0.5992662484115578,
+      "n_positive": 71,
+      "n_negative": 169,
+      "n_total": 240,
+      "precision": 0.4507042253521127,
+      "recall": 0.4507042253521127,
+      "f1": 0.4507042253521127,
+      "pr_auc": 0.47638441439374646,
+      "roc_auc_secondary": 0.7319776648054005,
+      "confusion_matrix": {
+        "tn": 130,
+        "fp": 39,
+        "fn": 39,
+        "tp": 32
+      }
+    },
+    "stress_calibration": {
+      "brier_score": 0.23075686773531992,
+      "mean_predicted_minus_observed": 0.059229749140762476,
+      "verdict": "overconfident (predicted probabilities systematically higher than observed frequency)",
+      "reliability_curve": {
+        "mean_predicted": [
+          0.07230636985270254,
+          0.09582692856660951,
+          0.11975255887525939,
+          0.133592613159822,
+          0.14717216764336508,
+          0.17858143936395907,
+          0.36659935318089665,
+          0.7238727416216464,
+          0.8509317246963236,
+          0.8619949277803739
+        ],
+        "observed_frequency": [
+          0.0,
+          0.125,
+          0.08333333333333333,
+          0.08333333333333333,
+          0.3333333333333333,
+          0.375,
+          0.5833333333333334,
+          0.5833333333333334,
+          0.25,
+          0.5416666666666666
+        ]
+      }
+    }
+  },
+  "calibrated": {
+    "name": "random_forest_calibrated",
+    "threshold": 0.6417933766429295,
+    "test": {
+      "threshold": 0.6417933766429295,
+      "n_positive": 241,
+      "n_negative": 719,
+      "n_total": 960,
+      "precision": 0.5018867924528302,
+      "recall": 0.5518672199170125,
+      "f1": 0.525691699604743,
+      "pr_auc": 0.6033362594448903,
+      "roc_auc_secondary": 0.7705896271331205,
+      "confusion_matrix": {
+        "tn": 587,
+        "fp": 132,
+        "fn": 108,
+        "tp": 133
+      }
+    },
+    "calibration": {
+      "brier_score": 0.19199332109079364,
+      "mean_predicted_minus_observed": 0.13388309937274004,
+      "verdict": "overconfident (predicted probabilities systematically higher than observed frequency)",
+      "reliability_curve": {
+        "mean_predicted": [
+          0.053505154956492725,
+          0.06332037783223408,
+          0.07633368340873596,
+          0.10984975285338994,
+          0.1809166106051222,
+          0.3658058712962379,
+          0.5475450441091146,
+          0.6862523783103933,
+          0.8511828686198664,
+          0.9145359184024798
+        ],
+        "observed_frequency": [
+          0.07291666666666667,
+          0.09375,
+          0.07291666666666667,
+          0.21875,
+          0.03125,
+          0.10416666666666667,
+          0.4479166666666667,
+          0.4166666666666667,
+          0.375,
+          0.6770833333333334
+        ]
+      }
+    },
+    "false_positive_cost": {
+      "assumed_cost_per_false_positive": 1.0,
+      "n_false_positives": 132,
+      "n_true_positives": 133,
+      "total_fp_cost_units": 132.0,
+      "false_positives_per_true_positive": 0.9924812030075187,
+      "net_value_sensitivity": [
+        {
+          "assumed_benefit_per_true_positive": 2.0,
+          "net_value_units": 134.0
+        },
+        {
+          "assumed_benefit_per_true_positive": 5.0,
+          "net_value_units": 533.0
+        },
+        {
+          "assumed_benefit_per_true_positive": 10.0,
+          "net_value_units": 1198.0
+        }
+      ],
+      "disclaimer": "assumed_cost_per_false_positive and the benefit-per-true-positive sweep are illustrative synthetic modeling assumptions chosen to demonstrate the trade-off, not real Razorpay costs."
+    },
+    "warning_lead_time": {
+      "n_episodes_total": 25,
+      "n_early_warning": 3,
+      "n_detected_at_or_after_onset": 9,
+      "n_missed": 13,
+      "median_warning_lead_time_days": 7.0,
+      "warning_lead_time_percentiles_days": {
+        "10": 2.2,
+        "25": 4.0,
+        "50": 7.0,
+        "75": 7.5,
+        "90": 7.8
+      },
+      "fraction_episodes_with_early_warning": 0.12
+    },
+    "stress_test": {
+      "threshold": 0.6417933766429295,
+      "n_positive": 71,
+      "n_negative": 169,
+      "n_total": 240,
+      "precision": 0.4507042253521127,
+      "recall": 0.4507042253521127,
+      "f1": 0.4507042253521127,
+      "pr_auc": 0.47638441439374646,
+      "roc_auc_secondary": 0.7319776648054005,
+      "confusion_matrix": {
+        "tn": 130,
+        "fp": 39,
+        "fn": 39,
+        "tp": 32
+      }
+    },
+    "stress_calibration": {
+      "brier_score": 0.2525485689349507,
+      "mean_predicted_minus_observed": 0.03625483770636438,
+      "verdict": "overconfident (predicted probabilities systematically higher than observed frequency)",
+      "reliability_curve": {
+        "mean_predicted": [
+          0.04815913453642682,
+          0.055962700862849935,
+          0.06513833378936949,
+          0.0710414091516658,
+          0.0773680823538196,
+          0.09468713578758868,
+          0.3067307417040272,
+          0.7800495479775783,
+          0.9078191653905687,
+          0.9139254588430825
+        ],
+        "observed_frequency": [
+          0.0,
+          0.125,
+          0.08333333333333333,
+          0.08333333333333333,
+          0.3333333333333333,
+          0.375,
+          0.5833333333333334,
+          0.5833333333333334,
+          0.25,
+          0.5416666666666666
+        ]
+      }
+    }
+  },
+  "leakage_checks": {
+    "test_set_never_passed_to_any_fit_call": true,
+    "calibration_fit_only_on_val_calibration_slice": true,
+    "base_random_forest_feature_importances_deterministic_given_same_train_data": true,
+    "val_calibration_and_val_threshold_are_disjoint": true
+  },
+  "comparison_table": [
+    {
+      "variant": "random_forest_uncalibrated",
+      "threshold": 0.5992662484115578,
+      "precision": 0.5018867924528302,
+      "recall": 0.5518672199170125,
+      "f1": 0.525691699604743,
+      "pr_auc": 0.6033362594448903,
+      "brier_score": 0.18785575700374177,
+      "calibration_verdict": "overconfident (predicted probabilities systematically higher than observed frequency)",
+      "false_positives_per_true_positive": 0.9924812030075187,
+      "median_warning_lead_time_days": 7.0,
+      "stress_pr_auc": 0.47638441439374646,
+      "stress_precision": 0.4507042253521127,
+      "stress_recall": 0.4507042253521127,
+      "stress_brier_score": 0.23075686773531992
+    },
+    {
+      "variant": "random_forest_calibrated",
+      "threshold": 0.6417933766429295,
+      "precision": 0.5018867924528302,
+      "recall": 0.5518672199170125,
+      "f1": 0.525691699604743,
+      "pr_auc": 0.6033362594448903,
+      "brier_score": 0.19199332109079364,
+      "calibration_verdict": "overconfident (predicted probabilities systematically higher than observed frequency)",
+      "false_positives_per_true_positive": 0.9924812030075187,
+      "median_warning_lead_time_days": 7.0,
+      "stress_pr_auc": 0.47638441439374646,
+      "stress_precision": 0.4507042253521127,
+      "stress_recall": 0.4507042253521127,
+      "stress_brier_score": 0.2525485689349507
+    }
+  ]
+}

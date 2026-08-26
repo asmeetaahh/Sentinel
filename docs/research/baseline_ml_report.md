@@ -154,6 +154,154 @@ calibration numbers use a min-max-scaled pseudo-probability purely for
 plotting on a comparable 0-1 axis, and should not be read as a genuine
 calibration failure/success in the same sense as the other three models.
 
+## E.1 Calibration implementation and evaluation (follow-up pass)
+
+This section documents a dedicated follow-up pass evaluating and
+implementing calibration for the provisional Random Forest / 30-day
+candidate specifically, per a subsequent, narrower task. Reproduce with
+`scripts/evaluate_calibration.py`; results in
+`data/metadata/modeling/calibration_results.json`.
+
+### Method
+
+**Platt scaling (sigmoid)**, via `sklearn.calibration.CalibratedClassifierCV`
+wrapping a `FrozenEstimator`-wrapped, already-fit Random Forest (the
+`cv="prefit"` API was removed in sklearn ≥1.6; `FrozenEstimator` is its
+replacement — same semantics, base model frozen, never refit by the
+calibrator).
+
+**Why sigmoid, chosen before fitting or evaluating either method** (not by
+comparing results and picking the winner): isotonic regression is
+nonparametric and prone to overfitting or producing a jagged, non-smooth
+map when the calibration set is modest; sigmoid fits only 2 parameters and
+is the standard, more data-efficient default at the available scale
+(600 rows after the validation split below). A same-day diagnostic
+comparison (not the selection method — see below) confirmed this was the
+right call: isotonic's test-set Brier score (0.209) was worse than
+sigmoid's (0.192), which was itself worse than doing nothing (0.188) — see
+"Result" below.
+
+**Fitting protocol** (train/validation only, test never touched):
+1. Base Random Forest fit on the merchant-level **train** split only,
+   identical hyperparameters to the uncalibrated baseline
+   (`config.RANDOM_FOREST_PARAMS`, with `n_jobs` pinned to 1 for this
+   artifact specifically — see Limitations).
+2. The 1,200-row **validation** split is itself divided in two (seeded,
+   stratified, 50/50): `val_calibration` (600 rows) fits the sigmoid map;
+   `val_threshold` (600 rows, disjoint from the first) selects the
+   F1-maximizing decision threshold — for both the calibrated **and**
+   uncalibrated variants, so the comparison below is like-for-like. (The
+   original baseline report's uncalibrated-RF numbers used the *full*
+   1,200-row validation set for threshold selection; re-selecting on the
+   600-row `val_threshold` half here is why this section's "uncalibrated"
+   row differs very slightly from Section C's.)
+3. Test set used only for final evaluation, in both variants.
+
+### Result: calibration did NOT clearly improve this candidate
+
+| Metric (test, h=30) | Uncalibrated RF | Calibrated RF (sigmoid) |
+|---|---|---|
+| Precision | 0.502 | 0.502 |
+| Recall | 0.552 | 0.552 |
+| F1 | 0.526 | 0.526 |
+| PR-AUC | 0.603 | 0.603 |
+| **Brier score** | **0.188** | **0.192** (worse) |
+| Mean predicted − observed (avg. bias) | +0.157 | +0.134 (smaller) |
+| Calibration verdict | Overconfident | Overconfident |
+| FP:TP ratio | 0.99 | 0.99 |
+| Median warning lead time (days) | 7.0 | 7.0 |
+
+**Precision/recall/F1/PR-AUC/FP-cost/warning-lead-time are IDENTICAL between
+the two** — this is mathematically expected, not a bug: sigmoid scaling is
+a strictly monotonic transform of the raw score, so it cannot change the
+induced ranking, and therefore cannot change any metric computed from a
+rank-based threshold search over that ranking
+(`test_calibration_preserves_ranking_relative_to_uncalibrated` asserts this
+directly). **Only Brier score and the reliability curve shape can differ —
+and Brier score got slightly worse, not better.**
+
+The average bias (`mean_predicted_minus_observed`) did shrink (+0.157 →
++0.134), which sounds like an improvement, but the reliability curve
+(`plots/calibration_before_after.png`) shows why Brier disagrees: the
+underlying raw reliability curve is genuinely non-monotonic and noisy at
+this sample size (bins alternate between ~0.03 and ~0.22 observed frequency
+at similar predicted-probability levels — see the reliability-curve data in
+`calibration_results.json`). A 2-parameter sigmoid cannot fit a
+non-monotonic pattern; it can only rescale toward smaller *average* error
+while making specific regions worse — here, the highest-confidence bin
+became more extreme (0.86→0.92 mean predicted, same 0.68 observed),
+which Brier's squared-error penalizes disproportionately. **This is a
+genuine, checked finding** (confirmed with isotonic too, which was worse
+still — see Method above), not a bug in the calibration code: given this
+benchmark's current validation-set size, post-hoc calibration does not
+reliably improve this specific Random Forest's probability outputs.
+
+### Stress-test behavior
+
+| Metric (stress test, h=30) | Uncalibrated RF | Calibrated RF |
+|---|---|---|
+| PR-AUC | (same ranking → identical to uncalibrated by construction) | |
+| Brier score | 0.231 | **0.253** (worse, and by more than on the normal test — +9.4% relative vs. +2.2% relative) |
+| Mean predicted − observed | +0.059 | +0.036 (smaller) |
+
+**Calibration's Brier-score cost is larger under temporal distribution
+shift, not smaller.** The sigmoid map was fit on early-period validation
+data; applying it to late-period (post-cutoff) test rows extrapolates a
+mapping learned under one distribution to a somewhat different one, and
+that extrapolation cost shows up as a larger Brier penalty than on the
+normal (early-period) test set. This is a real, checked limitation, not
+elided: calibration does not "travel" better than the raw model under
+drift here — if anything, slightly worse.
+
+### Leakage verification
+
+Checked both structurally and behaviorally (`tests/test_calibration.py`,
+10 tests, all passing):
+- `fit_calibrated()`'s signature has exactly four parameters
+  (`X_train, y_train, X_val_calibration, y_val_calibration`) — there is no
+  parameter through which test data could be passed, verified by
+  introspecting the signature directly, not just by code review.
+- The base Random Forest's `feature_importances_` are bit-identical before
+  and after the calibrator is fit on `val_calibration` — proving the
+  "frozen" base model is genuinely not refit on validation data.
+- `val_calibration` and `val_threshold` are verified disjoint and their
+  union exactly equals `val` (no validation row is used for both purposes,
+  no validation row is dropped).
+- Fitting twice with an unrelated, wildly-scaled "test-like" array sitting
+  in scope produces identical calibrator output — ruling out any
+  accidental reference/closure capture of test data.
+- A model fit once and asked to score the test set twice returns
+  bit-identical results (deterministic inference, see Limitations for the
+  `n_jobs` fix this required).
+
+### Limitations
+
+- **A real (harmless) nondeterminism was found and fixed during this pass**:
+  `RandomForestClassifier`'s `predict_proba` with `n_jobs=-1` (the shared
+  baseline setting) is not bit-exact reproducible run-to-run — parallel
+  reduction across threads sums per-tree probabilities in a
+  non-deterministic order, causing ~1e-16 (machine-epsilon) differences.
+  Confirmed empirically to have zero effect on the fitted trees or any
+  reported metric (`feature_importances_` identical regardless of
+  `n_jobs`), but it does violate a literal "deterministic inference"
+  requirement. Fixed by pinning `n_jobs=1` for this artifact's base model
+  specifically — the shared `config.RANDOM_FOREST_PARAMS` (and therefore
+  the original baseline evaluation's numbers) is untouched.
+- **The validation set is small** (1,200 rows for this horizon, halved to
+  600 for calibration fitting) — this is very likely *why* calibration
+  didn't help here; a materially larger validation set (available at the
+  eventual ~500-merchant scale) might change this conclusion in either
+  direction. This was not re-tested at scale in this pass.
+- **Only one calibration configuration was adopted** (sigmoid, 50/50
+  validation split); isotonic was checked once as a diagnostic, not
+  formally evaluated end-to-end (no isotonic artifact was saved) — per the
+  instruction not to search across many configurations.
+- **This does not establish that Random Forest is well- or poorly-suited
+  to calibration in general** — only that this specific implementation, at
+  this specific (small) validation scale, did not produce a clear
+  improvement. Calibration remains a reasonable thing to revisit once more
+  data is available.
+
 ## F. False-positive cost assumptions
 
 **What constitutes a false positive**: a merchant-day where the model
@@ -422,6 +570,19 @@ competitive, much simpler alternative at 30d (PR-AUC 0.486, F1 0.557,
 better stress-test recall retention at 14d) and deserves serious
 consideration as the simpler choice if interpretability or stress-test
 stability is weighted more heavily than peak PR-AUC.
+
+**Update (§E.1)**: probability calibration was implemented and evaluated
+for this candidate and did **not** provide a clean improvement — Brier
+score got slightly worse both on the normal test (0.188→0.192) and, more
+so, under temporal stress (0.231→0.253), while discrimination metrics are
+mathematically unchanged (sigmoid scaling is rank-preserving). Random
+Forest / 30d remains the provisional candidate on **discrimination and
+false-positive-profile grounds**, not on calibration grounds — its
+probabilities (calibrated or not) should be treated as directionally
+useful for ranking risk, not as literal, well-calibrated probabilities of
+an elevated episode. Both the uncalibrated model and the calibrated
+artifact are available (`data/metadata/modeling/artifacts/`); neither is
+recommended as "calibrated and ready" — see §E.1 Limitations.
 
 ## M. Recommended primary horizon
 
