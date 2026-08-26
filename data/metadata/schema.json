@@ -1,0 +1,375 @@
+{
+  "merchants": [
+    {
+      "name": "merchant_id",
+      "dtype": "string",
+      "description": "Stable synthetic merchant identifier, e.g. M0001."
+    },
+    {
+      "name": "archetype",
+      "dtype": "string",
+      "description": "One of the 8 fixed merchant archetypes."
+    },
+    {
+      "name": "business_tier",
+      "dtype": "string",
+      "description": "small | mid | large \u2014 drives baseline GMV scale."
+    },
+    {
+      "name": "signup_date",
+      "dtype": "date",
+      "description": "Synthetic platform signup date, always before the observation window start."
+    },
+    {
+      "name": "baseline_daily_gmv",
+      "dtype": "float64",
+      "description": "Merchant-specific mean daily GMV before trend/seasonality/events/noise."
+    },
+    {
+      "name": "baseline_daily_txn_count",
+      "dtype": "float64",
+      "description": "Merchant-specific mean daily transaction count."
+    },
+    {
+      "name": "baseline_aov",
+      "dtype": "float64",
+      "description": "Merchant-specific baseline average order value."
+    },
+    {
+      "name": "baseline_refund_rate",
+      "dtype": "float64",
+      "description": "Baseline fraction of transactions refunded."
+    },
+    {
+      "name": "baseline_chargeback_rate",
+      "dtype": "float64",
+      "description": "Baseline fraction of transactions charged back."
+    },
+    {
+      "name": "baseline_fulfillment_delay_days",
+      "dtype": "float64",
+      "description": "Baseline average fulfillment delay in days."
+    },
+    {
+      "name": "baseline_on_time_rate",
+      "dtype": "float64",
+      "description": "Baseline fraction of orders fulfilled on time."
+    },
+    {
+      "name": "baseline_new_customer_rate",
+      "dtype": "float64",
+      "description": "Baseline fraction of daily customers who are new."
+    },
+    {
+      "name": "baseline_pct_pay_card",
+      "dtype": "float64",
+      "description": "Baseline card payment share."
+    },
+    {
+      "name": "baseline_pct_pay_upi",
+      "dtype": "float64",
+      "description": "Baseline UPI payment share."
+    },
+    {
+      "name": "baseline_pct_pay_netbanking",
+      "dtype": "float64",
+      "description": "Baseline netbanking payment share."
+    },
+    {
+      "name": "baseline_pct_pay_wallet",
+      "dtype": "float64",
+      "description": "Baseline wallet payment share."
+    },
+    {
+      "name": "baseline_pct_pay_bnpl",
+      "dtype": "float64",
+      "description": "Baseline BNPL payment share."
+    },
+    {
+      "name": "annual_growth_rate",
+      "dtype": "float64",
+      "description": "Organic annualized growth drift applied to baseline GMV/txn, independent of events."
+    },
+    {
+      "name": "volatility_factor",
+      "dtype": "float64",
+      "description": "Day-to-day multiplicative noise std applied to GMV/txn."
+    },
+    {
+      "name": "liquidity_buffer_days",
+      "dtype": "float64",
+      "description": "Target liquidity buffer expressed in days of current GMV."
+    },
+    {
+      "name": "settlement_cycle_days",
+      "dtype": "int64",
+      "description": "Assumed payment settlement cycle (T+N) in days."
+    },
+    {
+      "name": "weekly_seasonality_profile",
+      "dtype": "string",
+      "description": "Coarse tag describing the archetype's weekly pattern."
+    }
+  ],
+  "daily_observations": [
+    {
+      "name": "merchant_id",
+      "dtype": "string",
+      "description": "Foreign key to merchants.merchant_id."
+    },
+    {
+      "name": "date",
+      "dtype": "date",
+      "description": "Calendar date of the observation."
+    },
+    {
+      "name": "day_index",
+      "dtype": "int64",
+      "description": "0-based day offset from the run's start date. Convenience key, monotonic per merchant."
+    },
+    {
+      "name": "gmv",
+      "dtype": "float64",
+      "description": "Gross merchandise value for the day. Never negative."
+    },
+    {
+      "name": "transaction_count",
+      "dtype": "int64",
+      "description": "Number of transactions. Never negative, floor of 1."
+    },
+    {
+      "name": "aov",
+      "dtype": "float64",
+      "description": "Realized average order value for the day (gmv / transaction_count)."
+    },
+    {
+      "name": "refund_count",
+      "dtype": "int64",
+      "description": "Number of refunded transactions. Never negative."
+    },
+    {
+      "name": "refund_amount",
+      "dtype": "float64",
+      "description": "Total refunded amount. Never negative, never exceeds gmv."
+    },
+    {
+      "name": "refund_rate",
+      "dtype": "float64",
+      "description": "refund_count / transaction_count."
+    },
+    {
+      "name": "chargeback_count",
+      "dtype": "int64",
+      "description": "Number of chargebacks initiated. Never negative."
+    },
+    {
+      "name": "chargeback_amount",
+      "dtype": "float64",
+      "description": "Total chargeback amount. Never negative."
+    },
+    {
+      "name": "chargeback_rate",
+      "dtype": "float64",
+      "description": "chargeback_count / transaction_count."
+    },
+    {
+      "name": "fulfillment_delay_avg_days",
+      "dtype": "float64",
+      "description": "Average fulfillment delay in days for the day's orders. Never negative."
+    },
+    {
+      "name": "fulfillment_on_time_rate",
+      "dtype": "float64",
+      "description": "Fraction of the day's orders fulfilled on time. In [0, 1]."
+    },
+    {
+      "name": "customer_count",
+      "dtype": "int64",
+      "description": "Distinct customers transacting that day. Never negative."
+    },
+    {
+      "name": "new_customers",
+      "dtype": "int64",
+      "description": "Customers transacting for the first time. Never negative."
+    },
+    {
+      "name": "returning_customers",
+      "dtype": "int64",
+      "description": "customer_count - new_customers. Never negative."
+    },
+    {
+      "name": "new_customer_rate",
+      "dtype": "float64",
+      "description": "new_customers / customer_count."
+    },
+    {
+      "name": "pct_pay_card",
+      "dtype": "float64",
+      "description": "Share of the day's GMV paid via card."
+    },
+    {
+      "name": "pct_pay_upi",
+      "dtype": "float64",
+      "description": "Share of the day's GMV paid via UPI."
+    },
+    {
+      "name": "pct_pay_netbanking",
+      "dtype": "float64",
+      "description": "Share of the day's GMV paid via netbanking."
+    },
+    {
+      "name": "pct_pay_wallet",
+      "dtype": "float64",
+      "description": "Share of the day's GMV paid via wallet."
+    },
+    {
+      "name": "pct_pay_bnpl",
+      "dtype": "float64",
+      "description": "Share of the day's GMV paid via BNPL."
+    },
+    {
+      "name": "liquidity_balance",
+      "dtype": "float64",
+      "description": "Simplified mean-reverting settled-funds buffer. Floored at 0."
+    },
+    {
+      "name": "pending_settlement_amount",
+      "dtype": "float64",
+      "description": "Simplified rolling not-yet-settled amount, based on settlement_cycle_days. Never negative."
+    }
+  ],
+  "events": [
+    {
+      "name": "event_id",
+      "dtype": "string",
+      "description": "Stable synthetic event identifier, e.g. E000123."
+    },
+    {
+      "name": "merchant_id",
+      "dtype": "string",
+      "description": "Foreign key to merchants.merchant_id."
+    },
+    {
+      "name": "event_type",
+      "dtype": "string",
+      "description": "One of the 9 event types in config.EVENT_TYPES."
+    },
+    {
+      "name": "category",
+      "dtype": "string",
+      "description": "risk | benign_growth."
+    },
+    {
+      "name": "hard_negative",
+      "dtype": "bool",
+      "description": "True for benign_growth events explicitly designed as growth-without-risk cases."
+    },
+    {
+      "name": "shape",
+      "dtype": "string",
+      "description": "gradual | sudden \u2014 onset ramp shape."
+    },
+    {
+      "name": "start_date",
+      "dtype": "date",
+      "description": "First day the event has nonzero effect."
+    },
+    {
+      "name": "end_date",
+      "dtype": "date",
+      "description": "Last day of the event's plateau/peak phase before decay, clipped to the run window."
+    },
+    {
+      "name": "recovery_end_date",
+      "dtype": "date",
+      "description": "Last day of the post-event decay tail, clipped to the run window."
+    },
+    {
+      "name": "duration_days",
+      "dtype": "int64",
+      "description": "Nominal event duration (onset + plateau), before the recovery tail."
+    },
+    {
+      "name": "severity_score",
+      "dtype": "float64",
+      "description": "Normalized 0-1 severity draw for this event instance."
+    },
+    {
+      "name": "affects",
+      "dtype": "string",
+      "description": "Comma-separated list of daily_observations metrics this event perturbs."
+    },
+    {
+      "name": "description",
+      "dtype": "string",
+      "description": "Auto-generated human-readable summary."
+    }
+  ],
+  "labels": [
+    {
+      "name": "merchant_id",
+      "dtype": "string",
+      "description": "Foreign key to merchants.merchant_id."
+    },
+    {
+      "name": "as_of_date",
+      "dtype": "date",
+      "description": "Prediction date t. Only rows with a full future window are included."
+    },
+    {
+      "name": "day_index",
+      "dtype": "int64",
+      "description": "day_index of as_of_date."
+    },
+    {
+      "name": "horizon_days",
+      "dtype": "int64",
+      "description": "7 | 14 | 30."
+    },
+    {
+      "name": "future_chargeback_amount",
+      "dtype": "float64",
+      "description": "Sum of chargeback_amount over (t, t+horizon]. Uses future data only."
+    },
+    {
+      "name": "future_chargeback_rate",
+      "dtype": "float64",
+      "description": "Volume-weighted chargeback rate over (t, t+horizon]."
+    },
+    {
+      "name": "future_transaction_count",
+      "dtype": "int64",
+      "description": "Sum of transaction_count over (t, t+horizon]."
+    },
+    {
+      "name": "baseline_daily_gmv_trailing",
+      "dtype": "float64",
+      "description": "Mean daily gmv over the trailing window ending at t (uses only data at/before t)."
+    },
+    {
+      "name": "baseline_daily_chargeback_amount_trailing",
+      "dtype": "float64",
+      "description": "Mean daily chargeback_amount over the trailing window ending at t."
+    },
+    {
+      "name": "baseline_chargeback_rate_trailing",
+      "dtype": "float64",
+      "description": "Volume-weighted chargeback rate over the trailing window ending at t."
+    },
+    {
+      "name": "elevation_ratio_amount",
+      "dtype": "float64",
+      "description": "future_chargeback_amount / (baseline_daily_chargeback_amount_trailing * horizon_days), guarded against div-by-~0."
+    },
+    {
+      "name": "elevation_ratio_rate",
+      "dtype": "float64",
+      "description": "future_chargeback_rate / baseline_chargeback_rate_trailing, guarded against div-by-~0."
+    },
+    {
+      "name": "label_elevated_chargeback",
+      "dtype": "int64",
+      "description": "1 if this future window is a materially elevated chargeback-loss episode, else 0. See config.py thresholds."
+    }
+  ]
+}

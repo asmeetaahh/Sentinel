@@ -1,0 +1,59 @@
+{
+  "generator_version": "0.1.0",
+  "generated_at_utc": "2026-08-26T04:58:24.401719+00:00",
+  "seed": 42,
+  "n_merchants": 50,
+  "n_days": 180,
+  "start_date": "2024-01-01",
+  "end_date": "2024-06-28",
+  "archetypes": [
+    "D2C Fashion",
+    "Digital Goods",
+    "Education",
+    "Electronics",
+    "Marketplace",
+    "Quick Commerce",
+    "SaaS",
+    "Travel"
+  ],
+  "archetype_merchant_counts": {
+    "D2C Fashion": 7,
+    "Electronics": 7,
+    "SaaS": 6,
+    "Travel": 6,
+    "Marketplace": 6,
+    "Education": 6,
+    "Quick Commerce": 6,
+    "Digital Goods": 6
+  },
+  "label_horizons_days": [
+    7,
+    14,
+    30
+  ],
+  "row_counts": {
+    "merchants": 50,
+    "daily_observations": 9000,
+    "events": 141,
+    "labels": 24450
+  },
+  "event_type_counts": {
+    "festival_growth": 25,
+    "fulfillment_degradation": 21,
+    "chargeback_deterioration": 18,
+    "compound_risk": 17,
+    "refund_shock": 16,
+    "viral_campaign": 14,
+    "payment_method_shift": 12,
+    "product_launch": 10,
+    "customer_mix_shift": 8
+  },
+  "disclaimer": "All values in this dataset are synthetically generated for benchmark construction. None are derived from real Razorpay, merchant, or industry statistics. See docs/data_generation.md.",
+  "files": {
+    "merchants": "data/raw/merchants.csv",
+    "daily_observations": "data/raw/daily_observations.csv",
+    "events": "data/scenarios/events.csv",
+    "labels": "data/processed/labels.csv",
+    "schema": "data/metadata/schema.json"
+  }
+}
