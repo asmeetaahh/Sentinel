@@ -25,7 +25,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: 'Risk', icon: RiskIcon, enabled: false, to: '/risk' },
   { label: 'Explainability', icon: ExplainabilityIcon, enabled: false, to: '/explainability' },
   { label: 'Simulator', icon: SimulatorIcon, enabled: true, to: '/simulator' },
-  { label: 'Incident Response', icon: IncidentIcon, enabled: false, to: '/incident-response' },
+  { label: 'Incident Response', icon: IncidentIcon, enabled: true, to: '/incident-response' },
   { label: 'Evidence', icon: EvidenceIcon, enabled: false, to: '/evidence' },
   { label: 'Settings', icon: SettingsIcon, enabled: false, to: '/settings' },
 ]

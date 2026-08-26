@@ -20,7 +20,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.api.routers import health, merchants, risk, simulator
+from backend.api.routers import health, incidents, merchants, risk, simulator
 from backend.api.state import load_state
 
 DEV_CORS_ORIGINS = [
@@ -74,3 +74,4 @@ app.include_router(health.router)
 app.include_router(merchants.router)
 app.include_router(risk.router)
 app.include_router(simulator.router)
+app.include_router(incidents.router)

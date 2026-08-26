@@ -48,9 +48,9 @@ the explicit instruction not to over-engineer this).
 backend/
   api/
     main.py            FastAPI app, CORS, lifespan (loads state once at startup)
-    state.py            AppState: tables + artifact + SHAP explainer, loaded once
+    state.py            AppState: tables + artifact + SHAP explainer + events, loaded once
     dependencies.py      FastAPI Depends() wiring to AppState
-    routers/             health.py, merchants.py, risk.py — thin HTTP adapters only
+    routers/             health.py, merchants.py, risk.py, simulator.py, incidents.py — thin HTTP adapters only
     schemas/              Pydantic request/response models
   services/
     merchant_service.py  merchant list/profile/observations/feature vector
@@ -59,7 +59,15 @@ backend/
     risk_service.py       model score/state + assembles the risk response
     liquidity_service.py  exposure estimate + liquidity stress derivation
     explainability_service.py   thin wrapper around ml.explainability
-  evidence/, simulation/, ai/   untouched — out of scope for this task
+  simulation/
+    controls.py            bounded what-if control registry — see docs/architecture/simulator.md
+    simulation_service.py   modified-feature-vector what-if flow, same artifact
+  evidence/
+    reason_codes.py         synthetic prototype reason-code taxonomy + evidence requirements
+    evidence_service.py     deterministic evidence-readiness engine
+  incidents/
+    incident_service.py     incident selection/assembly — see docs/architecture/incident_response.md
+  ai/   untouched — out of scope for this task
 ```
 
 Routers contain no business logic — they call a service, catch its domain
@@ -79,6 +87,11 @@ FastAPI.
 | GET | `/merchants/{id}/features` | The 55-feature vector as of `as_of_date`, with manifest metadata |
 | GET | `/merchants/{id}/risk` | Model risk score/state + exposure + liquidity stress, for `as_of_date` (+`horizon_days`, only `30` supported) |
 | GET | `/merchants/{id}/explanation` | SHAP drivers for `as_of_date` (+`top_k`) |
+| GET | `/merchants/{id}/simulation/controls` | Bounded what-if control bounds/baseline — see `docs/architecture/simulator.md` |
+| POST | `/merchants/{id}/simulation` | Runs the same saved model on a modified feature vector — see `docs/architecture/simulator.md` |
+| GET | `/merchants/{id}/incidents` | Summary list of this merchant's incidents — see `docs/architecture/incident_response.md` |
+| GET | `/incidents/{incident_id}` | Full incident detail (risk/exposure/liquidity/drivers/evidence) |
+| GET | `/incidents/{incident_id}/evidence` | Just the evidence-readiness section of an incident |
 
 Full request/response shapes are in `backend/api/schemas/` and enforced by
 FastAPI at runtime (a malformed request → `422`, not a silent bad response).

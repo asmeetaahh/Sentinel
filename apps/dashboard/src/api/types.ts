@@ -4,7 +4,7 @@
  * these are not independently invented shapes.
  */
 
-export type Provenance = 'observed' | 'modeled' | 'derived'
+export type Provenance = 'observed' | 'modeled' | 'derived' | 'synthetic_prototype'
 
 // ---------------------------------------------------------------------------
 // Health / metadata
@@ -306,6 +306,121 @@ export interface SimulationResponse {
   exposure: SimulationExposureSection
   liquidity_stress: SimulationLiquidityStressSection
   modeled_impact_disclaimer: string
+}
+
+// ---------------------------------------------------------------------------
+// Incidents / Evidence Readiness
+// ---------------------------------------------------------------------------
+
+export type IncidentPriority = 'high' | 'medium' | 'low'
+export type IncidentStatus = 'active' | 'resolved'
+export type EvidenceReadinessStatus = 'ready' | 'partial' | 'insufficient'
+export type WorkflowStage = 'evidence_check' | 'response_ready_for_merchant_review'
+
+export interface IncidentWindow {
+  start_date: string
+  end_date: string
+  recovery_end_date: string
+  duration_days: number
+}
+
+export interface ReasonCodeInfo {
+  code: string
+  label: string
+  description: string
+  taxonomy_disclaimer: string
+}
+
+export interface CaseSummary {
+  estimated_case_count: number
+  method: string
+  provenance: Provenance
+  note: string
+}
+
+export interface EvidenceItem {
+  category: string
+  label: string
+  required: boolean
+  available: boolean
+  rationale: string
+  provenance: Provenance
+}
+
+export interface EvidenceReadiness {
+  reason_code: string
+  required_evidence: string[]
+  items: EvidenceItem[]
+  required_count: number
+  available_count: number
+  missing_evidence: string[]
+  readiness_status: EvidenceReadinessStatus
+  disclaimer: string
+}
+
+export interface ScenarioContext {
+  event_id: string
+  shape: string
+  severity_score: number
+  affects: string[]
+  provenance: Provenance
+  note: string
+}
+
+export interface IncidentSummary {
+  incident_id: string
+  merchant_id: string
+  event_type: string
+  status: IncidentStatus
+  priority: IncidentPriority
+  horizon_days: number
+  window: IncidentWindow
+  detected_date: string
+  probability_calibrated: number
+  risk_state: 'elevated' | 'normal'
+  exposure_estimate: number
+  liquidity_stress: number | null
+  reason_code: string
+  reason_code_label: string
+  evidence_readiness_status: EvidenceReadinessStatus
+  estimated_case_count: number
+  workflow_stage: WorkflowStage
+}
+
+export interface IncidentListResponse {
+  merchant_id: string
+  count: number
+  incidents: IncidentSummary[]
+}
+
+export interface IncidentDetail {
+  incident_id: string
+  merchant_id: string
+  event_type: string
+  status: IncidentStatus
+  priority: IncidentPriority
+  priority_reasons: string[]
+  horizon_days: number
+  day_index: number
+  window: IncidentWindow
+  detected_date: string
+  detection_note: string
+  model: ModelSection
+  exposure: ExposureSection
+  liquidity: LiquiditySection
+  drivers: DriversSection
+  causality_disclaimer: string
+  reason_code: ReasonCodeInfo
+  case_summary: CaseSummary
+  evidence_readiness: EvidenceReadiness
+  scenario_context: ScenarioContext
+  workflow_stage: WorkflowStage
+}
+
+export interface IncidentEvidenceResponse {
+  incident_id: string
+  merchant_id: string
+  evidence_readiness: EvidenceReadiness
 }
 
 // ---------------------------------------------------------------------------

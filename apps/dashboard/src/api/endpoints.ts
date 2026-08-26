@@ -8,6 +8,9 @@ import type {
   ControlsListResponse,
   ExplanationResponse,
   HealthResponse,
+  IncidentDetail,
+  IncidentEvidenceResponse,
+  IncidentListResponse,
   MerchantListResponse,
   MerchantProfileResponse,
   ModelMetadataResponse,
@@ -63,4 +66,16 @@ export function runSimulation(merchantId: string, body: SimulationRequestBody): 
     method: 'POST',
     body,
   })
+}
+
+export function listIncidents(merchantId: string): Promise<IncidentListResponse> {
+  return apiClient.request(`/merchants/${encodeURIComponent(merchantId)}/incidents`)
+}
+
+export function getIncident(incidentId: string): Promise<IncidentDetail> {
+  return apiClient.request(`/incidents/${encodeURIComponent(incidentId)}`)
+}
+
+export function getIncidentEvidence(incidentId: string): Promise<IncidentEvidenceResponse> {
+  return apiClient.request(`/incidents/${encodeURIComponent(incidentId)}/evidence`)
 }

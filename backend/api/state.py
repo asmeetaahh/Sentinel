@@ -33,6 +33,7 @@ class AppState:
     daily_observations: pd.DataFrame
     features: pd.DataFrame
     labels: pd.DataFrame
+    events: pd.DataFrame
     feature_columns: list[str]
     feature_metadata_by_name: dict
     artifact: artifact_module.LoadedArtifact
@@ -54,6 +55,17 @@ def load_state() -> AppState:
     feature_cols = datasets.load_feature_columns()
     daily_observations = pd.read_csv(REPO_ROOT / "data" / "raw" / "daily_observations.csv", parse_dates=["date"])
 
+    # Ground-truth scenario metadata (which synthetic risk/benign-growth
+    # episode was injected, and when) — never read by the feature pipeline
+    # or the model (see docs/architecture/feature_engineering.md's leakage
+    # guarantees), used here ONLY to ground the incident layer's episode
+    # windows in real generator state, exactly as ml/modeling/failure_analysis.py
+    # already does for research diagnostics. See docs/architecture/incident_response.md.
+    events = pd.read_csv(
+        REPO_ROOT / "data" / "scenarios" / "events.csv",
+        parse_dates=["start_date", "end_date", "recovery_end_date"],
+    )
+
     # Full merchant table, loaded separately from tables["merchants"] (which
     # ml.modeling.datasets trims to merchant_id/archetype/business_tier).
     # Services decide what subset of columns to expose — the ml-internal
@@ -70,6 +82,7 @@ def load_state() -> AppState:
         daily_observations=daily_observations,
         features=tables["features"],
         labels=tables["labels"],
+        events=events,
         feature_columns=feature_cols,
         feature_metadata_by_name=metadata_by_name,
         artifact=loaded_artifact,
