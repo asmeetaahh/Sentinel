@@ -1,4 +1,10 @@
+# On macOS, xgboost also requires the OpenMP runtime, which is not a pip
+# package: `brew install libomp` (one-time, system-level). Without it,
+# `import xgboost` raises XGBoostError at load time — see
+# docs/research/baseline_ml_report.md section B.
 numpy>=1.26
 pandas>=2.1
 pytest>=8.0
 matplotlib>=3.8
+scikit-learn>=1.4
+xgboost>=2.0
