@@ -20,7 +20,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.api.routers import health, merchants, risk
+from backend.api.routers import health, merchants, risk, simulator
 from backend.api.state import load_state
 
 DEV_CORS_ORIGINS = [
@@ -62,10 +62,15 @@ app.add_middleware(
     allow_origins=DEV_CORS_ORIGINS,
     allow_origin_regex=DEV_CORS_ORIGIN_REGEX,
     allow_credentials=True,
-    allow_methods=["GET"],
+    # POST added for the simulator endpoint (backend/api/routers/simulator.py)
+    # — the only mutating-looking route in the API; it still never writes
+    # anything to disk, it just runs the already-loaded model on a modified,
+    # in-memory feature row.
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
 app.include_router(health.router)
 app.include_router(merchants.router)
 app.include_router(risk.router)
+app.include_router(simulator.router)

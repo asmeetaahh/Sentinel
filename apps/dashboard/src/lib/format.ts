@@ -56,3 +56,14 @@ export function formatSignedPercentPoints(value: number): string {
   const sign = points > 0 ? '+' : ''
   return `${sign}${points.toFixed(1)}pp`
 }
+
+/** Relative change formatted as a signed percentage, e.g. "+11.6%". Used
+ * for the simulator's comparison table, where current/simulated values are
+ * shown in their own native units but "how much did this move" is easiest
+ * to read as one consistent normalized column across metrics. */
+export function formatSignedRelativePercent(relative: number | null): string {
+  if (relative === null) return '—'
+  const pct = relative * 100
+  const sign = pct > 0 ? '+' : ''
+  return `${sign}${pct.toFixed(1)}%`
+}

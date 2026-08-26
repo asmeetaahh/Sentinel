@@ -29,7 +29,14 @@ export class ApiUnavailableError extends Error {
   }
 }
 
-async function request<T>(path: string, params?: Record<string, string | number | undefined>): Promise<T> {
+interface RequestOptions {
+  method?: 'GET' | 'POST'
+  params?: Record<string, string | number | undefined>
+  body?: unknown
+}
+
+async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const { method = 'GET', params, body } = options
   const url = new URL(path, BASE_URL)
   if (params) {
     for (const [key, value] of Object.entries(params)) {
@@ -39,7 +46,14 @@ async function request<T>(path: string, params?: Record<string, string | number 
 
   let response: Response
   try {
-    response = await fetch(url.toString(), { headers: { Accept: 'application/json' } })
+    response = await fetch(url.toString(), {
+      method,
+      headers: {
+        Accept: 'application/json',
+        ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
+      },
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    })
   } catch (cause) {
     throw new ApiUnavailableError(cause)
   }

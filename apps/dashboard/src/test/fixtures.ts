@@ -6,11 +6,13 @@
  */
 
 import type {
+  ControlsListResponse,
   ExplanationResponse,
   MerchantListResponse,
   MerchantProfileResponse,
   ObservationsResponse,
   RiskResponse,
+  SimulationResponse,
 } from '@/api/types'
 
 export const mockMerchantList: MerchantListResponse = {
@@ -126,6 +128,103 @@ export const mockExplanation: ExplanationResponse = {
   },
   all_contributors: [],
   causality_disclaimer: 'SHAP attributes the model output to its inputs; it does not establish causality.',
+}
+
+export const mockControlsList: ControlsListResponse = {
+  merchant_id: 'M0001',
+  as_of_date: '2024-06-28',
+  day_index: 179,
+  controls: [
+    {
+      control_id: 'refund_rate_28d',
+      label: 'Refund rate (trailing 28 days)',
+      feature: 'refund_rate_28d',
+      group: 'refund_behavior',
+      unit: 'rate_0_to_1',
+      description: 'Volume-weighted share of transactions refunded over a trailing 28-day window.',
+      min_value: 0,
+      max_value: 1,
+      baseline_value: 0.1,
+    },
+    {
+      control_id: 'fulfillment_on_time_rate_28d',
+      label: 'On-time fulfillment rate (trailing 28 days)',
+      feature: 'fulfillment_on_time_rate_28d',
+      group: 'fulfillment',
+      unit: 'rate_0_to_1',
+      description: 'Transaction-volume-weighted mean on-time fulfillment rate over a trailing 28-day window.',
+      min_value: 0.41,
+      max_value: 0.999,
+      baseline_value: 0.9,
+    },
+    {
+      control_id: 'new_customer_rate_28d',
+      label: 'New-customer share (trailing 28 days)',
+      feature: 'new_customer_rate_28d',
+      group: 'customer_mix',
+      unit: 'rate_0_to_1',
+      description: 'Volume-weighted share of transactions from new customers over a trailing 28-day window.',
+      min_value: 0,
+      max_value: 0.93,
+      baseline_value: 0.55,
+    },
+  ],
+}
+
+export const mockSimulationResponse: SimulationResponse = {
+  merchant_id: 'M0001',
+  as_of_date: '2024-06-28',
+  day_index: 179,
+  horizon_days: 30,
+  controls: [
+    {
+      control_id: 'refund_rate_28d',
+      label: 'Refund rate (trailing 28 days)',
+      feature: 'refund_rate_28d',
+      group: 'refund_behavior',
+      min_value: 0,
+      max_value: 1,
+      baseline_value: 0.1,
+      simulated_value: 0.5,
+    },
+  ],
+  current: {
+    probability_calibrated: 0.2,
+    probability_raw_rf: 0.25,
+    risk_state: 'normal',
+    decision_threshold: 0.6418,
+    provenance: 'modeled',
+  },
+  simulated: {
+    probability_calibrated: 0.35,
+    probability_raw_rf: 0.4,
+    risk_state: 'normal',
+    decision_threshold: 0.6418,
+    provenance: 'modeled',
+  },
+  probability_delta: { absolute: 0.15, relative: 0.75 },
+  exposure: {
+    current: { value: 1000, provenance: 'derived', method: 'trailing 28-day mean daily chargeback_amount baseline.' },
+    simulated: { value: 1750, provenance: 'derived', method: 'Illustrative scaling by the modeled probability ratio.' },
+    delta: { absolute: 750, relative: 0.75 },
+  },
+  liquidity_stress: {
+    current: {
+      value: 0.02,
+      provenance: 'derived',
+      note: 'Transparent derived ratio.',
+      formula: 'predicted_chargeback_exposure / available_merchant_liquidity',
+    },
+    simulated: {
+      value: 0.035,
+      provenance: 'derived',
+      note: 'Transparent derived ratio.',
+      formula: 'predicted_chargeback_exposure / available_merchant_liquidity',
+    },
+    delta: { absolute: 0.015, relative: 0.75 },
+  },
+  modeled_impact_disclaimer:
+    'This is a MODELED IMPACT, not a guaranteed or causal outcome. It does not establish that any control causes a change in real-world risk.',
 }
 
 export const mockObservations: ObservationsResponse = {

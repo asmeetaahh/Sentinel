@@ -1,0 +1,61 @@
+import type { ControlMeta } from '@/api/types'
+import { formatPercent } from '@/lib/format'
+
+export function ControlSlider({
+  control,
+  value,
+  onChange,
+}: {
+  control: ControlMeta
+  value: number
+  onChange: (value: number) => void
+}) {
+  const range = control.max_value - control.min_value
+  const baselinePct = range === 0 ? 0 : ((control.baseline_value - control.min_value) / range) * 100
+  const step = Math.max(range / 500, 0.0005)
+  const isChanged = value !== control.baseline_value
+  const descriptionId = `${control.control_id}-description`
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex items-baseline justify-between gap-2">
+        <label htmlFor={control.control_id} className="text-sm font-medium text-slate-700">
+          {control.label}
+        </label>
+        <span className={`text-sm font-semibold tabular-nums ${isChanged ? 'text-indigo-700' : 'text-slate-500'}`}>
+          {formatPercent(value)}
+        </span>
+      </div>
+
+      <div className="relative py-1">
+        <input
+          id={control.control_id}
+          type="range"
+          min={control.min_value}
+          max={control.max_value}
+          step={step}
+          value={value}
+          onChange={(event) => onChange(Number(event.target.value))}
+          aria-describedby={descriptionId}
+          className="w-full accent-indigo-600"
+        />
+        <span
+          aria-hidden="true"
+          title={`Currently observed value: ${formatPercent(control.baseline_value)}`}
+          className="pointer-events-none absolute top-1/2 h-3 w-0.5 -translate-y-1/2 bg-slate-400"
+          style={{ left: `${baselinePct}%` }}
+        />
+      </div>
+
+      <div className="flex items-center justify-between text-[11px] text-slate-400">
+        <span>{formatPercent(control.min_value)}</span>
+        <span>Observed baseline: {formatPercent(control.baseline_value)}</span>
+        <span>{formatPercent(control.max_value)}</span>
+      </div>
+
+      <p id={descriptionId} className="text-xs text-slate-400">
+        {control.description}
+      </p>
+    </div>
+  )
+}

@@ -213,6 +213,102 @@ export interface ExplanationResponse {
 }
 
 // ---------------------------------------------------------------------------
+// Simulator
+// ---------------------------------------------------------------------------
+
+export interface ControlMeta {
+  control_id: string
+  label: string
+  feature: string
+  group: string
+  unit: string
+  description: string
+  min_value: number
+  max_value: number
+  baseline_value: number
+}
+
+export interface ControlsListResponse {
+  merchant_id: string
+  as_of_date: string
+  day_index: number
+  controls: ControlMeta[]
+}
+
+/** Exactly the three controls backend/simulation/controls.py exposes — kept
+ * in sync with backend/api/schemas/simulation.py's SimulationRequest. */
+export interface SimulationRequestBody {
+  as_of_date: string
+  horizon_days?: number
+  refund_rate_28d?: number
+  fulfillment_on_time_rate_28d?: number
+  new_customer_rate_28d?: number
+}
+
+export interface AppliedControl {
+  control_id: string
+  label: string
+  feature: string
+  group: string
+  min_value: number
+  max_value: number
+  baseline_value: number
+  simulated_value: number
+}
+
+export interface SimulationModelOutcome {
+  probability_calibrated: number
+  probability_raw_rf: number
+  risk_state: 'elevated' | 'normal'
+  decision_threshold: number
+  provenance: Provenance
+}
+
+export interface Delta {
+  absolute: number
+  relative: number | null
+}
+
+export interface SimulationExposureValue {
+  value: number
+  provenance: Provenance
+  method: string
+}
+
+export interface SimulationExposureSection {
+  current: SimulationExposureValue
+  simulated: SimulationExposureValue
+  delta: Delta
+}
+
+export interface SimulationLiquidityStressValue {
+  value: number | null
+  provenance: Provenance
+  note: string
+  formula?: string | null
+}
+
+export interface SimulationLiquidityStressSection {
+  current: SimulationLiquidityStressValue
+  simulated: SimulationLiquidityStressValue
+  delta: Delta | null
+}
+
+export interface SimulationResponse {
+  merchant_id: string
+  as_of_date: string
+  day_index: number
+  horizon_days: number
+  controls: AppliedControl[]
+  current: SimulationModelOutcome
+  simulated: SimulationModelOutcome
+  probability_delta: Delta
+  exposure: SimulationExposureSection
+  liquidity_stress: SimulationLiquidityStressSection
+  modeled_impact_disclaimer: string
+}
+
+// ---------------------------------------------------------------------------
 // Errors
 // ---------------------------------------------------------------------------
 
