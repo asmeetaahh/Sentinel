@@ -1,0 +1,738 @@
+{
+  "n_features": 55,
+  "n_rows": 9000,
+  "feature_columns": [
+    "payment_mix_hhi_7d",
+    "payment_mix_hhi_28d",
+    "payment_mix_hhi_60d",
+    "payment_mix_l1_drift_7v28",
+    "payment_mix_l1_drift_28v60",
+    "refund_rate_7d",
+    "refund_rate_28d",
+    "refund_rate_60d",
+    "refund_amount_to_gmv_28d",
+    "refund_count_28d",
+    "chargeback_rate_7d",
+    "chargeback_rate_28d",
+    "chargeback_rate_60d",
+    "chargeback_amount_to_gmv_28d",
+    "chargeback_count_28d",
+    "days_since_last_chargeback",
+    "fulfillment_on_time_rate_7d",
+    "fulfillment_on_time_rate_28d",
+    "fulfillment_on_time_rate_60d",
+    "fulfillment_delay_avg_days_28d",
+    "new_customer_rate_7d",
+    "new_customer_rate_28d",
+    "new_customer_rate_60d",
+    "customer_count_28d",
+    "liquidity_balance_28d",
+    "liquidity_to_gmv_ratio_28d",
+    "pending_settlement_to_gmv_28d",
+    "liquidity_coefficient_of_variation_28d",
+    "gmv_level_28d",
+    "transaction_count_level_28d",
+    "gmv_coefficient_of_variation_28d",
+    "merchant_tenure_days",
+    "is_weekend",
+    "day_of_year_sin",
+    "day_of_year_cos",
+    "chargeback_rate_velocity_7v28",
+    "chargeback_rate_velocity_28v60",
+    "chargeback_rate_acceleration",
+    "refund_rate_velocity_7v28",
+    "refund_rate_velocity_28v60",
+    "refund_rate_acceleration",
+    "fulfillment_on_time_rate_velocity_7v28",
+    "fulfillment_on_time_rate_velocity_28v60",
+    "fulfillment_on_time_rate_acceleration",
+    "gmv_velocity_7v28",
+    "gmv_velocity_28v60",
+    "gmv_acceleration",
+    "transaction_count_velocity_7v28",
+    "new_customer_rate_velocity_7v28",
+    "chargeback_rate_deviation_z",
+    "refund_rate_deviation_z",
+    "gmv_deviation_z",
+    "fulfillment_on_time_rate_deviation_z",
+    "new_customer_rate_deviation_z",
+    "liquidity_deviation_z"
+  ],
+  "groups": {
+    "chargeback_behavior": 6,
+    "customer_mix": 4,
+    "deviation_from_baseline": 6,
+    "financial_state": 4,
+    "fulfillment": 4,
+    "merchant_behavior": 7,
+    "payment_behavior": 5,
+    "refund_behavior": 5,
+    "temporal_velocity": 14
+  },
+  "features": [
+    {
+      "name": "payment_mix_hhi_7d",
+      "group": "payment_behavior",
+      "definition": "Herfindahl-Hirschman index (sum of squared GMV-weighted payment-method shares) over trailing 7d. Higher = more concentrated in one method.",
+      "source_columns": [
+        "pct_pay_card",
+        "pct_pay_upi",
+        "pct_pay_netbanking",
+        "pct_pay_wallet",
+        "pct_pay_bnpl",
+        "gmv"
+      ],
+      "window": "7d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "payment_mix_hhi_28d",
+      "group": "payment_behavior",
+      "definition": "Herfindahl-Hirschman index (sum of squared GMV-weighted payment-method shares) over trailing 28d. Higher = more concentrated in one method.",
+      "source_columns": [
+        "pct_pay_card",
+        "pct_pay_upi",
+        "pct_pay_netbanking",
+        "pct_pay_wallet",
+        "pct_pay_bnpl",
+        "gmv"
+      ],
+      "window": "28d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "payment_mix_hhi_60d",
+      "group": "payment_behavior",
+      "definition": "Herfindahl-Hirschman index (sum of squared GMV-weighted payment-method shares) over trailing 60d. Higher = more concentrated in one method.",
+      "source_columns": [
+        "pct_pay_card",
+        "pct_pay_upi",
+        "pct_pay_netbanking",
+        "pct_pay_wallet",
+        "pct_pay_bnpl",
+        "gmv"
+      ],
+      "window": "60d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "payment_mix_l1_drift_7v28",
+      "group": "payment_behavior",
+      "definition": "Sum of |share_i(7d) - share_i(28d)| across payment methods \u2014 how much the mix has moved recently vs. the medium-term.",
+      "source_columns": [
+        "pct_pay_card",
+        "pct_pay_upi",
+        "pct_pay_netbanking",
+        "pct_pay_wallet",
+        "pct_pay_bnpl",
+        "gmv"
+      ],
+      "window": "7d vs 28d",
+      "kind": "ratio",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "payment_mix_l1_drift_28v60",
+      "group": "payment_behavior",
+      "definition": "Sum of |share_i(28d) - share_i(60d)| across payment methods \u2014 medium-term vs. long-term mix drift.",
+      "source_columns": [
+        "pct_pay_card",
+        "pct_pay_upi",
+        "pct_pay_netbanking",
+        "pct_pay_wallet",
+        "pct_pay_bnpl",
+        "gmv"
+      ],
+      "window": "28d vs 60d",
+      "kind": "ratio",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "refund_rate_7d",
+      "group": "refund_behavior",
+      "definition": "Volume-weighted refund rate over trailing 7d: sum(refund_count)/sum(transaction_count). Not a mean of daily rates, to avoid low-count distortion.",
+      "source_columns": [
+        "refund_count",
+        "transaction_count"
+      ],
+      "window": "7d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "refund_rate_28d",
+      "group": "refund_behavior",
+      "definition": "Volume-weighted refund rate over trailing 28d: sum(refund_count)/sum(transaction_count). Not a mean of daily rates, to avoid low-count distortion.",
+      "source_columns": [
+        "refund_count",
+        "transaction_count"
+      ],
+      "window": "28d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "refund_rate_60d",
+      "group": "refund_behavior",
+      "definition": "Volume-weighted refund rate over trailing 60d: sum(refund_count)/sum(transaction_count). Not a mean of daily rates, to avoid low-count distortion.",
+      "source_columns": [
+        "refund_count",
+        "transaction_count"
+      ],
+      "window": "60d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "refund_amount_to_gmv_28d",
+      "group": "refund_behavior",
+      "definition": "Dollar-weighted refund burden: sum(refund_amount)/sum(gmv) over trailing 28d.",
+      "source_columns": [
+        "refund_amount",
+        "gmv"
+      ],
+      "window": "28d",
+      "kind": "ratio",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "refund_count_28d",
+      "group": "refund_behavior",
+      "definition": "Raw refund count over trailing 28d \u2014 exposure/confidence context for refund_rate_28d (a rate from 2 refunds is far less reliable than one from 50).",
+      "source_columns": [
+        "refund_count"
+      ],
+      "window": "28d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "chargeback_rate_7d",
+      "group": "chargeback_behavior",
+      "definition": "Volume-weighted chargeback rate over trailing 7d: sum(chargeback_count)/sum(transaction_count).",
+      "source_columns": [
+        "chargeback_count",
+        "transaction_count"
+      ],
+      "window": "7d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "chargeback_rate_28d",
+      "group": "chargeback_behavior",
+      "definition": "Volume-weighted chargeback rate over trailing 28d: sum(chargeback_count)/sum(transaction_count).",
+      "source_columns": [
+        "chargeback_count",
+        "transaction_count"
+      ],
+      "window": "28d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "chargeback_rate_60d",
+      "group": "chargeback_behavior",
+      "definition": "Volume-weighted chargeback rate over trailing 60d: sum(chargeback_count)/sum(transaction_count).",
+      "source_columns": [
+        "chargeback_count",
+        "transaction_count"
+      ],
+      "window": "60d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "chargeback_amount_to_gmv_28d",
+      "group": "chargeback_behavior",
+      "definition": "Dollar-weighted chargeback exposure: sum(chargeback_amount)/sum(gmv) over trailing 28d.",
+      "source_columns": [
+        "chargeback_amount",
+        "gmv"
+      ],
+      "window": "28d",
+      "kind": "ratio",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "chargeback_count_28d",
+      "group": "chargeback_behavior",
+      "definition": "Raw chargeback count over trailing 28d \u2014 exposure/confidence context for chargeback_rate_28d.",
+      "source_columns": [
+        "chargeback_count"
+      ],
+      "window": "28d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "days_since_last_chargeback",
+      "group": "chargeback_behavior",
+      "definition": "Days since the most recent day (<=t) with chargeback_count>0 for this merchant, capped at 90. A recency signal that doesn't collapse to 0 on days with no observed chargebacks yet.",
+      "source_columns": [
+        "chargeback_count",
+        "day_index"
+      ],
+      "window": "expanding (capped)",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "fulfillment_on_time_rate_7d",
+      "group": "fulfillment",
+      "definition": "Transaction-volume-weighted mean of fulfillment_on_time_rate over trailing 7d.",
+      "source_columns": [
+        "fulfillment_on_time_rate",
+        "transaction_count"
+      ],
+      "window": "7d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "fulfillment_on_time_rate_28d",
+      "group": "fulfillment",
+      "definition": "Transaction-volume-weighted mean of fulfillment_on_time_rate over trailing 28d.",
+      "source_columns": [
+        "fulfillment_on_time_rate",
+        "transaction_count"
+      ],
+      "window": "28d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "fulfillment_on_time_rate_60d",
+      "group": "fulfillment",
+      "definition": "Transaction-volume-weighted mean of fulfillment_on_time_rate over trailing 60d.",
+      "source_columns": [
+        "fulfillment_on_time_rate",
+        "transaction_count"
+      ],
+      "window": "60d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "fulfillment_delay_avg_days_28d",
+      "group": "fulfillment",
+      "definition": "Transaction-volume-weighted mean fulfillment delay (days) over trailing 28d.",
+      "source_columns": [
+        "fulfillment_delay_avg_days",
+        "transaction_count"
+      ],
+      "window": "28d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "new_customer_rate_7d",
+      "group": "customer_mix",
+      "definition": "Volume-weighted new-customer share over trailing 7d: sum(new_customers)/sum(customer_count).",
+      "source_columns": [
+        "new_customers",
+        "customer_count"
+      ],
+      "window": "7d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "new_customer_rate_28d",
+      "group": "customer_mix",
+      "definition": "Volume-weighted new-customer share over trailing 28d: sum(new_customers)/sum(customer_count).",
+      "source_columns": [
+        "new_customers",
+        "customer_count"
+      ],
+      "window": "28d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "new_customer_rate_60d",
+      "group": "customer_mix",
+      "definition": "Volume-weighted new-customer share over trailing 60d: sum(new_customers)/sum(customer_count).",
+      "source_columns": [
+        "new_customers",
+        "customer_count"
+      ],
+      "window": "60d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "customer_count_28d",
+      "group": "customer_mix",
+      "definition": "Mean daily distinct customer count over trailing 28d \u2014 activity scale context.",
+      "source_columns": [
+        "customer_count"
+      ],
+      "window": "28d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "liquidity_balance_28d",
+      "group": "financial_state",
+      "definition": "Mean daily liquidity_balance over trailing 28d (same units as gmv).",
+      "source_columns": [
+        "liquidity_balance"
+      ],
+      "window": "28d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "liquidity_to_gmv_ratio_28d",
+      "group": "financial_state",
+      "definition": "liquidity_balance_28d / mean(gmv, 28d) \u2014 buffer expressed as 'days of current GMV', directly interpretable.",
+      "source_columns": [
+        "liquidity_balance",
+        "gmv"
+      ],
+      "window": "28d",
+      "kind": "ratio",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "pending_settlement_to_gmv_28d",
+      "group": "financial_state",
+      "definition": "mean(pending_settlement_amount, 28d) / mean(gmv, 28d) \u2014 settlement pipeline scale relative to volume.",
+      "source_columns": [
+        "pending_settlement_amount",
+        "gmv"
+      ],
+      "window": "28d",
+      "kind": "ratio",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "liquidity_coefficient_of_variation_28d",
+      "group": "financial_state",
+      "definition": "std(liquidity_balance, 28d) / mean(liquidity_balance, 28d) \u2014 how stable the buffer has been recently.",
+      "source_columns": [
+        "liquidity_balance"
+      ],
+      "window": "28d",
+      "kind": "ratio",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "gmv_level_28d",
+      "group": "merchant_behavior",
+      "definition": "Mean daily gmv over trailing 28d.",
+      "source_columns": [
+        "gmv"
+      ],
+      "window": "28d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "transaction_count_level_28d",
+      "group": "merchant_behavior",
+      "definition": "Mean daily transaction_count over trailing 28d.",
+      "source_columns": [
+        "transaction_count"
+      ],
+      "window": "28d",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "gmv_coefficient_of_variation_28d",
+      "group": "merchant_behavior",
+      "definition": "std(gmv, 28d) / mean(gmv, 28d) \u2014 the merchant's own day-to-day noisiness, context for interpreting other deviations.",
+      "source_columns": [
+        "gmv"
+      ],
+      "window": "28d",
+      "kind": "ratio",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "merchant_tenure_days",
+      "group": "merchant_behavior",
+      "definition": "date - signup_date, in days. A real business-facing attribute (account age), not a generator ground-truth risk parameter \u2014 the only merchants.csv-derived feature in this pipeline.",
+      "source_columns": [
+        "date (daily_observations)",
+        "signup_date (merchants)"
+      ],
+      "window": "n/a (point-in-time)",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "is_weekend",
+      "group": "merchant_behavior",
+      "definition": "1 if the observation date is Saturday/Sunday, else 0.",
+      "source_columns": [
+        "date"
+      ],
+      "window": "n/a (point-in-time)",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "day_of_year_sin",
+      "group": "merchant_behavior",
+      "definition": "sin(2*pi*day_of_year/365.25) \u2014 cyclical calendar position, lets a model account for seasonality explicitly.",
+      "source_columns": [
+        "date"
+      ],
+      "window": "n/a (point-in-time)",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "day_of_year_cos",
+      "group": "merchant_behavior",
+      "definition": "cos(2*pi*day_of_year/365.25) \u2014 paired with day_of_year_sin for a non-discontinuous yearly cycle encoding.",
+      "source_columns": [
+        "date"
+      ],
+      "window": "n/a (point-in-time)",
+      "kind": "level",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "chargeback_rate_velocity_7v28",
+      "group": "temporal_velocity",
+      "definition": "chargeback_rate(7d) - chargeback_rate(28d) \u2014 short-term momentum (percentage points).",
+      "source_columns": [
+        "chargeback_count",
+        "transaction_count"
+      ],
+      "window": "7d vs 28d",
+      "kind": "velocity",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "chargeback_rate_velocity_28v60",
+      "group": "temporal_velocity",
+      "definition": "chargeback_rate(28d) - chargeback_rate(60d) \u2014 medium-term momentum (percentage points).",
+      "source_columns": [
+        "chargeback_count",
+        "transaction_count"
+      ],
+      "window": "28d vs 60d",
+      "kind": "velocity",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "chargeback_rate_acceleration",
+      "group": "temporal_velocity",
+      "definition": "velocity_7v28 - velocity_28v60 \u2014 is short-term momentum itself increasing (acceleration) or fading?",
+      "source_columns": [
+        "chargeback_count",
+        "transaction_count"
+      ],
+      "window": "7d/28d/60d composite",
+      "kind": "acceleration",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "refund_rate_velocity_7v28",
+      "group": "temporal_velocity",
+      "definition": "refund_rate(7d) - refund_rate(28d) \u2014 short-term momentum (percentage points).",
+      "source_columns": [
+        "refund_count",
+        "transaction_count"
+      ],
+      "window": "7d vs 28d",
+      "kind": "velocity",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "refund_rate_velocity_28v60",
+      "group": "temporal_velocity",
+      "definition": "refund_rate(28d) - refund_rate(60d) \u2014 medium-term momentum (percentage points).",
+      "source_columns": [
+        "refund_count",
+        "transaction_count"
+      ],
+      "window": "28d vs 60d",
+      "kind": "velocity",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "refund_rate_acceleration",
+      "group": "temporal_velocity",
+      "definition": "velocity_7v28 - velocity_28v60 \u2014 is short-term momentum itself increasing (acceleration) or fading?",
+      "source_columns": [
+        "refund_count",
+        "transaction_count"
+      ],
+      "window": "7d/28d/60d composite",
+      "kind": "acceleration",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "fulfillment_on_time_rate_velocity_7v28",
+      "group": "temporal_velocity",
+      "definition": "fulfillment_on_time_rate(7d) - fulfillment_on_time_rate(28d) \u2014 short-term momentum (percentage points).",
+      "source_columns": [
+        "fulfillment_on_time_rate",
+        "transaction_count"
+      ],
+      "window": "7d vs 28d",
+      "kind": "velocity",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "fulfillment_on_time_rate_velocity_28v60",
+      "group": "temporal_velocity",
+      "definition": "fulfillment_on_time_rate(28d) - fulfillment_on_time_rate(60d) \u2014 medium-term momentum (percentage points).",
+      "source_columns": [
+        "fulfillment_on_time_rate",
+        "transaction_count"
+      ],
+      "window": "28d vs 60d",
+      "kind": "velocity",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "fulfillment_on_time_rate_acceleration",
+      "group": "temporal_velocity",
+      "definition": "velocity_7v28 - velocity_28v60 \u2014 is short-term momentum itself increasing (acceleration) or fading?",
+      "source_columns": [
+        "fulfillment_on_time_rate",
+        "transaction_count"
+      ],
+      "window": "7d/28d/60d composite",
+      "kind": "acceleration",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "gmv_velocity_7v28",
+      "group": "temporal_velocity",
+      "definition": "mean(gmv,7d)/mean(gmv,28d) - 1 \u2014 relative GMV growth, short vs medium term.",
+      "source_columns": [
+        "gmv"
+      ],
+      "window": "7d vs 28d",
+      "kind": "velocity",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "gmv_velocity_28v60",
+      "group": "temporal_velocity",
+      "definition": "mean(gmv,28d)/mean(gmv,60d) - 1 \u2014 relative GMV growth, medium vs long term.",
+      "source_columns": [
+        "gmv"
+      ],
+      "window": "28d vs 60d",
+      "kind": "velocity",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "gmv_acceleration",
+      "group": "temporal_velocity",
+      "definition": "gmv_velocity_7v28 - gmv_velocity_28v60 \u2014 is GMV growth speeding up or slowing down?",
+      "source_columns": [
+        "gmv"
+      ],
+      "window": "7d/28d/60d composite",
+      "kind": "acceleration",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "transaction_count_velocity_7v28",
+      "group": "temporal_velocity",
+      "definition": "mean(transaction_count,7d)/mean(transaction_count,28d) - 1.",
+      "source_columns": [
+        "transaction_count"
+      ],
+      "window": "7d vs 28d",
+      "kind": "velocity",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "new_customer_rate_velocity_7v28",
+      "group": "temporal_velocity",
+      "definition": "new_customer_rate(7d) - new_customer_rate(28d).",
+      "source_columns": [
+        "new_customers",
+        "customer_count"
+      ],
+      "window": "7d vs 28d",
+      "kind": "velocity",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "chargeback_rate_deviation_z",
+      "group": "deviation_from_baseline",
+      "definition": "(current 7d chargeback_rate - this merchant's own expanding-history mean of its 28d chargeback_rate) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+      "source_columns": [
+        "chargeback_rate"
+      ],
+      "window": "7d vs expanding(28d-smoothed)",
+      "kind": "deviation",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "refund_rate_deviation_z",
+      "group": "deviation_from_baseline",
+      "definition": "(current 7d refund_rate - this merchant's own expanding-history mean of its 28d refund_rate) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+      "source_columns": [
+        "refund_rate"
+      ],
+      "window": "7d vs expanding(28d-smoothed)",
+      "kind": "deviation",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "gmv_deviation_z",
+      "group": "deviation_from_baseline",
+      "definition": "(current 7d gmv - this merchant's own expanding-history mean of its 28d gmv) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+      "source_columns": [
+        "gmv"
+      ],
+      "window": "7d vs expanding(28d-smoothed)",
+      "kind": "deviation",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "fulfillment_on_time_rate_deviation_z",
+      "group": "deviation_from_baseline",
+      "definition": "(current 7d fulfillment_on_time_rate - this merchant's own expanding-history mean of its 28d fulfillment_on_time_rate) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+      "source_columns": [
+        "fulfillment_on_time_rate"
+      ],
+      "window": "7d vs expanding(28d-smoothed)",
+      "kind": "deviation",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "new_customer_rate_deviation_z",
+      "group": "deviation_from_baseline",
+      "definition": "(current 7d new_customer_rate - this merchant's own expanding-history mean of its 28d new_customer_rate) / expanding std, clipped to [-10,10]. Uses only this merchant's own day_index<=t history.",
+      "source_columns": [
+        "new_customer_rate"
+      ],
+      "window": "7d vs expanding(28d-smoothed)",
+      "kind": "deviation",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    },
+    {
+      "name": "liquidity_deviation_z",
+      "group": "deviation_from_baseline",
+      "definition": "(current 7d liquidity_balance - this merchant's own expanding-history mean of its 28d liquidity_balance) / expanding std, clipped to [-10,10].",
+      "source_columns": [
+        "liquidity_balance"
+      ],
+      "window": "7d vs expanding(28d-smoothed)",
+      "kind": "deviation",
+      "leakage_status": "causal (uses only merchant_id, day_index<=t) \u2014 safe"
+    }
+  ],
+  "leakage_guarantees": [
+    "Only merchants.csv[merchant_id, signup_date] and daily_observations.csv were read.",
+    "events.csv and labels.csv were never loaded by this pipeline.",
+    "Every feature is a trailing (ending at t, inclusive) or expanding (day_index<=t) function."
+  ]
+}
