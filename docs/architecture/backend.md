@@ -158,8 +158,11 @@ liquidity). It is a plain ratio, not a model output.
 ## CORS
 
 Development-only origins (`localhost:3000`/`5173`, the common Next.js/Vite
-dev ports) are allowed, `GET` only, since the API is currently read-only.
-Revisit when a real frontend origin/deployment target exists.
+dev ports) are allowed by a fixed list, plus `allow_origin_regex` for any
+`localhost`/`127.0.0.1` port — Vite falls through to the next free port
+(5174, 5175, ...) whenever its default is already taken locally, which the
+fixed list alone can't anticipate. `GET` only, since the API is currently
+read-only. Revisit when a real frontend origin/deployment target exists.
 
 ## Running locally
 

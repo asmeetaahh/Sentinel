@@ -30,6 +30,16 @@ DEV_CORS_ORIGINS = [
     "http://127.0.0.1:5173",
 ]
 
+# Vite falls through to the next free port (5174, 5175, ...) whenever the
+# default is already taken by another local process — observed directly
+# while integrating apps/dashboard, where 5173/5174 were occupied by
+# unrelated processes on the dev machine. A fixed origin list is too
+# brittle for local development, so any localhost/127.0.0.1 port is also
+# allowed via regex; this only matters for a local, read-only,
+# synthetic-benchmark API with no auth/session data, not a production
+# CORS policy.
+DEV_CORS_ORIGIN_REGEX = r"http://(localhost|127\.0\.0\.1):\d+"
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -50,6 +60,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=DEV_CORS_ORIGINS,
+    allow_origin_regex=DEV_CORS_ORIGIN_REGEX,
     allow_credentials=True,
     allow_methods=["GET"],
     allow_headers=["*"],
