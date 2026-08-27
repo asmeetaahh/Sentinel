@@ -20,6 +20,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from .common import Provenance
 from .explainability import Driver
+from .risk import ConfidenceLevel, FeatureCoverageStatus
 from .simulation import SimulationRequest
 
 # ---------------------------------------------------------------------------
@@ -66,6 +67,23 @@ class LiquidityAIContext(BaseModel):
     available_liquidity: float
     liquidity_stress: float | None
     note: str
+    provenance: Provenance = "derived"
+
+
+class DataQualityAIContext(BaseModel):
+    """Mirrors backend/risk/confidence_service.py's output exactly — the
+    LLM may explain confidence_level using these already-provided reasons/
+    limitations, but must never invent a numeric/percentage confidence
+    score (none exists) and must never upgrade or downgrade the level
+    itself. See docs/architecture/confidence_data_quality.md.
+    """
+
+    confidence_level: ConfidenceLevel
+    history_days: int
+    feature_coverage_status: FeatureCoverageStatus
+    reasons: list[str]
+    limitations: list[str]
+    basis: str
     provenance: Provenance = "derived"
 
 
@@ -124,6 +142,7 @@ class SentinelAIContext(BaseModel):
     risk: RiskAIContext | None = None
     exposure: ExposureAIContext | None = None
     liquidity: LiquidityAIContext | None = None
+    data_quality: DataQualityAIContext | None = None
     drivers: list[Driver] = Field(default_factory=list)
     interventions: list[InterventionRecommendationAIContext] = Field(default_factory=list)
     simulation: SimulationAIContext | None = None

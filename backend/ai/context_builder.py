@@ -11,6 +11,7 @@ from __future__ import annotations
 from datetime import date
 
 from backend.api.schemas.ai import (
+    DataQualityAIContext,
     ExposureAIContext,
     IncidentAIContext,
     InterventionRecommendationAIContext,
@@ -42,6 +43,12 @@ STANDING_LIMITATIONS_RISK = [
     "performance over time, sigmoid calibration did not clearly improve the candidate, and a separate "
     "exposure-regression model did not outperform a simple trailing-average baseline and is not used as a "
     "product prediction — see docs/research/baseline_ml_report.md.",
+]
+
+STANDING_LIMITATIONS_CONFIDENCE = [
+    "The confidence/data-quality level is a deterministic prototype heuristic based on observed history length "
+    "and feature completeness — not a statistical confidence interval, not a model-calibrated probability, and "
+    "not independently validated. Sentinel does not report a numeric or percentage confidence score.",
 ]
 
 STANDING_LIMITATIONS_INTERVENTIONS = [
@@ -149,7 +156,7 @@ def build_context(
         Driver(**d) for d in [*explanation["drivers"]["top_positive_contributors"], *explanation["drivers"]["top_negative_contributors"]]
     ]
 
-    limitations = list(STANDING_LIMITATIONS_BASE) + list(STANDING_LIMITATIONS_RISK)
+    limitations = list(STANDING_LIMITATIONS_BASE) + list(STANDING_LIMITATIONS_RISK) + list(STANDING_LIMITATIONS_CONFIDENCE)
 
     intervention_result = recommendation_service.get_recommendations(state, merchant_id, as_of_date)
     interventions = [
@@ -194,6 +201,14 @@ def build_context(
             available_liquidity=risk_result["liquidity"]["available_liquidity"]["value"],
             liquidity_stress=risk_result["liquidity"]["liquidity_stress"]["value"],
             note=risk_result["liquidity"]["liquidity_stress"]["note"],
+        ),
+        data_quality=DataQualityAIContext(
+            confidence_level=risk_result["data_quality"]["confidence_level"],
+            history_days=risk_result["data_quality"]["history_days"],
+            feature_coverage_status=risk_result["data_quality"]["feature_coverage_status"],
+            reasons=risk_result["data_quality"]["reasons"],
+            limitations=risk_result["data_quality"]["limitations"],
+            basis=risk_result["data_quality"]["basis"],
         ),
         drivers=drivers,
         interventions=interventions,

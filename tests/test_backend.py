@@ -212,6 +212,8 @@ def test_risk_endpoint_matches_schema(client, any_merchant_id):
     assert body["exposure"]["estimate"]["provenance"] == "derived"
     assert body["liquidity"]["available_liquidity"]["provenance"] == "observed"
     assert body["liquidity"]["liquidity_stress"]["provenance"] == "derived"
+    assert body["data_quality"]["confidence_level"] in ("high", "medium", "limited")
+    assert body["data_quality"]["provenance"] == "derived"
 
 
 def test_risk_endpoint_disclaimer_present_and_not_overclaiming(client, any_merchant_id):

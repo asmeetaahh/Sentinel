@@ -7,6 +7,9 @@ from pydantic import BaseModel
 
 from .common import Provenance
 
+ConfidenceLevel = Literal["high", "medium", "limited"]
+FeatureCoverageStatus = Literal["complete", "incomplete"]
+
 
 class ModelSection(BaseModel):
     artifact_id: str
@@ -55,6 +58,25 @@ class LiquiditySection(BaseModel):
     liquidity_stress: LiquidityStress
 
 
+class DataQualitySection(BaseModel):
+    """Confidence / Data Quality V1 — see backend/risk/confidence_service.py
+    and docs/architecture/confidence_data_quality.md. A deterministic
+    transparency signal, never a modeled probability or statistical
+    confidence interval — `provenance` is always "derived", never
+    "modeled".
+    """
+
+    confidence_level: ConfidenceLevel
+    history_days: int
+    history_window_partial_days: int
+    history_window_full_days: int
+    feature_coverage_status: FeatureCoverageStatus
+    reasons: list[str]
+    limitations: list[str]
+    basis: str
+    provenance: Provenance
+
+
 class RiskResponse(BaseModel):
     merchant_id: str
     as_of_date: date
@@ -63,3 +85,4 @@ class RiskResponse(BaseModel):
     model: ModelSection
     exposure: ExposureSection
     liquidity: LiquiditySection
+    data_quality: DataQualitySection

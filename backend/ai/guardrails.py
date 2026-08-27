@@ -77,6 +77,8 @@ def summarize_provenance(context: SentinelAIContext) -> dict[str, str]:
         provenance["exposure"] = context.exposure.provenance
     if context.liquidity is not None:
         provenance["liquidity"] = context.liquidity.provenance
+    if context.data_quality is not None:
+        provenance["data_quality"] = context.data_quality.provenance
     if context.drivers:
         provenance["drivers"] = "modeled"
     if context.interventions:
@@ -93,6 +95,8 @@ def default_suggested_actions(context: SentinelAIContext) -> list[str]:
     suggestions are missing/malformed — never left blank in the UI.
     """
     actions = ["Why is my risk elevated?", "What does this mean for liquidity?"]
+    if context.data_quality is not None:
+        actions.append("How confident is this assessment?")
     if context.interventions:
         actions.append("What should I consider reviewing?")
     if context.simulation is not None:

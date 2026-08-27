@@ -15,7 +15,7 @@ from datetime import date
 import numpy as np
 
 from backend.api.state import AppState
-from backend.risk import liquidity_service
+from backend.risk import confidence_service, liquidity_service
 from backend.services.lookups import UnsupportedHorizonError, require_merchant, resolve_day_index
 
 SUPPORTED_HORIZONS = [30]
@@ -53,6 +53,8 @@ def assess_risk(state: AppState, merchant_id: str, as_of_date: date, horizon_day
     liquidity = liquidity_service.available_liquidity(state, merchant_id, day_index)
     stress = liquidity_service.liquidity_stress(exposure_estimate["value"], liquidity["value"])
 
+    data_quality = confidence_service.assess_confidence(state, merchant_id, day_index)
+
     return {
         "merchant_id": merchant_id,
         "as_of_date": as_of_date.isoformat(),
@@ -75,4 +77,5 @@ def assess_risk(state: AppState, merchant_id: str, as_of_date: date, horizon_day
             "available_liquidity": liquidity,
             "liquidity_stress": stress,
         },
+        "data_quality": data_quality,
     }

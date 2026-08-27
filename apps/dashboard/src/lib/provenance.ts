@@ -55,6 +55,16 @@ export const PRIORITY_STYLE: Record<'high' | 'medium' | 'low', { badge: string; 
   low: { badge: 'bg-slate-50 text-slate-500 ring-1 ring-slate-200', label: 'Low priority' },
 }
 
+/** Confidence/Data Quality V1 never uses red, even for "limited" — this is
+ * an honest transparency signal about data sufficiency, not a warning about
+ * elevated risk (red stays reserved for that). See
+ * docs/architecture/confidence_data_quality.md. */
+export const CONFIDENCE_STYLE: Record<'high' | 'medium' | 'limited', { badge: string; label: string }> = {
+  high: { badge: 'bg-teal-50 text-teal-700 ring-1 ring-teal-200', label: 'High' },
+  medium: { badge: 'bg-slate-100 text-slate-700 ring-1 ring-slate-300', label: 'Medium' },
+  limited: { badge: 'bg-amber-50 text-amber-800 ring-1 ring-amber-200', label: 'Limited' },
+}
+
 export const EVIDENCE_READINESS_STYLE: Record<'ready' | 'partial' | 'insufficient', { badge: string; label: string }> = {
   ready: { badge: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200', label: 'Ready' },
   partial: { badge: 'bg-amber-50 text-amber-800 ring-1 ring-amber-200', label: 'Partial' },

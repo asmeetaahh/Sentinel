@@ -1,5 +1,6 @@
 import type { RiskResponse } from '@/api/types'
 import { ProvenanceTag } from '@/components/common/ProvenanceTag'
+import { ConfidenceBadge } from '@/components/overview/ConfidenceBadge'
 import { formatDate, formatPercent, formatSignedPercentPoints } from '@/lib/format'
 import { RISK_STATE_STYLE } from '@/lib/provenance'
 import { useRiskTrend } from '@/hooks/useRiskTrend'
@@ -48,7 +49,11 @@ export function RiskSummary({ risk }: { risk: RiskResponse }) {
         </div>
       </div>
 
-      <p className="mt-5 border-t border-slate-100 pt-3 text-xs leading-relaxed text-slate-400">
+      {risk.data_quality && <ConfidenceBadge dataQuality={risk.data_quality} />}
+
+      <p
+        className={`text-xs leading-relaxed text-slate-400 ${risk.data_quality ? 'mt-3' : 'mt-5 border-t border-slate-100 pt-3'}`}
+      >
         {risk.model.disclaimer}
       </p>
     </section>

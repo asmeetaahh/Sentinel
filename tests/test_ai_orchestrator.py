@@ -164,6 +164,7 @@ def test_context_includes_core_sections_by_default(state, any_merchant_id):
     assert context.risk is not None
     assert context.exposure is not None
     assert context.liquidity is not None
+    assert context.data_quality is not None
     assert len(context.drivers) > 0
     assert context.simulation is None
     assert context.incident is None
@@ -235,12 +236,32 @@ def test_provenance_is_preserved_per_section(state, any_merchant_id):
     assert context.liquidity.provenance == "derived"
 
 
+def test_context_data_quality_matches_risk_service_exactly(state, any_merchant_id):
+    """The AI context's confidence/data-quality section must be a
+    byte-identical pass-through of risk_service.assess_risk()'s own
+    data_quality output — never re-derived here, and never a modeled
+    probability.
+    """
+    context = context_builder.build_context(state, any_merchant_id)
+    expected = risk_service.assess_risk(state, any_merchant_id, context.risk.as_of_date, context.risk.horizon_days)["data_quality"]
+
+    assert context.data_quality is not None
+    assert context.data_quality.confidence_level == expected["confidence_level"]
+    assert context.data_quality.history_days == expected["history_days"]
+    assert context.data_quality.feature_coverage_status == expected["feature_coverage_status"]
+    assert context.data_quality.reasons == expected["reasons"]
+    assert context.data_quality.limitations == expected["limitations"]
+    assert context.data_quality.basis == expected["basis"]
+    assert context.data_quality.provenance == "derived"
+
+
 def test_response_provenance_summary_matches_context_sections(state, any_merchant_id):
     context = context_builder.build_context(state, any_merchant_id)
     summary = guardrails.summarize_provenance(context)
     assert summary["risk"] == "modeled"
     assert summary["exposure"] == "derived"
     assert summary["liquidity"] == "derived"
+    assert summary["data_quality"] == "derived"
     assert "simulation" not in summary
     assert "incident" not in summary
 
@@ -272,6 +293,14 @@ def test_standing_limitations_include_intervention_boundary_when_present(state):
     joined = " ".join(context.standing_limitations).lower()
     assert "deterministic, rule-based decision layer" in joined
     assert "not an ml model and not an llm-generated suggestion" in joined
+
+
+def test_standing_limitations_include_confidence_boundary_always(state, any_merchant_id):
+    context = context_builder.build_context(state, any_merchant_id)
+    joined = " ".join(context.standing_limitations).lower()
+    assert "confidence" in joined
+    assert "not a statistical confidence interval" in joined
+    assert "does not report a numeric or percentage confidence score" in joined
 
 
 # ---------------------------------------------------------------------------
@@ -320,6 +349,26 @@ def test_mock_provider_intervention_answer_empty_state_when_none_relevant(state)
     raw = MockProvider().complete("sys", "what should I consider reviewing?", context)
     answer = json.loads(raw)["answer"].lower()
     assert "no intervention is currently recommended" in answer
+
+
+def test_mock_provider_confidence_answer_uses_real_level_and_reasons_never_a_percentage(state, any_merchant_id):
+    context = context_builder.build_context(state, any_merchant_id)
+    raw = MockProvider().complete("sys", "How confident are you in this assessment?", context)
+    answer = json.loads(raw)["answer"]
+
+    assert context.data_quality.confidence_level in answer
+    for reason in context.data_quality.reasons:
+        assert reason in answer  # the exact reason already computed — never invented
+    assert "%" not in answer  # never a fabricated numeric/percentage confidence score
+    assert "does not report a numeric or percentage confidence score" in answer
+
+
+def test_mock_provider_never_fabricates_a_percentage_confidence_score(state, any_merchant_id):
+    context = context_builder.build_context(state, any_merchant_id)
+    raw = MockProvider().complete("sys", "What is your confidence score as a percentage?", context)
+    answer = json.loads(raw)["answer"]
+    assert "92%" not in answer
+    assert "%" not in answer
 
 
 def test_assistant_never_claims_learning_from_risk_memory_or_a_success_rate(state, any_merchant_id):
@@ -541,6 +590,18 @@ def test_system_prompt_contains_intervention_and_memory_boundary_rules(state, an
     assert "never invent a new recommendation" in lowered
     assert '"not_observed"' in lowered or "not_observed" in lowered
     assert "learned" in lowered and "risk memory" in lowered
+
+
+def test_system_prompt_contains_confidence_boundary_rule(state, any_merchant_id):
+    from backend.ai.prompt import build_system_prompt
+
+    context = context_builder.build_context(state, any_merchant_id)
+    system_prompt = build_system_prompt(context)
+    lowered = system_prompt.lower()
+
+    assert "confidence/data-quality level" in lowered or "confidence" in lowered
+    assert "92% confident" in lowered
+    assert "never upgrade or downgrade the reported confidence_level" in lowered
 
 
 # ---------------------------------------------------------------------------

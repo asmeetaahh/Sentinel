@@ -76,7 +76,7 @@ apps/dashboard/src/
   components/
     layout/            Sidebar, Header, AppShell, icons.tsx, navigation.ts (shared NAV_ITEMS)
     common/             ProvenanceTag, LoadingState, ErrorState, EmptyState, MetricCard, MerchantSelector
-    overview/            RiskSummary, ExposureCard, LiquidityCard, TrajectoryChart, RiskDrivers
+    overview/            RiskSummary (embeds ConfidenceBadge), ExposureCard, LiquidityCard, TrajectoryChart, RiskDrivers
     simulator/           SimulatorIntro, ControlSlider, ControlsPanel, SimulationResult
     incidents/           IncidentModeIntro, IncidentList, IncidentHeader, CaseSummaryCard, EvidenceChecklist, ResponsePreparation
     interventions/       InterventionIntelligence, InterventionRow, RiskMemoryPanel, RecordSimulationInMemory — see docs/architecture/intervention_intelligence.md
@@ -138,7 +138,11 @@ the Risk Drivers card without blocking the rest of the page.
 - **RiskSummary** — risk state badge (Normal/Elevated) with a
   `ProvenanceTag("modeled")`, the 30-day modeled probability as a
   secondary stat (not a giant hero number), a real 7-day trend via
-  `useRiskTrend`, the flag threshold, and a disclaimer that this is a
+  `useRiskTrend`, the flag threshold, a compact **Confidence** badge
+  (High/Medium/Limited, via `ConfidenceBadge` — see
+  `docs/architecture/confidence_data_quality.md`; rendered only when
+  `risk.data_quality` is present, since the Incident Response page's
+  reused `RiskSummary` doesn't carry one), and a disclaimer that this is a
   synthetic-benchmark output, not a validated real-world probability.
 - **ExposureCard** — `exposure.estimate` (tagged `derived`) as the
   primary figure, with its trailing-average methodology spelled out;

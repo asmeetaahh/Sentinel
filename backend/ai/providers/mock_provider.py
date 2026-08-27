@@ -129,6 +129,19 @@ def _draft_answer(context: SentinelAIContext) -> str:
     return "\n".join(body)
 
 
+def _confidence_answer(context: SentinelAIContext) -> str:
+    dq = context.data_quality
+    if dq is None:
+        return "I don't have a verified confidence/data-quality assessment in the current context to explain."
+    reasons = " ".join(dq.reasons)
+    return (
+        f"Confidence is '{dq.confidence_level}' for this merchant as of the current assessment date. {reasons} "
+        "Sentinel does not report a numeric or percentage confidence score — only this qualitative level, "
+        "grounded in observed history length and feature completeness, not a statistical confidence interval "
+        "or a model-calibrated probability."
+    )
+
+
 def _intervention_answer(context: SentinelAIContext) -> str:
     if not context.interventions:
         return (
@@ -162,6 +175,8 @@ def _general_answer(context: SentinelAIContext) -> str:
         parts.append(f"Modeled {context.risk.horizon_days}-day risk: {context.risk.risk_state} ({context.risk.probability_calibrated:.1%}).")
     if context.liquidity is not None and context.liquidity.liquidity_stress is not None:
         parts.append(f"Liquidity stress: {context.liquidity.liquidity_stress:.2f}x (derived).")
+    if context.data_quality is not None:
+        parts.append(f"Confidence: {context.data_quality.confidence_level} (derived, not a percentage score).")
     if context.interventions:
         parts.append(f"{len(context.interventions)} intervention recommendation(s) are currently grounded for this merchant.")
     if context.incident is not None:
@@ -189,6 +204,8 @@ class MockProvider:
             body = _simulation_answer(context)
         elif any(k in question for k in ("recommend", "intervention", "should i", "what should", "consider")):
             body = _intervention_answer(context)
+        elif any(k in question for k in ("confidence", "confident", "data quality", "data-quality", "how sure", "how reliable")):
+            body = _confidence_answer(context)
         elif any(k in question for k in ("liquidity", "cash", "buffer")):
             body = _liquidity_answer(context)
         elif any(k in question for k in ("risk", "driver", "why", "elevated", "flag")):
@@ -198,6 +215,8 @@ class MockProvider:
 
         answer = f"{MOCK_LABEL} {body}"
         suggested = ["Why is my risk elevated?", "What does this mean for liquidity?"]
+        if context.data_quality is not None:
+            suggested.append("How confident is this assessment?")
         if context.interventions:
             suggested.append("What should I consider reviewing?")
         if context.simulation is not None:

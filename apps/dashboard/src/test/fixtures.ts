@@ -8,6 +8,7 @@
 import type {
   AssistantResponse,
   ControlsListResponse,
+  DataQualitySection,
   ExplanationResponse,
   IncidentDetail,
   IncidentListResponse,
@@ -48,6 +49,44 @@ export const mockMerchantProfile: MerchantProfileResponse = {
   },
 }
 
+export const mockDataQualityHigh: DataQualitySection = {
+  confidence_level: 'high',
+  history_days: 180,
+  history_window_partial_days: 28,
+  history_window_full_days: 60,
+  feature_coverage_status: 'complete',
+  reasons: [
+    "This merchant has 180 days of observed history available as of this date, at or beyond the feature pipeline's longest trailing window (60d) — every trailing-window feature (7d/28d/60d) is backed by its full intended window, not a shortened one.",
+    'All 55 model input features are present for this date.',
+  ],
+  limitations: [
+    'This confidence assessment is a deterministic prototype heuristic based on observed history length and feature completeness — not a statistical confidence interval, not a model-calibrated probability, and not independently validated.',
+    'This is a synthetic benchmark. Real-world validation of both the risk model and this confidence heuristic is still pending.',
+  ],
+  basis:
+    'Deterministic policy: history_days compared against the feature pipeline\'s own trailing-window sizes (WINDOW_MEDIUM=28d, WINDOW_LONG=60d), plus feature-row completeness. Not a statistical confidence interval or a model-calibrated probability.',
+  provenance: 'derived',
+}
+
+export const mockDataQualityMedium: DataQualitySection = {
+  ...mockDataQualityHigh,
+  confidence_level: 'medium',
+  history_days: 41,
+  reasons: [
+    "This merchant has 41 days of observed history — enough for the feature pipeline's primary 28-day windows, but short of its longest 60-day window, which is still computed on a shorter-than-intended history for this date.",
+    'All 55 model input features are present for this date.',
+  ],
+}
+
+export const mockDataQualityLimited: DataQualitySection = {
+  ...mockDataQualityHigh,
+  confidence_level: 'limited',
+  history_days: 11,
+  reasons: [
+    "This merchant has only 11 days of observed history available as of this date — short even of the feature pipeline's primary 28-day window. Trailing-window and deviation-from-baseline features for this date are computed on much less data than their nominal window size.",
+  ],
+}
+
 export const mockRisk: RiskResponse = {
   merchant_id: 'M0001',
   as_of_date: '2024-06-28',
@@ -85,6 +124,7 @@ export const mockRisk: RiskResponse = {
       formula: 'predicted_chargeback_exposure / available_merchant_liquidity',
     },
   },
+  data_quality: mockDataQualityHigh,
 }
 
 export const mockExplanation: ExplanationResponse = {
@@ -421,6 +461,15 @@ export const mockAssistantResponse: AssistantResponse = {
     },
     exposure: { value: 1500, method: 'trailing 28-day mean daily chargeback_amount baseline.', provenance: 'derived' },
     liquidity: { available_liquidity: 98765.4, liquidity_stress: 0.0152, note: 'Transparent derived ratio.', provenance: 'derived' },
+    data_quality: {
+      confidence_level: 'high',
+      history_days: 180,
+      feature_coverage_status: 'complete',
+      reasons: ['All 55 model input features are present for this date.'],
+      limitations: ['This is a synthetic benchmark. Real-world validation of both the risk model and this confidence heuristic is still pending.'],
+      basis: 'Deterministic policy based on history length vs. the feature pipeline\'s own window sizes and feature completeness.',
+      provenance: 'derived',
+    },
     drivers: [
       {
         feature: 'chargeback_rate_28d',

@@ -8,6 +8,8 @@ import { MerchantSelector } from '@/components/common/MerchantSelector'
 import { MerchantProvider } from '@/context/MerchantContext'
 import * as endpoints from '@/api/endpoints'
 import {
+  mockDataQualityLimited,
+  mockDataQualityMedium,
   mockEmptyInterventionMemory,
   mockEmptyInterventions,
   mockExplanation,
@@ -80,6 +82,10 @@ describe('OverviewPage', () => {
     expect(screen.getAllByText('Modeled').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Derived').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Observed').length).toBeGreaterThan(0)
+
+    // Confidence / Data Quality surface, from the same risk response
+    expect(screen.getByText('Confidence')).toBeInTheDocument()
+    expect(screen.getByText('High')).toBeInTheDocument()
   })
 
   it('shows an error state when the risk endpoint fails, without blocking the rest of the page', async () => {
@@ -95,6 +101,36 @@ describe('OverviewPage', () => {
     vi.spyOn(endpoints, 'listMerchants').mockRejectedValue(new Error('backend unreachable'))
     renderOverview()
     expect(await screen.findByText('backend unreachable')).toBeInTheDocument()
+  })
+
+  // ---------------------------------------------------------------------
+  // Confidence / Data Quality
+  // ---------------------------------------------------------------------
+
+  it('renders medium confidence with its real reason text when expanded', async () => {
+    vi.spyOn(endpoints, 'getRisk').mockResolvedValue({ ...mockRisk, data_quality: mockDataQualityMedium })
+    renderOverview()
+
+    expect(await screen.findByText('Medium')).toBeInTheDocument()
+    await userEvent.click(screen.getByText('Why this level'))
+    expect(screen.getByText(mockDataQualityMedium.reasons[0])).toBeInTheDocument()
+    expect(screen.getByText(mockDataQualityMedium.limitations[0])).toBeInTheDocument()
+  })
+
+  it('renders limited confidence honestly, with its real limited-history reason', async () => {
+    vi.spyOn(endpoints, 'getRisk').mockResolvedValue({ ...mockRisk, data_quality: mockDataQualityLimited })
+    renderOverview()
+
+    expect(await screen.findByText('Limited')).toBeInTheDocument()
+    await userEvent.click(screen.getByText('Why this level'))
+    expect(screen.getByText(mockDataQualityLimited.reasons[0])).toBeInTheDocument()
+  })
+
+  it('never renders a fabricated numeric or percentage confidence score', async () => {
+    renderOverview()
+    await screen.findByText('Confidence')
+    await userEvent.click(screen.getByText('Why this level'))
+    expect(screen.queryByText(/\d+%\s*confiden/i)).not.toBeInTheDocument()
   })
 
   // ---------------------------------------------------------------------
@@ -179,6 +215,9 @@ describe('OverviewPage', () => {
     vi.spyOn(endpoints, 'getMerchantProfile').mockImplementation((merchantId: string) =>
       Promise.resolve({ ...mockMerchantProfile, merchant_id: merchantId, archetype: merchantId === 'M0002' ? 'Travel' : 'SaaS' }),
     )
+    vi.spyOn(endpoints, 'getRisk').mockImplementation((merchantId: string) =>
+      Promise.resolve({ ...mockRisk, merchant_id: merchantId, data_quality: merchantId === 'M0002' ? mockDataQualityLimited : mockRisk.data_quality }),
+    )
     vi.spyOn(endpoints, 'getInterventions').mockImplementation((merchantId: string) =>
       Promise.resolve(
         merchantId === 'M0002'
@@ -192,9 +231,10 @@ describe('OverviewPage', () => {
 
     renderOverviewWithSelector()
 
-    // M0001 is selected by default: no recommendation, empty Risk Memory.
+    // M0001 is selected by default: no recommendation, empty Risk Memory, high confidence.
     expect(await screen.findByText('No intervention currently justified')).toBeInTheDocument()
     expect(screen.getByText('No intervention activity recorded yet')).toBeInTheDocument()
+    expect(screen.getByText('High')).toBeInTheDocument()
     expect(endpoints.getInterventions).toHaveBeenCalledWith('M0001', expect.anything())
 
     await userEvent.selectOptions(screen.getByLabelText('Merchant'), 'M0002')
@@ -205,8 +245,10 @@ describe('OverviewPage', () => {
     await waitFor(() => expect(endpoints.getInterventions).toHaveBeenCalledWith('M0002', expect.anything()))
     expect(endpoints.getInterventionMemory).toHaveBeenCalledWith('M0002')
 
-    // ...and M0001's stale empty-state text is gone, not just supplemented.
+    // ...and M0001's stale empty-state text and confidence level are gone, not just supplemented.
     expect(screen.queryByText('No intervention currently justified')).not.toBeInTheDocument()
     expect(screen.queryByText('No intervention activity recorded yet')).not.toBeInTheDocument()
+    expect(await screen.findByText('Limited')).toBeInTheDocument()
+    expect(screen.queryByText('High')).not.toBeInTheDocument()
   })
 })

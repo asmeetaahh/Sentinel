@@ -153,6 +153,21 @@ export interface LiquiditySection {
   liquidity_stress: LiquidityStress
 }
 
+export type ConfidenceLevel = 'high' | 'medium' | 'limited'
+export type FeatureCoverageStatus = 'complete' | 'incomplete'
+
+export interface DataQualitySection {
+  confidence_level: ConfidenceLevel
+  history_days: number
+  history_window_partial_days: number
+  history_window_full_days: number
+  feature_coverage_status: FeatureCoverageStatus
+  reasons: string[]
+  limitations: string[]
+  basis: string
+  provenance: Provenance
+}
+
 export interface RiskResponse {
   merchant_id: string
   as_of_date: string
@@ -161,6 +176,13 @@ export interface RiskResponse {
   model: ModelSection
   exposure: ExposureSection
   liquidity: LiquiditySection
+  // Optional here (unlike the backend, where it's always present on a real
+  // /risk call): the Incident Response page reuses RiskSummary via a thin
+  // IncidentDetail -> RiskResponse adapter (IncidentResponsePage.tsx) that
+  // has no data_quality to supply, since IncidentDetail doesn't carry one —
+  // Confidence/Data Quality V1 is scoped to the Overview risk card only.
+  // See docs/architecture/confidence_data_quality.md.
+  data_quality?: DataQualitySection
 }
 
 // ---------------------------------------------------------------------------
@@ -468,6 +490,16 @@ export interface LiquidityAIContext {
   provenance: Provenance
 }
 
+export interface DataQualityAIContext {
+  confidence_level: ConfidenceLevel
+  history_days: number
+  feature_coverage_status: FeatureCoverageStatus
+  reasons: string[]
+  limitations: string[]
+  basis: string
+  provenance: Provenance
+}
+
 export interface SimulationAIContext {
   controls_changed: Record<string, number>
   current_probability: number
@@ -511,6 +543,7 @@ export interface SentinelAIContext {
   risk: RiskAIContext | null
   exposure: ExposureAIContext | null
   liquidity: LiquidityAIContext | null
+  data_quality: DataQualityAIContext | null
   drivers: Driver[]
   interventions: InterventionRecommendationAIContext[]
   simulation: SimulationAIContext | null

@@ -58,6 +58,7 @@ backend/
   risk/
     risk_service.py       model score/state + assembles the risk response
     liquidity_service.py  exposure estimate + liquidity stress derivation
+    confidence_service.py  Confidence / Data Quality V1 — see docs/architecture/confidence_data_quality.md
     explainability_service.py   thin wrapper around ml.explainability
   simulation/
     controls.py            bounded what-if control registry — see docs/architecture/simulator.md
@@ -95,7 +96,7 @@ FastAPI.
 | GET | `/merchants/{id}` | Merchant profile + latest observed snapshot |
 | GET | `/merchants/{id}/observations` | Historical daily observations (`start_date`, `end_date`, `limit`) |
 | GET | `/merchants/{id}/features` | The 55-feature vector as of `as_of_date`, with manifest metadata |
-| GET | `/merchants/{id}/risk` | Model risk score/state + exposure + liquidity stress, for `as_of_date` (+`horizon_days`, only `30` supported) |
+| GET | `/merchants/{id}/risk` | Model risk score/state + exposure + liquidity stress + confidence/data-quality, for `as_of_date` (+`horizon_days`, only `30` supported) — see `docs/architecture/confidence_data_quality.md` |
 | GET | `/merchants/{id}/explanation` | SHAP drivers for `as_of_date` (+`top_k`) |
 | GET | `/merchants/{id}/simulation/controls` | Bounded what-if control bounds/baseline — see `docs/architecture/simulator.md` |
 | POST | `/merchants/{id}/simulation` | Runs the same saved model on a modified feature vector — see `docs/architecture/simulator.md` |

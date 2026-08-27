@@ -51,6 +51,7 @@ from existing, unmodified service calls:
 | `risk` | `risk_service.assess_risk()` — same call `/merchants/{id}/risk` makes | `modeled` |
 | `exposure` | same `risk_service.assess_risk()` call | `derived` |
 | `liquidity` | same `risk_service.assess_risk()` call | `derived` |
+| `data_quality` | same `risk_service.assess_risk()` call — Confidence/Data Quality V1, see `docs/architecture/confidence_data_quality.md` | `derived` |
 | `drivers` | `explainability_service.explain()` — same call `/explanation` makes | `modeled` |
 | `simulation` (optional) | `simulation_service.simulate()` — same call `/simulation` makes, **re-run**, never client-relayed (see below) | `modeled` |
 | `incident` (optional) | `incident_service.get_incident()` — same call `/incidents/{id}` makes | `derived` |
@@ -143,6 +144,12 @@ instructs the model accordingly:
   recommendation's own `reason`, forbid inventing a new one, and forbid
   any claim about Risk Memory outcomes or a "success rate" — see
   `docs/architecture/intervention_intelligence.md`.
+- **Explain the confidence/data-quality level** — `data_quality` section;
+  rule 12 restricts the assistant to the already-provided
+  `reasons`/`limitations`, forbids inventing or implying any numeric or
+  percentage confidence score (none exists), and forbids upgrading or
+  downgrading the reported `confidence_level` — see
+  `docs/architecture/confidence_data_quality.md`.
 - **Draft response material** — no separate schema field; the system
   prompt's rule 6 requires any drafted text to be labeled a draft and
   state it requires merchant confirmation. The mock provider's
@@ -184,6 +191,14 @@ claiming a real-world outcome was observed for any past intervention —
 `"not_observed"` is the only status the assistant may ever report,
 matching the fact that no `outcome_status` other than `"not_observed"`
 can exist in this system (`docs/architecture/intervention_intelligence.md`).
+
+A further rule was added for Confidence / Data Quality V1 (rule 12): the
+assistant may explain `confidence_level` using exactly the `reasons`/
+`limitations` already provided, but must never invent, calculate, or
+imply a numeric or percentage confidence score ("92% confident") — none
+exists anywhere in the verified context — and must never upgrade or
+downgrade the reported `confidence_level` itself
+(`docs/architecture/confidence_data_quality.md`).
 
 ## 6. Prompt-injection defense
 
@@ -269,7 +284,12 @@ questions (`_intervention_answer`, routed on "recommend"/"intervention"/
 "should i"/"what should"/"consider") and returns a plain refusal-style
 answer for out-of-scope questions like "success rate," "learned from," or
 "outcome rate" — the mock provider demonstrates the same rule 10/11
-boundary a real provider is instructed to respect, deterministically.
+boundary a real provider is instructed to respect, deterministically. It
+also recognizes confidence-related questions (`_confidence_answer`,
+routed on "confidence"/"confident"/"data quality"/"how sure"/
+"how reliable") and, even when directly asked for "a percentage," always
+answers with the real qualitative `confidence_level` and states plainly
+that no numeric score is reported — demonstrating rule 12 the same way.
 
 ## 11. External dependency
 
