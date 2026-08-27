@@ -11,31 +11,49 @@ function renderSidebarAt(initialPath: string) {
       <Sidebar />
       <Routes>
         <Route path="/" element={<div>Overview screen</div>} />
+        <Route path="/risk" element={<div>Risk screen</div>} />
+        <Route path="/explainability" element={<div>Explainability screen</div>} />
         <Route path="/simulator" element={<div>Simulator screen</div>} />
         <Route path="/incident-response" element={<div>Incident Response screen</div>} />
+        <Route path="/evidence" element={<div>Evidence screen</div>} />
       </Routes>
     </MemoryRouter>,
   )
 }
 
+const ALL_LABELS = ['Overview', 'Risk', 'Explainability', 'Simulator', 'Incident Response', 'Evidence']
+
 describe('Sidebar navigation', () => {
-  it('Overview, Simulator, and Incident Response are real, clickable links', () => {
+  it('every nav item is a real, clickable, enabled link — none are disabled placeholders', () => {
     renderSidebarAt('/')
-    for (const label of ['Overview', 'Simulator', 'Incident Response']) {
+    for (const label of ALL_LABELS) {
       const link = screen.getByRole('link', { name: label })
       expect(link).not.toHaveAttribute('aria-disabled')
     }
+    expect(screen.queryByText('Soon')).not.toBeInTheDocument()
   })
 
-  it('Risk, Explainability, Evidence, and Settings remain disabled placeholders', () => {
+  it('there is no Settings nav item — removed rather than left as a dead placeholder', () => {
     renderSidebarAt('/')
-    for (const label of ['Risk', 'Explainability', 'Evidence', 'Settings']) {
-      const button = screen.getByTitle(`${label} — coming soon`)
-      expect(button.tagName).toBe('BUTTON')
-      expect(button).toBeDisabled()
-      expect(button).toHaveAttribute('aria-disabled', 'true')
-      expect(button).toHaveTextContent('Soon')
-    }
+    expect(screen.queryByText('Settings')).not.toBeInTheDocument()
+  })
+
+  it('clicking Risk navigates to the risk route', async () => {
+    renderSidebarAt('/')
+    await userEvent.click(screen.getByRole('link', { name: 'Risk' }))
+    expect(await screen.findByText('Risk screen')).toBeInTheDocument()
+  })
+
+  it('clicking Explainability navigates to the explainability route', async () => {
+    renderSidebarAt('/')
+    await userEvent.click(screen.getByRole('link', { name: 'Explainability' }))
+    expect(await screen.findByText('Explainability screen')).toBeInTheDocument()
+  })
+
+  it('clicking Evidence navigates to the evidence route', async () => {
+    renderSidebarAt('/')
+    await userEvent.click(screen.getByRole('link', { name: 'Evidence' }))
+    expect(await screen.findByText('Evidence screen')).toBeInTheDocument()
   })
 
   it('clicking Incident Response navigates to the incident-response route', async () => {
