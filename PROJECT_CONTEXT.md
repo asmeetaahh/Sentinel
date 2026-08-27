@@ -9,11 +9,7 @@ targeting Track 02 — AI Risk Manager.
 Sentinel is a merchant-facing chargeback and settlement continuity
 intelligence platform.
 
-It detects potential high-loss chargeback episodes early,
-quantifies expected chargeback exposure, translates that exposure
-into merchant-specific liquidity stress, explains observable drivers,
-allows bounded what-if simulation, and prepares merchants for dispute
-response.
+It detects potential high-loss chargeback episodes early, quantifies expected chargeback exposure, translates that exposure into merchant-specific liquidity stress, explains observable drivers, allows bounded what-if simulation, identifies grounded intervention opportunities, prepares merchants for dispute response, and records intervention/simulation outcomes for future prioritization.
 
 ## Core loop
 
@@ -22,8 +18,11 @@ Observe
 → Quantify
 → Explain
 → Simulate
+→ Intervene
 → Prepare
 → Respond
+→ Observe Outcome
+→ Remember
 
 ## Primary ML problem
 
