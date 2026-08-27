@@ -101,6 +101,26 @@ describe('AssistantPanel', () => {
     await waitFor(() => expect(endpoints.askAssistant).toHaveBeenLastCalledWith('M0001', expect.objectContaining({ question: 'What does this mean for liquidity?' })))
   })
 
+  it('shows a provider-specific badge (not "MOCK PROVIDER") when a real provider answered', async () => {
+    vi.spyOn(endpoints, 'askAssistant').mockResolvedValue({
+      ...mockAssistantResponse,
+      provider: 'featherless:openai/gpt-oss-20b',
+    })
+    renderPanel()
+    await userEvent.click(screen.getByText('Why is my risk elevated?'))
+
+    expect(await screen.findByText('FEATHERLESS · openai/gpt-oss-20b')).toBeInTheDocument()
+    expect(screen.queryByText('MOCK PROVIDER — not a real AI response')).not.toBeInTheDocument()
+  })
+
+  it('formats an openai-vendor identifier the same way (vendor uppercased, model verbatim)', async () => {
+    vi.spyOn(endpoints, 'askAssistant').mockResolvedValue({ ...mockAssistantResponse, provider: 'openai:gpt-4o-mini' })
+    renderPanel()
+    await userEvent.click(screen.getByText('Why is my risk elevated?'))
+
+    expect(await screen.findByText('OPENAI · gpt-4o-mini')).toBeInTheDocument()
+  })
+
   it('shows a distinct provider-unavailable state on a 503 response', async () => {
     vi.spyOn(endpoints, 'askAssistant').mockRejectedValue(new ApiError(503, 'The AI assistant provider is currently unavailable.'))
     renderPanel()

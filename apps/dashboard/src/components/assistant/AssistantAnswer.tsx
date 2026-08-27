@@ -1,5 +1,5 @@
 import type { AssistantResponse } from '@/api/types'
-import { humanizeGroupName } from '@/lib/format'
+import { formatProviderLabel, humanizeGroupName } from '@/lib/format'
 import { PROVENANCE_LABEL, PROVENANCE_STYLE } from '@/lib/provenance'
 
 export function AssistantAnswer({
@@ -24,7 +24,7 @@ export function AssistantAnswer({
             isMock ? 'bg-amber-50 text-amber-800 ring-1 ring-amber-200' : 'bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200'
           }`}
         >
-          {isMock ? 'MOCK PROVIDER — not a real AI response' : `Provider: ${response.provider}`}
+          {isMock ? 'MOCK PROVIDER — not a real AI response' : formatProviderLabel(response.provider)}
         </span>
       </div>
 

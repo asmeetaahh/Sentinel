@@ -77,7 +77,7 @@ backend/
     context_builder.py      assembles the one authoritative SentinelAIContext from existing services only
     guardrails.py            prompt-injection pre-filter + deterministic provenance/limitations/disclaimer
     prompt.py, response_parser.py, orchestrator.py
-    providers/               provider-agnostic interface, mock (default) and OpenAI (lazy-imported) implementations
+    providers/               provider-agnostic interface, mock (default), OpenAI, and Featherless.ai (both lazy-imported) implementations
     — see docs/architecture/ai_orchestrator.md — the LLM is an explainer over verified context, never the risk engine
 ```
 

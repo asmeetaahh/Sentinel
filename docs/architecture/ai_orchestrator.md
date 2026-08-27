@@ -91,37 +91,68 @@ merchant's incident into another's conversation.
 ## 2. Provider abstraction
 
 `backend/ai/providers/base.py:LLMProvider` is a `Protocol` — one method,
-`complete(system_prompt, user_message, context) -> str`. Two implementations:
+`complete(system_prompt, user_message, context) -> str`. Three
+implementations:
 
 - **`MockProvider`** (`mock_provider.py`) — the default
   (`SENTINEL_AI_PROVIDER` unset or `mock`). Fully deterministic: a plain
   keyword router over `context` fields, no network call, no randomness.
   Every answer is prefixed/labeled with `MOCK_LABEL` so it can never be
   mistaken for a real response, and the response's `provider` field is
-  always exactly `"mock"`.
-- **`OpenAIProvider`** (`openai_provider.py`) — imports the `openai` SDK
-  **lazily**, inside `__init__`, not at module load time, so the package
-  being absent never breaks app startup or any other Sentinel feature.
-  Requests `response_format={"type": "json_object"}` for a best-effort
-  structured reply; any SDK/network failure is caught and re-raised as
-  `ProviderUnavailableError` with a generic message — the raw exception
-  (which can carry request/credential details) never propagates.
+  always exactly `"mock"`. **Remains fully available** — nothing about
+  adding a real provider changes this path, and it is still the default
+  when `SENTINEL_AI_PROVIDER` is unset, so local development and the
+  entire test suite run with zero network dependency by default.
+- **`OpenAIProvider`** (`openai_provider.py`) — talks to OpenAI's own API.
+  Imports the `openai` SDK **lazily**, inside `__init__`, not at module
+  load time, so the package being absent never breaks app startup or any
+  other Sentinel feature. Requests `response_format={"type": "json_object"}`
+  for a best-effort structured reply; any SDK/network failure is caught
+  and re-raised as `ProviderUnavailableError` with a generic message — the
+  raw exception (which can carry request/credential details) never
+  propagates.
+- **`FeatherlessProvider`** (`featherless_provider.py`) — talks to
+  [Featherless.ai](https://featherless.ai)'s OpenAI-**compatible** Chat
+  Completions API at a configurable `base_url`, hosting open-weight models
+  (the default demo model is `openai/gpt-oss-20b`). Reuses the **same**
+  `openai` SDK as `OpenAIProvider` — Featherless requires no custom HTTP
+  stack, just the SDK's `OpenAI(api_key=..., base_url=...)` pointed
+  somewhere else — imported lazily the same way, and mapping every
+  SDK/network failure to `ProviderUnavailableError` the same way. It
+  deliberately does **not** request `response_format={"type": "json_object"}`
+  (unlike `OpenAIProvider`): Featherless's compatibility layer isn't
+  guaranteed to support that parameter for every hosted model, and forcing
+  it risks a hard request failure for a cosmetic benefit —
+  `backend/ai/prompt.py`'s own instructions already ask for the JSON
+  shape, and `backend/ai/response_parser.py` already falls back to raw
+  text defensively if the model doesn't comply. This is a compatibility
+  choice, not a relaxation of any safety property: output still passes
+  through the identical parser/validation path as every other provider.
 
 `backend/ai/providers/factory.py:build_provider()` selects between them
 from environment configuration and **never raises**:
 
-| `SENTINEL_AI_PROVIDER` | `OPENAI_API_KEY` | Result |
+| `SENTINEL_AI_PROVIDER` | Required variables | Result |
 |---|---|---|
 | unset or `mock` | — | `MockProvider` |
-| `openai` | present | `OpenAIProvider` (or `UnavailableProvider` if the SDK isn't installed) |
-| `openai` | absent | `UnavailableProvider` — fails only when `.complete()` is actually called |
+| `openai` | `OPENAI_API_KEY` | `OpenAIProvider` (or `UnavailableProvider` if the SDK isn't installed) |
+| `openai` | *(missing)* | `UnavailableProvider` — fails only when `.complete()` is actually called |
+| `featherless` | `FEATHERLESS_API_KEY`, `FEATHERLESS_BASE_URL`, `FEATHERLESS_MODEL` | `FeatherlessProvider` (or `UnavailableProvider` if the SDK isn't installed) |
+| `featherless` | *(any missing)* | `UnavailableProvider` — the message names exactly which variable(s) are missing |
 | anything else | — | `UnavailableProvider` |
+
+There is deliberately **no separate `AI_PROVIDER` variable** — Featherless
+is added as a third value of the same `SENTINEL_AI_PROVIDER` switch that
+already existed for `mock`/`openai`, not a second, competing
+configuration mechanism.
 
 `UnavailableProvider.complete()` raises `ProviderUnavailableError` lazily —
 building it never fails, so a misconfigured AI provider can never prevent
 `load_state()`, and therefore the entire backend, from starting. This is
 computed **once** at startup and stored on `AppState.ai_provider`, exactly
-like the model artifact and SHAP explainer.
+like the model artifact and SHAP explainer — changing `SENTINEL_AI_PROVIDER`
+in `.env` requires a backend restart to take effect, the same as it
+already did for the `openai` path.
 
 ## 3. Bounded capabilities
 
@@ -269,7 +300,15 @@ row, collapsible limitations/disclaimer, and follow-up chips), a **distinct**
 `ErrorState.tsx`'s `describeError`), and a generic error state. The
 `provider` field is always rendered — a prominent amber "MOCK PROVIDER —
 not a real AI response" badge whenever `provider === "mock"`, so mock and
-real output can never be visually confused.
+real output can never be visually confused. For any real provider, the
+badge shows the exact `provider` identifier the backend reported,
+formatted by `lib/format.ts:formatProviderLabel()` — vendor uppercased,
+model id preserved verbatim (e.g. `FEATHERLESS · openai/gpt-oss-20b`,
+`OPENAI · gpt-4o-mini`) — never reworded, guessed, or replaced with a
+generic "AI" label, and never phrased in a way that implies the model
+itself performs the risk analysis (the panel's own copy and every answer
+still frame this as Sentinel's verified context being *explained*, not
+computed, by whichever provider is active).
 
 ## 10. Mock provider — isolation and labeling
 
@@ -293,14 +332,45 @@ that no numeric score is reported — demonstrating rule 12 the same way.
 
 ## 11. External dependency
 
-`openai>=1.0` (`requirements.txt`) — imported lazily, never required for
-the app to start, never required for tests (which default to
-`SENTINEL_AI_PROVIDER=mock` and make zero network calls;
+`openai>=1.0` (`requirements.txt`) is the **only** package either real
+provider needs — Featherless's OpenAI-compatible API means no second SDK
+or custom HTTP client was added for it. Imported lazily by both
+`OpenAIProvider` and `FeatherlessProvider`, never required for the app to
+start, never required for tests (which default to `SENTINEL_AI_PROVIDER=mock`
+and make zero network calls;
 `tests/test_ai_orchestrator.py::test_default_test_suite_provider_is_mock_not_a_real_network_provider`
-asserts this explicitly). Live end-to-end verification in this environment
-used the mock provider exclusively (no `OPENAI_API_KEY` was available) —
-every mock answer in that verification is clearly labeled as such, never
-presented as a real model's output.
+asserts this explicitly, and every `FeatherlessProvider` test in
+`tests/test_featherless_provider.py` mocks `openai.OpenAI` directly rather
+than reaching the real network). Live end-to-end verification of the
+Featherless path used a small number of representative real requests
+against the actual configured API — see "Live verification" in the
+implementation report for this task; every other verification run in this
+environment used the mock provider exclusively, clearly labeled as such,
+never presented as a real model's output.
+
+### Setting up the Featherless.ai provider for a demo
+
+```bash
+# .env (repo root, gitignored — never commit real values)
+SENTINEL_AI_PROVIDER=featherless
+FEATHERLESS_API_KEY=<your real key>
+FEATHERLESS_BASE_URL=https://api.featherless.ai/v1
+FEATHERLESS_MODEL=openai/gpt-oss-20b
+```
+
+There is no `python-dotenv` loading in this backend (consistent with the
+pre-existing `OPENAI_API_KEY` path, which never had one either) — export
+`.env`'s variables into the shell before starting the backend, e.g.:
+
+```bash
+set -a && source .env && set +a
+.venv/bin/python scripts/run_backend.py --port 8010 --no-reload
+```
+
+`SENTINEL_AI_PROVIDER` is read once at startup (`load_state()`), so a
+changed `.env` requires a backend restart to take effect — set
+`SENTINEL_AI_PROVIDER=mock` (or leave it unset) to go back to the
+deterministic local/test provider without touching any code.
 
 ## Limitations
 
@@ -319,6 +389,13 @@ presented as a real model's output.
   provider) but always has a deterministic fallback
   (`guardrails.default_suggested_actions`) if the provider omits or
   malforms it — never left empty in the UI.
+- **Featherless/gpt-oss-20b was smoke-tested with a small number of live
+  requests, not exhaustively.** The task explicitly scoped live
+  verification to "a few representative live requests" against the real,
+  paid API — this proves the integration works end-to-end for the tested
+  question types, not that every possible phrasing produces a well-formed
+  JSON response. `response_parser.py`'s defensive raw-text fallback exists
+  precisely because this can't be guaranteed for any real provider.
 - **This is still a synthetic-benchmark research prototype.** The
   assistant explains a provisional Random Forest / 30-day candidate with
   the documented limitations in `docs/research/baseline_ml_report.md`; it

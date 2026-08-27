@@ -57,6 +57,22 @@ export function humanizeFeatureName(featureName: string): string {
   return spaced.charAt(0).toUpperCase() + spaced.slice(1)
 }
 
+/**
+ * Turns an AssistantResponse.provider identifier (e.g. "featherless:openai/gpt-oss-20b",
+ * "openai:gpt-4o-mini") into a compact, demo-legible badge label — the
+ * vendor uppercased, the exact configured model id preserved verbatim
+ * (never reformatted/guessed), so the badge always shows precisely which
+ * real provider answered. "mock" is handled separately by the caller
+ * (AssistantAnswer.tsx) with its own dedicated "MOCK PROVIDER" copy.
+ */
+export function formatProviderLabel(identifier: string): string {
+  const separatorIndex = identifier.indexOf(':')
+  if (separatorIndex === -1) return identifier.toUpperCase()
+  const vendor = identifier.slice(0, separatorIndex)
+  const model = identifier.slice(separatorIndex + 1)
+  return `${vendor.toUpperCase()} · ${model}`
+}
+
 export function humanizeGroupName(group: string): string {
   return group
     .split('_')
