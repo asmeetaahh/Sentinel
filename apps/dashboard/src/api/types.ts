@@ -496,6 +496,15 @@ export interface IncidentAIContext {
   provenance: Provenance
 }
 
+export interface InterventionRecommendationAIContext {
+  intervention_id: string
+  control_id: string
+  title: string
+  reason: string
+  priority: 'high' | 'medium'
+  provenance: Provenance
+}
+
 export interface SentinelAIContext {
   merchant: MerchantAIContext
   observed_state: ObservedStateAIContext | null
@@ -503,6 +512,7 @@ export interface SentinelAIContext {
   exposure: ExposureAIContext | null
   liquidity: LiquidityAIContext | null
   drivers: Driver[]
+  interventions: InterventionRecommendationAIContext[]
   simulation: SimulationAIContext | null
   incident: IncidentAIContext | null
   standing_limitations: string[]
@@ -525,6 +535,93 @@ export interface AssistantResponse {
   suggested_next_actions: string[]
   provider: string
   guardrail_triggered: boolean
+}
+
+// ---------------------------------------------------------------------------
+// Intervention Intelligence / Merchant Risk Memory
+// ---------------------------------------------------------------------------
+
+export type InterventionPriority = 'high' | 'medium'
+export type ActionStatus = 'reviewed' | 'simulated' | 'acknowledged' | 'dismissed'
+export type OutcomeStatus = 'not_observed'
+
+export interface ValueWithProvenance {
+  value: number
+  provenance: Provenance
+}
+
+export interface DeviationInfo {
+  value: number
+  provenance: Provenance
+  method: string
+}
+
+export interface ShapCorroboration {
+  corroborated: boolean
+  provenance: Provenance
+  note: string
+}
+
+export interface InterventionRecommendation {
+  intervention_id: string
+  merchant_id: string
+  as_of_date: string
+  control_id: string
+  title: string
+  reason: string
+  priority: InterventionPriority
+  priority_rank: number
+  current_value: ValueWithProvenance
+  deviation_z: DeviationInfo
+  shap_corroboration: ShapCorroboration
+  simulator_control: ControlMeta
+  modeled_impact_reminder: string
+}
+
+export interface InterventionRecommendationsResponse {
+  merchant_id: string
+  as_of_date: string
+  relevance_threshold_z: number
+  count: number
+  recommendations: InterventionRecommendation[]
+  empty_state_note: string | null
+}
+
+export interface SimulatedImpactSummary {
+  current_probability: number
+  simulated_probability: number
+  probability_delta_absolute: number
+  exposure_current: number
+  exposure_simulated: number
+  liquidity_stress_current: number | null
+  liquidity_stress_simulated: number | null
+  disclaimer: string
+  provenance: Provenance
+}
+
+export interface InterventionMemoryRecord {
+  intervention_id: string
+  merchant_id: string
+  control_id: string
+  recommendation_title: string
+  action_status: ActionStatus
+  timestamp: string
+  simulated_impact: SimulatedImpactSummary | null
+  outcome_status: OutcomeStatus
+  outcome_note: string
+}
+
+export interface InterventionMemoryListResponse {
+  merchant_id: string
+  count: number
+  records: InterventionMemoryRecord[]
+  empty_state_note: string | null
+}
+
+export interface RecordInterventionRequestBody {
+  intervention_id: string
+  action_status: ActionStatus
+  simulation?: SimulationRequestBody
 }
 
 // ---------------------------------------------------------------------------

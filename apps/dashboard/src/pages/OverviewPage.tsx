@@ -3,6 +3,8 @@ import { ErrorState } from '@/components/common/ErrorState'
 import { LoadingState } from '@/components/common/LoadingState'
 import { EmptyState } from '@/components/common/EmptyState'
 import { MetricCard } from '@/components/common/MetricCard'
+import { InterventionIntelligence } from '@/components/interventions/InterventionIntelligence'
+import { RiskMemoryPanel } from '@/components/interventions/RiskMemoryPanel'
 import { ExposureCard } from '@/components/overview/ExposureCard'
 import { LiquidityCard } from '@/components/overview/LiquidityCard'
 import { RiskDrivers } from '@/components/overview/RiskDrivers'
@@ -10,6 +12,8 @@ import { RiskSummary } from '@/components/overview/RiskSummary'
 import { TrajectoryChart } from '@/components/overview/TrajectoryChart'
 import { useMerchantContext } from '@/context/MerchantContext'
 import { useExplanation } from '@/hooks/useExplanation'
+import { useInterventionMemory } from '@/hooks/useInterventionMemory'
+import { useInterventions } from '@/hooks/useInterventions'
 import { useMerchantProfile } from '@/hooks/useMerchantProfile'
 import { useObservations } from '@/hooks/useObservations'
 import { useRisk } from '@/hooks/useRisk'
@@ -38,6 +42,8 @@ function OverviewContent({ merchantId }: { merchantId: string }) {
   const risk = useRisk(merchantId, asOfDate)
   const explanation = useExplanation(merchantId, asOfDate, 6)
   const observations = useObservations(merchantId, 90)
+  const interventions = useInterventions(merchantId, asOfDate)
+  const memory = useInterventionMemory(merchantId)
 
   if (profile.loading) return <LoadingState label="Loading merchant profile…" />
   if (profile.error) return <ErrorState error={profile.error} />
@@ -94,11 +100,25 @@ function OverviewContent({ merchantId }: { merchantId: string }) {
         />
       )}
 
+      {interventions.loading && <LoadingState label="Evaluating intervention candidates…" />}
+      {interventions.error ? <ErrorState error={interventions.error} /> : null}
+      {interventions.data && (
+        <InterventionIntelligence merchantId={merchantId} interventions={interventions.data} onRecorded={memory.refetch} />
+      )}
+
+      {memory.loading && <LoadingState label="Loading Risk Memory…" />}
+      {memory.error ? <ErrorState error={memory.error} /> : null}
+      {memory.data && <RiskMemoryPanel memory={memory.data} />}
+
       <AssistantPanel
         key={merchantId}
         merchantId={merchantId}
         asOfDate={asOfDate}
-        suggestedPrompts={['Why is my risk elevated?', 'What is driving the current risk?', 'What does this mean for liquidity?']}
+        suggestedPrompts={[
+          'Why is my risk elevated?',
+          'What should I consider reviewing?',
+          'What does this mean for liquidity?',
+        ]}
       />
     </div>
   )

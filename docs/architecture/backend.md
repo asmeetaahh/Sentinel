@@ -50,7 +50,7 @@ backend/
     main.py            FastAPI app, CORS, lifespan (loads state once at startup)
     state.py            AppState: tables + artifact + SHAP explainer + events, loaded once
     dependencies.py      FastAPI Depends() wiring to AppState
-    routers/             health.py, merchants.py, risk.py, simulator.py, incidents.py, ai.py — thin HTTP adapters only
+    routers/             health.py, merchants.py, risk.py, simulator.py, incidents.py, interventions.py, ai.py — thin HTTP adapters only
     schemas/              Pydantic request/response models
   services/
     merchant_service.py  merchant list/profile/observations/feature vector
@@ -67,6 +67,11 @@ backend/
     evidence_service.py     deterministic evidence-readiness engine
   incidents/
     incident_service.py     incident selection/assembly — see docs/architecture/incident_response.md
+  interventions/
+    rules.py                 deterministic intervention rule registry (relevance/priority) — see docs/architecture/intervention_intelligence.md
+    recommendation_service.py  ranks candidates against the SAME simulator controls + SHAP contributors
+  memory/
+    risk_memory_service.py   in-process Merchant Risk Memory V1 — records action/simulation state, outcome always "not_observed"
   ai/
     context_builder.py      assembles the one authoritative SentinelAIContext from existing services only
     guardrails.py            prompt-injection pre-filter + deterministic provenance/limitations/disclaimer
@@ -97,6 +102,9 @@ FastAPI.
 | GET | `/merchants/{id}/incidents` | Summary list of this merchant's incidents — see `docs/architecture/incident_response.md` |
 | GET | `/incidents/{incident_id}` | Full incident detail (risk/exposure/liquidity/drivers/evidence) |
 | GET | `/incidents/{incident_id}/evidence` | Just the evidence-readiness section of an incident |
+| GET | `/merchants/{id}/interventions` | Deterministic, ranked intervention recommendations — see `docs/architecture/intervention_intelligence.md` |
+| GET | `/merchants/{id}/interventions/memory` | This merchant's Risk Memory records (session-scoped, in-process) |
+| POST | `/merchants/{id}/interventions/memory` | Record a supported action/simulation state; outcome is always `"not_observed"` |
 | POST | `/merchants/{id}/assistant` | Bounded AI assistant over verified context — see `docs/architecture/ai_orchestrator.md` |
 
 Full request/response shapes are in `backend/api/schemas/` and enforced by
@@ -211,7 +219,11 @@ starting from a clean checkout, in order):
   (`baseline_ml_report.md`) but never persisted, so `horizon_days` other
   than 30 returns `400`, not a fabricated result.
 - **No persistence, no auth.** Every response is derived fresh from
-  in-memory, startup-loaded CSVs/artifacts. Fine for a local, synthetic,
+  in-memory, startup-loaded CSVs/artifacts. The one exception is Merchant
+  Risk Memory (`state.memory_store`,
+  `docs/architecture/intervention_intelligence.md`) — an in-process,
+  session-scoped record of intervention activity, still cleared on every
+  restart and still not a database. Fine for a local, synthetic,
   read-only benchmark; not evaluated for multi-user or production use.
 - **Exposure is not a validated ML prediction** (see above) — it is an
   honestly-labeled arithmetic derivation, not equivalent in rigor to the

@@ -13,6 +13,7 @@ export function ControlsPanel({
   canRun,
   running,
   hasChanges,
+  highlightedControlId,
 }: {
   controls: ControlMeta[]
   values: Record<string, number>
@@ -22,6 +23,7 @@ export function ControlsPanel({
   canRun: boolean
   running: boolean
   hasChanges: boolean
+  highlightedControlId?: string | null
 }) {
   return (
     <MetricCard title="Bounded operational controls">
@@ -32,6 +34,7 @@ export function ControlsPanel({
             control={control}
             value={values[control.control_id] ?? control.baseline_value}
             onChange={(value) => onChange(control.control_id, value)}
+            highlighted={control.control_id === highlightedControlId}
           />
         ))}
       </div>

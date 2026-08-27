@@ -13,6 +13,7 @@ from datetime import date
 from backend.api.schemas.ai import (
     ExposureAIContext,
     IncidentAIContext,
+    InterventionRecommendationAIContext,
     LiquidityAIContext,
     MerchantAIContext,
     ObservedStateContext,
@@ -24,6 +25,7 @@ from backend.api.schemas.explainability import Driver
 from backend.api.schemas.simulation import SimulationRequest
 from backend.api.state import AppState
 from backend.incidents.incident_service import IncidentNotFoundError, get_incident
+from backend.interventions import recommendation_service
 from backend.risk import explainability_service, risk_service
 from backend.services.lookups import require_merchant, resolve_day_index
 from backend.simulation import simulation_service
@@ -40,6 +42,13 @@ STANDING_LIMITATIONS_RISK = [
     "performance over time, sigmoid calibration did not clearly improve the candidate, and a separate "
     "exposure-regression model did not outperform a simple trailing-average baseline and is not used as a "
     "product prediction — see docs/research/baseline_ml_report.md.",
+]
+
+STANDING_LIMITATIONS_INTERVENTIONS = [
+    "Intervention recommendations are produced by a deterministic, rule-based decision layer — not an ML "
+    "model and not an LLM-generated suggestion. They identify which bounded simulator control deviates from "
+    "this merchant's own recent baseline; they do not claim that acting on one guarantees a change in "
+    "real-world risk, and testing one's modeled impact requires the simulator.",
 ]
 
 STANDING_LIMITATIONS_SIMULATION = [
@@ -142,6 +151,20 @@ def build_context(
 
     limitations = list(STANDING_LIMITATIONS_BASE) + list(STANDING_LIMITATIONS_RISK)
 
+    intervention_result = recommendation_service.get_recommendations(state, merchant_id, as_of_date)
+    interventions = [
+        InterventionRecommendationAIContext(
+            intervention_id=rec["intervention_id"],
+            control_id=rec["control_id"],
+            title=rec["title"],
+            reason=rec["reason"],
+            priority=rec["priority"],
+        )
+        for rec in intervention_result["recommendations"]
+    ]
+    if interventions:
+        limitations += STANDING_LIMITATIONS_INTERVENTIONS
+
     simulation_context = None
     if simulation_request is not None:
         simulation_context = _simulation_context(state, merchant_id, simulation_request)
@@ -173,6 +196,7 @@ def build_context(
             note=risk_result["liquidity"]["liquidity_stress"]["note"],
         ),
         drivers=drivers,
+        interventions=interventions,
         simulation=simulation_context,
         incident=incident_context,
         standing_limitations=limitations,

@@ -39,6 +39,7 @@ class AppState:
     artifact: artifact_module.LoadedArtifact
     explainer: object  # shap.TreeExplainer
     ai_provider: object  # backend.ai.providers.base.LLMProvider — built once, never raises on build
+    memory_store: dict[str, list[dict]]  # merchant_id -> Risk Memory records, in-process only — see docs/architecture/intervention_intelligence.md
 
 
 _STATE: AppState | None = None
@@ -96,6 +97,7 @@ def load_state() -> AppState:
         artifact=loaded_artifact,
         explainer=explainer,
         ai_provider=ai_provider,
+        memory_store={},
     )
     return _STATE
 

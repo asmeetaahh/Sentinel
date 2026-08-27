@@ -97,6 +97,21 @@ class IncidentAIContext(BaseModel):
     provenance: Provenance = "derived"
 
 
+class InterventionRecommendationAIContext(BaseModel):
+    """One entry per candidate from backend/interventions/recommendation_service.py
+    — never computed here. The LLM may summarize `reason` verbatim; the
+    system prompt (backend/ai/prompt.py) forbids inventing a different one
+    or a different control. See docs/architecture/intervention_intelligence.md.
+    """
+
+    intervention_id: str
+    control_id: str
+    title: str
+    reason: str
+    priority: Literal["high", "medium"]
+    provenance: Provenance = "derived"
+
+
 class SentinelAIContext(BaseModel):
     """The one authoritative structure passed to the LLM and echoed back to
     the frontend as `AssistantResponse.cited_context`. Sub-sections are
@@ -110,6 +125,7 @@ class SentinelAIContext(BaseModel):
     exposure: ExposureAIContext | None = None
     liquidity: LiquidityAIContext | None = None
     drivers: list[Driver] = Field(default_factory=list)
+    interventions: list[InterventionRecommendationAIContext] = Field(default_factory=list)
     simulation: SimulationAIContext | None = None
     incident: IncidentAIContext | None = None
     standing_limitations: list[str]

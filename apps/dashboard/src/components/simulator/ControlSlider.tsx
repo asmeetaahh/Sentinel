@@ -5,10 +5,15 @@ export function ControlSlider({
   control,
   value,
   onChange,
+  highlighted = false,
 }: {
   control: ControlMeta
   value: number
   onChange: (value: number) => void
+  /** Set when this control was arrived at via an intervention
+   * recommendation's "Test in Simulator" link (?control=<id>) — a visual
+   * cue only, changes no behavior or bounds. */
+  highlighted?: boolean
 }) {
   const range = control.max_value - control.min_value
   const baselinePct = range === 0 ? 0 : ((control.baseline_value - control.min_value) / range) * 100
@@ -17,7 +22,7 @@ export function ControlSlider({
   const descriptionId = `${control.control_id}-description`
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className={`flex flex-col gap-2 ${highlighted ? 'rounded-lg p-2 ring-2 ring-indigo-300' : ''}`}>
       <div className="flex items-baseline justify-between gap-2">
         <label htmlFor={control.control_id} className="text-sm font-medium text-slate-700">
           {control.label}

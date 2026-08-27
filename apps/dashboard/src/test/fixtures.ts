@@ -11,6 +11,8 @@ import type {
   ExplanationResponse,
   IncidentDetail,
   IncidentListResponse,
+  InterventionMemoryListResponse,
+  InterventionRecommendationsResponse,
   MerchantListResponse,
   MerchantProfileResponse,
   ObservationsResponse,
@@ -431,6 +433,7 @@ export const mockAssistantResponse: AssistantResponse = {
         direction: 'increases_risk',
       },
     ],
+    interventions: [],
     simulation: null,
     incident: null,
     standing_limitations: [
@@ -448,4 +451,85 @@ export const mockAssistantResponse: AssistantResponse = {
   suggested_next_actions: ['Why is my risk elevated?', 'What does this mean for liquidity?'],
   provider: 'mock',
   guardrail_triggered: false,
+}
+
+export const mockEmptyInterventions: InterventionRecommendationsResponse = {
+  merchant_id: 'M0001',
+  as_of_date: '2024-06-28',
+  relevance_threshold_z: 2.0,
+  count: 0,
+  recommendations: [],
+  empty_state_note:
+    'No intervention is currently justified: none of the three bounded simulator controls show a material deviation from this merchant\'s own recent baseline as of this date.',
+}
+
+export const mockInterventionRecommendation = {
+  intervention_id: 'M0001:refund_rate_28d:2024-06-28',
+  merchant_id: 'M0001',
+  as_of_date: '2024-06-28',
+  control_id: 'refund_rate_28d',
+  title: 'Review refund pressure',
+  reason: "Refund rate (trailing 28 days) is currently 28.0%, which is 2.4 standard deviations above this merchant's own recent historical baseline.",
+  priority: 'high' as const,
+  priority_rank: 1,
+  current_value: { value: 0.28, provenance: 'observed' as const },
+  deviation_z: {
+    value: 2.4,
+    provenance: 'derived' as const,
+    method: 'refund_rate_deviation_z — the existing causal feature-engineering deviation-from-baseline z-score.',
+  },
+  shap_corroboration: {
+    corroborated: true,
+    provenance: 'modeled' as const,
+    note: "Whether any feature in this control's behavior group currently appears among this merchant's verified SHAP contributors pushing risk higher.",
+  },
+  simulator_control: {
+    control_id: 'refund_rate_28d',
+    label: 'Refund rate (trailing 28 days)',
+    feature: 'refund_rate_28d',
+    group: 'refund_behavior',
+    unit: 'rate_0_to_1',
+    description: 'Volume-weighted share of transactions refunded over a trailing 28-day window.',
+    min_value: 0,
+    max_value: 1,
+    baseline_value: 0.28,
+  },
+  modeled_impact_reminder:
+    'This is an observed deviation from the merchant\'s own recent baseline — not a claim that changing it will reduce real-world risk. Test the modeled impact of adjusting this control in the simulator.',
+}
+
+export const mockInterventionsWithRecommendation: InterventionRecommendationsResponse = {
+  merchant_id: 'M0001',
+  as_of_date: '2024-06-28',
+  relevance_threshold_z: 2.0,
+  count: 1,
+  recommendations: [mockInterventionRecommendation],
+  empty_state_note: null,
+}
+
+export const mockEmptyInterventionMemory: InterventionMemoryListResponse = {
+  merchant_id: 'M0001',
+  count: 0,
+  records: [],
+  empty_state_note: 'No intervention activity has been recorded for this merchant in this session. Recording is entirely optional and merchant-initiated — nothing is recorded automatically.',
+}
+
+export const mockInterventionMemoryRecord = {
+  intervention_id: 'M0001:refund_rate_28d:2024-06-28',
+  merchant_id: 'M0001',
+  control_id: 'refund_rate_28d',
+  recommendation_title: 'Review refund pressure',
+  action_status: 'acknowledged' as const,
+  timestamp: '2026-08-27T14:39:24.481251Z',
+  simulated_impact: null,
+  outcome_status: 'not_observed' as const,
+  outcome_note:
+    "This synthetic benchmark does not provide real-world post-intervention outcomes. Sentinel does not fabricate, infer, or claim to have observed one — this record remains 'not_observed' until a legitimate outcome data source exists.",
+}
+
+export const mockInterventionMemoryWithRecords: InterventionMemoryListResponse = {
+  merchant_id: 'M0001',
+  count: 1,
+  records: [mockInterventionMemoryRecord],
+  empty_state_note: null,
 }

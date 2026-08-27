@@ -13,10 +13,14 @@ import type {
   IncidentDetail,
   IncidentEvidenceResponse,
   IncidentListResponse,
+  InterventionMemoryListResponse,
+  InterventionMemoryRecord,
+  InterventionRecommendationsResponse,
   MerchantListResponse,
   MerchantProfileResponse,
   ModelMetadataResponse,
   ObservationsResponse,
+  RecordInterventionRequestBody,
   RiskResponse,
   SimulationRequestBody,
   SimulationResponse,
@@ -84,6 +88,23 @@ export function getIncidentEvidence(incidentId: string): Promise<IncidentEvidenc
 
 export function askAssistant(merchantId: string, body: AssistantRequestBody): Promise<AssistantResponse> {
   return apiClient.request(`/merchants/${encodeURIComponent(merchantId)}/assistant`, {
+    method: 'POST',
+    body,
+  })
+}
+
+export function getInterventions(merchantId: string, asOfDate?: string): Promise<InterventionRecommendationsResponse> {
+  return apiClient.request(`/merchants/${encodeURIComponent(merchantId)}/interventions`, {
+    params: { as_of_date: asOfDate },
+  })
+}
+
+export function getInterventionMemory(merchantId: string): Promise<InterventionMemoryListResponse> {
+  return apiClient.request(`/merchants/${encodeURIComponent(merchantId)}/interventions/memory`)
+}
+
+export function recordIntervention(merchantId: string, body: RecordInterventionRequestBody): Promise<InterventionMemoryRecord> {
+  return apiClient.request(`/merchants/${encodeURIComponent(merchantId)}/interventions/memory`, {
     method: 'POST',
     body,
   })

@@ -65,3 +65,16 @@ export const INCIDENT_STATUS_STYLE: Record<'active' | 'resolved', { badge: strin
   active: { badge: 'bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200', label: 'Active' },
   resolved: { badge: 'bg-slate-100 text-slate-600 ring-1 ring-slate-300', label: 'Resolved' },
 }
+
+export const ACTION_STATUS_STYLE: Record<'reviewed' | 'simulated' | 'acknowledged' | 'dismissed', { badge: string; label: string }> = {
+  reviewed: { badge: 'bg-slate-100 text-slate-700 ring-1 ring-slate-300', label: 'Reviewed' },
+  simulated: { badge: 'bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200', label: 'Simulated' },
+  acknowledged: { badge: 'bg-teal-50 text-teal-700 ring-1 ring-teal-200', label: 'Acknowledged' },
+  dismissed: { badge: 'bg-slate-50 text-slate-500 ring-1 ring-slate-200', label: 'Dismissed' },
+}
+
+/** "Not observed" is a calm, muted fact of this prototype's design — never
+ * styled as a warning/failure. See docs/architecture/intervention_intelligence.md. */
+export const OUTCOME_STATUS_STYLE: Record<'not_observed', { badge: string; label: string }> = {
+  not_observed: { badge: 'bg-slate-50 text-slate-500 ring-1 ring-slate-200', label: 'Not observed' },
+}

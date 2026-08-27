@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 import { AssistantPanel } from '@/components/assistant/AssistantPanel'
 import { EmptyState } from '@/components/common/EmptyState'
 import { ErrorState } from '@/components/common/ErrorState'
 import { LoadingState } from '@/components/common/LoadingState'
+import { RecordSimulationInMemory } from '@/components/interventions/RecordSimulationInMemory'
 import { ControlsPanel } from '@/components/simulator/ControlsPanel'
 import { SimulationResult } from '@/components/simulator/SimulationResult'
 import { SimulatorIntro } from '@/components/simulator/SimulatorIntro'
 import { useMerchantContext } from '@/context/MerchantContext'
+import { useInterventionMemory } from '@/hooks/useInterventionMemory'
+import { useInterventions } from '@/hooks/useInterventions'
 import { useMerchantProfile } from '@/hooks/useMerchantProfile'
 import { useSimulation } from '@/hooks/useSimulation'
 import { useSimulationControls } from '@/hooks/useSimulationControls'
@@ -34,6 +38,11 @@ function SimulatorContent({ merchantId }: { merchantId: string }) {
   const asOfDate = profile.data?.latest_observed_snapshot.as_of_date ?? null
   const controls = useSimulationControls(merchantId, asOfDate)
   const simulation = useSimulation(merchantId)
+  const interventions = useInterventions(merchantId, asOfDate)
+  const memory = useInterventionMemory(merchantId)
+
+  const [searchParams] = useSearchParams()
+  const highlightedControlId = searchParams.get('control')
 
   const [values, setValues] = useState<Record<string, number>>({})
 
@@ -67,6 +76,15 @@ function SimulatorContent({ merchantId }: { merchantId: string }) {
     simulation.reset()
   }
 
+  // "Record in Risk Memory" is only offered when the just-run simulation
+  // touched exactly the one control a currently-active recommendation
+  // names — a multi-control simulation, or one with no matching
+  // recommendation, has no single intervention_id to attach the record to.
+  const matchingRecommendation =
+    simulation.data && simulation.data.controls.length === 1 && interventions.data
+      ? interventions.data.recommendations.find((rec) => rec.control_id === simulation.data!.controls[0].control_id)
+      : undefined
+
   return (
     <div className="flex flex-col gap-6">
       <SimulatorIntro merchantId={merchantId} asOfDate={asOfDate} />
@@ -85,9 +103,10 @@ function SimulatorContent({ merchantId }: { merchantId: string }) {
             canRun={hasChanges && !simulation.loading}
             running={simulation.loading}
             hasChanges={hasChanges}
+            highlightedControlId={highlightedControlId}
           />
 
-          <div>
+          <div className="flex flex-col gap-3">
             {simulation.loading && <LoadingState label="Running simulation on the saved model…" />}
             {simulation.error ? <ErrorState error={simulation.error} /> : null}
             {!simulation.loading && !simulation.error && !simulation.data && (
@@ -97,6 +116,14 @@ function SimulatorContent({ merchantId }: { merchantId: string }) {
               />
             )}
             {simulation.data && <SimulationResult result={simulation.data} />}
+            {simulation.data && matchingRecommendation && (
+              <RecordSimulationInMemory
+                merchantId={merchantId}
+                interventionId={matchingRecommendation.intervention_id}
+                simulationRequest={simulationRequestFromResult(simulation.data)}
+                onRecorded={memory.refetch}
+              />
+            )}
           </div>
         </div>
       )}

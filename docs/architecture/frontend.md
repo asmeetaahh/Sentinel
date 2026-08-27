@@ -63,6 +63,9 @@ apps/dashboard/src/
     useRiskTrend.ts    derives a real 7-day-prior comparison via a second /risk call
     useSimulationControls.ts   useAsync wrapper around GET .../simulation/controls
     useSimulation.ts   imperative (button-triggered) POST .../simulation, not auto-run
+    useInterventions.ts   useAsync wrapper around GET .../interventions
+    useInterventionMemory.ts   useAsync wrapper around GET .../interventions/memory, exposes refetch()
+    useRecordIntervention.ts   imperative POST .../interventions/memory
   context/
     MerchantContext.tsx   selected merchant + full merchant list, app-wide
   lib/
@@ -76,6 +79,7 @@ apps/dashboard/src/
     overview/            RiskSummary, ExposureCard, LiquidityCard, TrajectoryChart, RiskDrivers
     simulator/           SimulatorIntro, ControlSlider, ControlsPanel, SimulationResult
     incidents/           IncidentModeIntro, IncidentList, IncidentHeader, CaseSummaryCard, EvidenceChecklist, ResponsePreparation
+    interventions/       InterventionIntelligence, InterventionRow, RiskMemoryPanel, RecordSimulationInMemory — see docs/architecture/intervention_intelligence.md
     assistant/           AssistantPanel, SuggestedPrompts, AssistantAnswer — see docs/architecture/ai_orchestrator.md
   pages/
     OverviewPage.tsx           composes the above for the Overview screen
@@ -155,6 +159,16 @@ the Risk Drivers card without blocking the rest of the page.
   modeled risk" / "Reducing modeled risk"), plus the backend's
   causality disclaimer footer. Shows an explicit empty state if a
   merchant has no drivers rather than fabricating any.
+- **InterventionIntelligence** — the deterministic, ranked recommendation
+  list from `/merchants/{id}/interventions` (priority badge, optional
+  "Verified SHAP driver" badge, reason, expandable "Why this matters,"
+  "Test in Simulator" deep link, "Acknowledge" action), or the honest
+  empty state when nothing clears the relevance bar. See
+  `docs/architecture/intervention_intelligence.md` for the full rules.
+- **RiskMemoryPanel** — this merchant's Risk Memory records, newest
+  first, each showing action status and an always-present "Outcome: Not
+  observed" badge — or its own honest empty state when nothing has been
+  recorded.
 - **AssistantPanel** — embedded at the bottom of the screen; see
   "Assistant panel" below.
 
@@ -176,7 +190,17 @@ result; switching merchants (via the same shared `MerchantContext`) does
 the same automatically. `AssistantPanel` is embedded below the result,
 receiving the currently-run simulation (reconstructed from the result via
 `lib/simulationRequest.ts:simulationRequestFromResult`, never a raw client
-number the backend has to trust) so the assistant can explain it.
+number the backend has to trust) so the assistant can explain it. When
+arrived at via an Intervention Intelligence "Test in Simulator" link
+(`/simulator?control=<control_id>`, read via `useSearchParams()`), the
+matching `ControlSlider` gets a visual ring highlight
+(`highlightedControlId`) — a UI affordance only, every control stays
+independently editable. After a simulation touches exactly the one
+control a currently-active recommendation names,
+`RecordSimulationInMemory` offers to record that modeled result in Risk
+Memory (`action_status: "simulated"`) — omitted for a multi-control
+simulation or one with no matching recommendation, since there is no
+single `intervention_id` to attach it to.
 
 ## Incident Response screen
 
@@ -216,7 +240,9 @@ panel is a thin client for.
 `/health`, `/merchants`, `/merchants/{id}`, `/merchants/{id}/observations`,
 `/merchants/{id}/risk`, `/merchants/{id}/explanation`,
 `/merchants/{id}/simulation/controls`, `/merchants/{id}/simulation`,
-`/merchants/{id}/incidents`, `/incidents/{id}`, `/merchants/{id}/assistant`.
+`/merchants/{id}/incidents`, `/incidents/{id}`,
+`/merchants/{id}/interventions`, `/merchants/{id}/interventions/memory`
+(GET and POST), `/merchants/{id}/assistant`.
 (`/metadata`, `/merchants/{id}/features`, and `/incidents/{id}/evidence`
 are typed in `api/types.ts` for completeness but not yet called from any
 screen.)
@@ -232,8 +258,11 @@ tokens file:
   borders, restrained shadows — no gradients, no glassmorphism.
 - **Color semantics**: slate = observed, indigo = modeled, teal =
   derived (`lib/provenance.ts`); red = elevated risk / negative driver,
-  emerald/teal = normal risk / positive driver. Colors are never reused
-  for unrelated meanings.
+  emerald/teal = normal risk / positive driver. Intervention priority
+  reuses the existing amber/slate `PRIORITY_STYLE` (no red for "high"),
+  and Risk Memory's `ACTION_STATUS_STYLE`/`OUTCOME_STATUS_STYLE` are
+  deliberately muted — "not observed" is styled as a calm fact, never a
+  warning. Colors are never reused for unrelated meanings.
 - **Focus states**: a visible `:focus-visible` ring is defined globally
   in `index.css` and never removed, for keyboard accessibility.
 

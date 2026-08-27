@@ -1,18 +1,28 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import * as endpoints from '@/api/endpoints'
 import { MerchantProvider } from '@/context/MerchantContext'
-import { mockControlsList, mockMerchantList, mockMerchantProfile, mockSimulationResponse } from '@/test/fixtures'
+import {
+  mockControlsList,
+  mockEmptyInterventionMemory,
+  mockEmptyInterventions,
+  mockMerchantList,
+  mockMerchantProfile,
+  mockSimulationResponse,
+} from '@/test/fixtures'
 
 import { SimulatorPage } from './SimulatorPage'
 
-function renderSimulator() {
+function renderSimulator(initialPath = '/simulator') {
   return render(
-    <MerchantProvider>
-      <SimulatorPage />
-    </MerchantProvider>,
+    <MemoryRouter initialEntries={[initialPath]}>
+      <MerchantProvider>
+        <SimulatorPage />
+      </MerchantProvider>
+    </MemoryRouter>,
   )
 }
 
@@ -29,6 +39,8 @@ describe('SimulatorPage', () => {
     vi.spyOn(endpoints, 'getMerchantProfile').mockResolvedValue(mockMerchantProfile)
     vi.spyOn(endpoints, 'getSimulationControls').mockResolvedValue(mockControlsList)
     vi.spyOn(endpoints, 'runSimulation').mockResolvedValue(mockSimulationResponse)
+    vi.spyOn(endpoints, 'getInterventions').mockResolvedValue(mockEmptyInterventions)
+    vi.spyOn(endpoints, 'getInterventionMemory').mockResolvedValue(mockEmptyInterventionMemory)
   })
 
   it('shows a loading state before merchants have loaded', () => {

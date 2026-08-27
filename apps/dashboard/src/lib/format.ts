@@ -9,6 +9,13 @@ const numberFormatter = new Intl.NumberFormat('en-US', { maximumFractionDigits: 
 const percentFormatter = new Intl.NumberFormat('en-US', { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 })
 const dateFormatter = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
 const shortDateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' })
+const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: '2-digit',
+})
 
 export function formatAmount(value: number): string {
   return `${numberFormatter.format(value)} units`
@@ -31,6 +38,12 @@ export function formatDate(isoDate: string): string {
 
 export function formatShortDate(isoDate: string): string {
   return shortDateFormatter.format(new Date(`${isoDate}T00:00:00Z`))
+}
+
+/** For a full ISO 8601 datetime (e.g. a Risk Memory record's server-assigned
+ * timestamp) — distinct from formatDate, which expects a bare date. */
+export function formatDateTime(isoDateTime: string): string {
+  return dateTimeFormatter.format(new Date(isoDateTime))
 }
 
 export function formatRatio(value: number, digits = 2): string {

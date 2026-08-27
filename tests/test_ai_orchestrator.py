@@ -188,6 +188,36 @@ def test_context_includes_incident_section_when_requested(state, merchant_with_i
     assert context.incident.incident_id == incident_id
 
 
+def test_context_interventions_matches_recommendation_service_exactly(state, any_merchant_id):
+    """Proves the AI context never re-derives intervention recommendations
+    — it must be byte-identical to the real, unmodified recommendation
+    service's own output for the same merchant/date.
+    """
+    from backend.interventions import recommendation_service
+
+    context = context_builder.build_context(state, any_merchant_id)
+    expected = recommendation_service.get_recommendations(state, any_merchant_id)
+
+    assert len(context.interventions) == expected["count"]
+    for ctx_rec, expected_rec in zip(context.interventions, expected["recommendations"]):
+        assert ctx_rec.intervention_id == expected_rec["intervention_id"]
+        assert ctx_rec.control_id == expected_rec["control_id"]
+        assert ctx_rec.title == expected_rec["title"]
+        assert ctx_rec.reason == expected_rec["reason"]
+        assert ctx_rec.priority == expected_rec["priority"]
+
+
+def test_context_interventions_empty_list_for_a_merchant_with_no_recommendation(state):
+    from backend.interventions import recommendation_service
+
+    for merchant_id in state.merchants["merchant_id"]:
+        if recommendation_service.get_recommendations(state, merchant_id)["count"] == 0:
+            context = context_builder.build_context(state, merchant_id)
+            assert context.interventions == []
+            return
+    pytest.fail("no merchant with zero recommendations found to test the empty case")
+
+
 def test_context_rejects_incident_belonging_to_another_merchant(state, merchant_with_incident):
     other_merchant_id = next(m for m in state.merchants["merchant_id"] if m != merchant_with_incident[0])
     from backend.incidents.incident_service import IncidentNotFoundError
@@ -224,6 +254,26 @@ def test_standing_limitations_reflect_documented_model_boundaries(state, any_mer
     assert "persistence baseline" in joined or "exposure-regression" in joined
 
 
+def test_provenance_includes_interventions_only_when_present(state):
+    from backend.interventions import recommendation_service
+
+    with_rec = next(m for m in state.merchants["merchant_id"] if recommendation_service.get_recommendations(state, m)["count"] > 0)
+    without_rec = next(m for m in state.merchants["merchant_id"] if recommendation_service.get_recommendations(state, m)["count"] == 0)
+
+    assert guardrails.summarize_provenance(context_builder.build_context(state, with_rec))["interventions"] == "derived"
+    assert "interventions" not in guardrails.summarize_provenance(context_builder.build_context(state, without_rec))
+
+
+def test_standing_limitations_include_intervention_boundary_when_present(state):
+    from backend.interventions import recommendation_service
+
+    merchant_id = next(m for m in state.merchants["merchant_id"] if recommendation_service.get_recommendations(state, m)["count"] > 0)
+    context = context_builder.build_context(state, merchant_id)
+    joined = " ".join(context.standing_limitations).lower()
+    assert "deterministic, rule-based decision layer" in joined
+    assert "not an ml model and not an llm-generated suggestion" in joined
+
+
 # ---------------------------------------------------------------------------
 # Numerical safety: values in the AssistantResponse must exactly match the
 # authoritative service output, never an LLM-produced number.
@@ -247,6 +297,37 @@ def test_mock_provider_never_invents_a_probability_not_in_context(state, any_mer
     raw = MockProvider().complete("sys", "why is my risk elevated?", context)
     parsed = json.loads(raw)
     assert f"{context.risk.probability_calibrated:.1%}" in parsed["answer"]
+
+
+def test_mock_provider_intervention_answer_only_uses_real_recommendation_reasons(state):
+    from backend.interventions import recommendation_service
+
+    merchant_id = next(m for m in state.merchants["merchant_id"] if recommendation_service.get_recommendations(state, m)["count"] > 0)
+    context = context_builder.build_context(state, merchant_id)
+    raw = MockProvider().complete("sys", "what should I consider reviewing?", context)
+    answer = json.loads(raw)["answer"]
+
+    for rec in context.interventions:
+        assert rec.title in answer
+        assert rec.reason in answer  # the exact reason already computed — never a reworded/invented one
+
+
+def test_mock_provider_intervention_answer_empty_state_when_none_relevant(state):
+    from backend.interventions import recommendation_service
+
+    merchant_id = next(m for m in state.merchants["merchant_id"] if recommendation_service.get_recommendations(state, m)["count"] == 0)
+    context = context_builder.build_context(state, merchant_id)
+    raw = MockProvider().complete("sys", "what should I consider reviewing?", context)
+    answer = json.loads(raw)["answer"].lower()
+    assert "no intervention is currently recommended" in answer
+
+
+def test_assistant_never_claims_learning_from_risk_memory_or_a_success_rate(state, any_merchant_id):
+    for question in ["What is my intervention success rate?", "Has Sentinel learned from past interventions?"]:
+        response = handle_assistant_request(state, any_merchant_id, AssistantRequest(question=question))
+        lowered = response.answer.lower()
+        assert "success rate" not in lowered
+        assert "has learned" not in lowered and "sentinel has learned" not in lowered
 
 
 # ---------------------------------------------------------------------------
@@ -447,6 +528,19 @@ def test_system_prompt_contains_required_safety_rules(state, any_merchant_id):
     assert "not causal" in lowered or "never call it causal" in lowered
     assert "untrusted input" in lowered
     assert "never fabricate evidence" in lowered or "never fabricate" in lowered
+
+
+def test_system_prompt_contains_intervention_and_memory_boundary_rules(state, any_merchant_id):
+    from backend.ai.prompt import build_system_prompt
+
+    context = context_builder.build_context(state, any_merchant_id)
+    system_prompt = build_system_prompt(context)
+    lowered = system_prompt.lower()
+
+    assert "intervention recommendation" in lowered
+    assert "never invent a new recommendation" in lowered
+    assert '"not_observed"' in lowered or "not_observed" in lowered
+    assert "learned" in lowered and "risk memory" in lowered
 
 
 # ---------------------------------------------------------------------------

@@ -39,6 +39,10 @@ _OUT_OF_SCOPE_MARKERS = (
     "real-world probability",
     "production ready",
     "production-ready",
+    "success rate",
+    "learned from",
+    "has sentinel learned",
+    "outcome rate",
 )
 
 
@@ -125,6 +129,25 @@ def _draft_answer(context: SentinelAIContext) -> str:
     return "\n".join(body)
 
 
+def _intervention_answer(context: SentinelAIContext) -> str:
+    if not context.interventions:
+        return (
+            "No intervention is currently recommended for this merchant — none of the three bounded "
+            "simulator controls (refund rate, on-time fulfillment rate, new-customer share) show a "
+            "material deviation from this merchant's own recent baseline as of this date."
+        )
+    lines = ["Current intervention recommendations, in priority order:"]
+    for rec in context.interventions:
+        lines.append(f"- [{rec.priority}] {rec.title} — {rec.reason}")
+    lines.append(
+        "These are deterministic, rule-based candidates grounded in this merchant's own observed "
+        "deviation from baseline — not an ML prediction and not an LLM-generated suggestion. They do not "
+        "guarantee a change in real-world risk. Test a control's modeled impact in the simulator before "
+        "drawing any conclusion."
+    )
+    return "\n".join(lines)
+
+
 def _out_of_scope_answer() -> str:
     return (
         "That's not something I can answer from Sentinel's verified context — this prototype has no access to "
@@ -139,11 +162,13 @@ def _general_answer(context: SentinelAIContext) -> str:
         parts.append(f"Modeled {context.risk.horizon_days}-day risk: {context.risk.risk_state} ({context.risk.probability_calibrated:.1%}).")
     if context.liquidity is not None and context.liquidity.liquidity_stress is not None:
         parts.append(f"Liquidity stress: {context.liquidity.liquidity_stress:.2f}x (derived).")
+    if context.interventions:
+        parts.append(f"{len(context.interventions)} intervention recommendation(s) are currently grounded for this merchant.")
     if context.incident is not None:
         parts.append(f"Selected incident: {context.incident.incident_id}, evidence {context.incident.evidence_readiness_status}.")
     if context.simulation is not None:
         parts.append("A simulation result is also loaded — ask me to explain its modeled impact.")
-    parts.append("Ask about risk drivers, liquidity, a simulation, or incident evidence for more detail.")
+    parts.append("Ask about risk drivers, liquidity, recommended interventions, a simulation, or incident evidence for more detail.")
     return " ".join(parts)
 
 
@@ -162,6 +187,8 @@ class MockProvider:
             body = _incident_answer(context)
         elif context.simulation is not None and any(k in question for k in ("simulat", "what if", "modeled impact")):
             body = _simulation_answer(context)
+        elif any(k in question for k in ("recommend", "intervention", "should i", "what should", "consider")):
+            body = _intervention_answer(context)
         elif any(k in question for k in ("liquidity", "cash", "buffer")):
             body = _liquidity_answer(context)
         elif any(k in question for k in ("risk", "driver", "why", "elevated", "flag")):
@@ -171,6 +198,8 @@ class MockProvider:
 
         answer = f"{MOCK_LABEL} {body}"
         suggested = ["Why is my risk elevated?", "What does this mean for liquidity?"]
+        if context.interventions:
+            suggested.append("What should I consider reviewing?")
         if context.simulation is not None:
             suggested.append("Explain the modeled impact of my simulation.")
         if context.incident is not None:

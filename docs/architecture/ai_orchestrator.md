@@ -54,7 +54,18 @@ from existing, unmodified service calls:
 | `drivers` | `explainability_service.explain()` — same call `/explanation` makes | `modeled` |
 | `simulation` (optional) | `simulation_service.simulate()` — same call `/simulation` makes, **re-run**, never client-relayed (see below) | `modeled` |
 | `incident` (optional) | `incident_service.get_incident()` — same call `/incidents/{id}` makes | `derived` |
+| `interventions` | `recommendation_service.get_recommendations()` — same call `/merchants/{id}/interventions` makes, always computed like `drivers` | `derived` |
 | `standing_limitations` | fixed, backend-authored strings (see §5) | — |
+
+**Interventions are explained, never generated, by the assistant.** The
+`interventions` list is the exact same ranked output
+`docs/architecture/intervention_intelligence.md` describes — the
+assistant may summarize an existing recommendation's `reason` verbatim,
+but cannot invent a new recommendation, a different control, or a reason
+not already given (system prompt rule 10, §5 below). The assistant also
+never sees, and never reports on, Merchant Risk Memory records — it has
+no way to claim Sentinel "learned" from past interventions or calculate a
+success rate, because no such context field exists (rule 11).
 
 Nothing here reads raw filesystem/database content directly — every field
 is a named, typed pass-through of an existing service's already-validated
@@ -127,6 +138,11 @@ instructs the model accordingly:
   caller supplies simulation controls; rule 4 enforces "MODELED IMPACT" framing.
 - **Explain incident/evidence readiness** — `incident` section; rule 5
   enforces "missing evidence is missing, never implied to exist."
+- **Explain an intervention recommendation** — `interventions` section;
+  rules 10–11 restrict the assistant to summarizing an existing
+  recommendation's own `reason`, forbid inventing a new one, and forbid
+  any claim about Risk Memory outcomes or a "success rate" — see
+  `docs/architecture/intervention_intelligence.md`.
 - **Draft response material** — no separate schema field; the system
   prompt's rule 6 requires any drafted text to be labeled a draft and
   state it requires merchant confirmation. The mock provider's
@@ -156,6 +172,18 @@ improve the candidate, exposure regression did not beat the persistence
 baseline) — see `context_builder.py`'s `STANDING_LIMITATIONS_*` constants,
 which are also echoed verbatim into `AssistantResponse.limitations`
 regardless of what the provider says.
+
+Two rules were added for Intervention Intelligence / Merchant Risk
+Memory (`backend/ai/prompt.py:SYSTEM_RULES`, rules 10–11): rule 10
+permits summarizing an existing recommendation's `reason` verbatim but
+forbids inventing a new recommendation, a different control, or an
+unsupported reason, and forbids implying that acting on one guarantees or
+causes a change in real-world risk; rule 11 forbids claiming Sentinel has
+"learned" from Risk Memory, calculating an intervention success rate, or
+claiming a real-world outcome was observed for any past intervention —
+`"not_observed"` is the only status the assistant may ever report,
+matching the fact that no `outcome_status` other than `"not_observed"`
+can exist in this system (`docs/architecture/intervention_intelligence.md`).
 
 ## 6. Prompt-injection defense
 
@@ -236,7 +264,12 @@ the deliberate default, and its output is unconditionally prefixed with
 `MOCK_LABEL`. No production component hardcodes an "impressive" answer —
 `apps/dashboard/src/components/assistant/AssistantPanel.test.tsx`'s "never
 renders any answer text that was not returned by the API" test guards this
-directly.
+directly. Its keyword router now also recognizes intervention-related
+questions (`_intervention_answer`, routed on "recommend"/"intervention"/
+"should i"/"what should"/"consider") and returns a plain refusal-style
+answer for out-of-scope questions like "success rate," "learned from," or
+"outcome rate" — the mock provider demonstrates the same rule 10/11
+boundary a real provider is instructed to respect, deterministically.
 
 ## 11. External dependency
 
