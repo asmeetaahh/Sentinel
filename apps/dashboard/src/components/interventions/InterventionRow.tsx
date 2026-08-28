@@ -29,29 +29,29 @@ export function InterventionRow({
               {priorityStyle.label}
             </span>
             {recommendation.shap_corroboration.corroborated && (
-              <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-medium text-indigo-700 ring-1 ring-indigo-200">
+              <span className="inline-flex items-center rounded-full bg-indigo-500/10 px-2 py-0.5 text-[11px] font-medium text-indigo-300 ring-1 ring-indigo-200">
                 Verified SHAP driver
               </span>
             )}
           </div>
-          <h4 className="mt-1 text-sm font-semibold text-slate-800">{recommendation.title}</h4>
+          <h4 className="mt-1 text-sm font-semibold text-foreground">{recommendation.title}</h4>
         </div>
-        <span className="text-xs text-slate-400 tabular-nums">
+        <span className="text-xs text-muted-foreground tabular-nums">
           {formatPercent(recommendation.current_value.value)} · {Math.abs(recommendation.deviation_z.value).toFixed(1)}σ
         </span>
       </div>
 
-      <p className="text-sm text-slate-600">{recommendation.reason}</p>
+      <p className="text-sm text-secondary-foreground">{recommendation.reason}</p>
 
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
-        className="w-fit text-xs font-medium text-slate-400 underline decoration-dotted hover:text-slate-600"
+        className="w-fit text-xs font-medium text-muted-foreground underline decoration-dotted hover:text-secondary-foreground"
       >
         {expanded ? 'Hide details' : 'Why this matters'}
       </button>
       {expanded && (
-        <div className="rounded-md bg-slate-50 px-3 py-2 text-xs text-slate-500">
+        <div className="rounded-md bg-muted px-3 py-2 text-xs text-secondary-foreground">
           <p>{recommendation.deviation_z.method}</p>
           <p className="mt-1">{recommendation.shap_corroboration.note}</p>
           <p className="mt-1">{recommendation.modeled_impact_reminder}</p>
@@ -69,7 +69,7 @@ export function InterventionRow({
           type="button"
           onClick={onAcknowledge}
           disabled={acknowledging || acknowledged}
-          className="flex items-center gap-1.5 rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+          className="flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-secondary-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
         >
           {acknowledging ? <InlineLoadingState /> : acknowledged ? 'Acknowledged ✓' : 'Acknowledge'}
         </button>

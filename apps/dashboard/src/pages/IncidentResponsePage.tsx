@@ -66,14 +66,12 @@ function IncidentResponseContent({ merchantId }: { merchantId: string }) {
   return (
     <div className="flex flex-col gap-6">
       <IncidentModeIntro merchantId={merchantId} />
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">
-        <IncidentList
-          incidents={incidents.data.incidents}
-          selectedIncidentId={selectedIncidentId}
-          onSelect={setSelectedIncidentId}
-        />
-        {selectedIncidentId && <IncidentDetailPane incidentId={selectedIncidentId} />}
-      </div>
+      <IncidentList
+        incidents={incidents.data.incidents}
+        selectedIncidentId={selectedIncidentId}
+        onSelect={setSelectedIncidentId}
+      />
+      {selectedIncidentId && <IncidentDetailPane incidentId={selectedIncidentId} />}
     </div>
   )
 }

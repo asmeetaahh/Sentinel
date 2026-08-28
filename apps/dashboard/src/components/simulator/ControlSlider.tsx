@@ -24,10 +24,10 @@ export function ControlSlider({
   return (
     <div className={`flex flex-col gap-2 ${highlighted ? 'rounded-lg p-2 ring-2 ring-indigo-300' : ''}`}>
       <div className="flex items-baseline justify-between gap-2">
-        <label htmlFor={control.control_id} className="text-sm font-medium text-slate-700">
+        <label htmlFor={control.control_id} className="text-sm font-medium text-foreground">
           {control.label}
         </label>
-        <span className={`text-sm font-semibold tabular-nums ${isChanged ? 'text-indigo-700' : 'text-slate-500'}`}>
+        <span className={`text-sm font-semibold tabular-nums ${isChanged ? 'text-indigo-300' : 'text-secondary-foreground'}`}>
           {formatPercent(value)}
         </span>
       </div>
@@ -47,18 +47,18 @@ export function ControlSlider({
         <span
           aria-hidden="true"
           title={`Currently observed value: ${formatPercent(control.baseline_value)}`}
-          className="pointer-events-none absolute top-1/2 h-3 w-0.5 -translate-y-1/2 bg-slate-400"
+          className="pointer-events-none absolute top-1/2 h-3 w-0.5 -translate-y-1/2 bg-slate-300"
           style={{ left: `${baselinePct}%` }}
         />
       </div>
 
-      <div className="flex items-center justify-between text-[11px] text-slate-400">
+      <div className="flex items-center justify-between text-[11px] text-muted-foreground">
         <span>{formatPercent(control.min_value)}</span>
         <span>Observed baseline: {formatPercent(control.baseline_value)}</span>
         <span>{formatPercent(control.max_value)}</span>
       </div>
 
-      <p id={descriptionId} className="text-xs text-slate-400">
+      <p id={descriptionId} className="text-xs text-muted-foreground">
         {control.description}
       </p>
     </div>

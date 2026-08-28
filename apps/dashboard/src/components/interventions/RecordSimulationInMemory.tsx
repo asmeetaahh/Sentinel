@@ -35,7 +35,7 @@ export function RecordSimulationInMemory({
   }
 
   if (done) {
-    return <p className="text-xs font-medium text-teal-700">✓ Recorded in Risk Memory</p>
+    return <p className="text-xs font-medium text-teal-400">✓ Recorded in Risk Memory</p>
   }
 
   return (
@@ -44,11 +44,11 @@ export function RecordSimulationInMemory({
         type="button"
         onClick={handleClick}
         disabled={record.loading}
-        className="flex w-fit items-center gap-2 rounded-md border border-indigo-300 bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700 transition-colors hover:bg-indigo-100 disabled:cursor-not-allowed disabled:opacity-60"
+        className="flex w-fit items-center gap-2 rounded-md border border-indigo-400/40 bg-indigo-500/10 px-3 py-1.5 text-xs font-medium text-indigo-300 transition-colors hover:bg-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {record.loading ? <InlineLoadingState /> : 'Record this modeled impact in Risk Memory'}
       </button>
-      {record.error ? <p className="text-xs text-red-600">Could not record this action. Try again.</p> : null}
+      {record.error ? <p className="text-xs text-red-400">Could not record this action. Try again.</p> : null}
     </div>
   )
 }

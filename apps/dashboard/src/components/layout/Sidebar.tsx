@@ -4,15 +4,13 @@ import { NAV_ITEMS } from './navigation'
 
 export function Sidebar() {
   return (
-    <aside className="flex h-full w-16 flex-col justify-between border-r border-slate-800 bg-slate-950 py-4 md:w-60 md:px-3">
+    <aside className="flex h-full w-16 flex-col justify-between border-r border-border bg-background py-4 md:w-60 md:px-3">
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-2 px-2 md:px-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-indigo-600 text-sm font-semibold text-white">
-            S
-          </span>
+          <img src="/sentinel-logo.png" alt="" width={30} height={30} className="h-[30px] w-[30px] shrink-0 rounded-md" />
           <div className="hidden flex-col leading-tight md:flex">
-            <span className="text-sm font-semibold tracking-wide text-white">Sentinel</span>
-            <span className="text-[11px] text-slate-400">Risk Intelligence</span>
+            <span className="text-sm font-semibold tracking-wide text-indigo-300">Sentinel</span>
+            <span className="text-[11px] text-muted-foreground">Risk Intelligence</span>
           </div>
         </div>
 
@@ -25,14 +23,18 @@ export function Sidebar() {
                 end={to === '/'}
                 title={label}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive ? 'bg-slate-800/70 text-white' : 'text-slate-300 hover:bg-slate-900 hover:text-white'
+                  `flex items-center gap-3 rounded-md border px-3 py-2 text-sm font-medium transition-all duration-150 ${
+                    isActive
+                      ? 'border-indigo-500/30 bg-indigo-500/10 text-foreground shadow-[0_0_16px_-4px_rgba(129,140,248,0.35)]'
+                      : 'border-transparent text-secondary-foreground hover:border-indigo-500/15 hover:bg-indigo-500/5 hover:text-foreground'
                   }`
                 }
               >
                 {({ isActive }) => (
                   <>
-                    <Icon className={`shrink-0 ${isActive ? 'text-indigo-400' : 'text-slate-500'}`} />
+                    <Icon
+                      className={`shrink-0 ${isActive ? 'text-indigo-300 drop-shadow-[0_0_4px_rgba(165,180,252,0.55)]' : 'text-muted-foreground'}`}
+                    />
                     <span className="hidden md:inline">{label}</span>
                   </>
                 )}
@@ -44,12 +46,12 @@ export function Sidebar() {
                 disabled
                 aria-disabled="true"
                 title={`${label} — coming soon`}
-                className="flex cursor-not-allowed items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500"
+                className="flex cursor-not-allowed items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground"
               >
-                <Icon className="shrink-0 text-slate-600" />
+                <Icon className="shrink-0 text-muted-foreground" />
                 <span className="hidden items-center gap-2 md:flex">
                   {label}
-                  <span className="rounded-full bg-slate-800 px-1.5 py-0.5 text-[10px] font-medium text-slate-400">
+                  <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
                     Soon
                   </span>
                 </span>
@@ -59,7 +61,7 @@ export function Sidebar() {
         </nav>
       </div>
 
-      <div className="hidden px-2 text-[11px] leading-snug text-slate-500 md:block">
+      <div className="hidden px-2 text-[11px] leading-snug text-muted-foreground md:block">
         Synthetic benchmark prototype. No real merchant or Razorpay data.
       </div>
     </aside>

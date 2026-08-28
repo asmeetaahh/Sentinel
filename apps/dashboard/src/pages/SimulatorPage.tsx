@@ -100,10 +100,10 @@ function SimulatorContent({ merchantId }: { merchantId: string }) {
       <SimulatorIntro merchantId={merchantId} asOfDate={asOfDate} />
 
       {deepLinkedRecommendation && (
-        <section className="rounded-xl border border-indigo-200 bg-indigo-50/60 p-4">
+        <section className="rounded-xl border border-indigo-400/30 bg-indigo-500/10 p-4">
           <p className="text-xs font-medium tracking-wide text-indigo-500 uppercase">Testing a recommended intervention</p>
-          <p className="mt-1 text-sm font-semibold text-indigo-900">{deepLinkedRecommendation.title}</p>
-          <p className="mt-1 text-sm text-indigo-800">{deepLinkedRecommendation.reason}</p>
+          <p className="mt-1 text-sm font-semibold text-indigo-100">{deepLinkedRecommendation.title}</p>
+          <p className="mt-1 text-sm text-indigo-200">{deepLinkedRecommendation.reason}</p>
         </section>
       )}
 

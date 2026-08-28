@@ -28,14 +28,14 @@ export function describeError(error: unknown): { title: string; detail: string }
 export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: () => void }) {
   const { title, detail } = describeError(error)
   return (
-    <div role="alert" className="flex flex-col gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm">
-      <p className="font-medium text-red-800">{title}</p>
-      <p className="text-red-700">{detail}</p>
+    <div role="alert" className="flex flex-col gap-2 rounded-lg border border-red-500/25 bg-red-500/10 px-4 py-3 text-sm">
+      <p className="font-medium text-red-300">{title}</p>
+      <p className="text-red-400/90">{detail}</p>
       {onRetry && (
         <button
           type="button"
           onClick={onRetry}
-          className="mt-1 w-fit rounded-md border border-red-300 bg-white px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100"
+          className="mt-1 w-fit rounded-md border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-300 hover:bg-red-500/20"
         >
           Retry
         </button>

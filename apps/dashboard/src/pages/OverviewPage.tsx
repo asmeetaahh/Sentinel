@@ -51,11 +51,11 @@ function OverviewContent({ merchantId }: { merchantId: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="rounded-xl border border-border bg-card p-5 shadow-sm shadow-black/20">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-medium tracking-wide text-slate-400 uppercase">Current merchant state</p>
-            <p className="text-sm text-slate-600">
+            <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">Current merchant state</p>
+            <p className="text-sm text-secondary-foreground">
               {profile.data.merchant_id} · signed up {formatDate(profile.data.signup_date)} ·{' '}
               {profile.data.weekly_seasonality_profile.replace('_', ' ')}
             </p>
@@ -88,7 +88,7 @@ function OverviewContent({ merchantId }: { merchantId: string }) {
       {explanation.loading && <LoadingState label="Computing verified SHAP explanation…" />}
       {explanation.error ? (
         <div>
-          <p className="mb-2 text-sm font-medium text-slate-500">Verified model drivers</p>
+          <p className="mb-2 text-sm font-medium text-secondary-foreground">Verified model drivers</p>
           <ErrorState error={explanation.error} />
         </div>
       ) : null}
@@ -127,8 +127,8 @@ function OverviewContent({ merchantId }: { merchantId: string }) {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-[11px] font-medium tracking-wide text-slate-400 uppercase">{label}</p>
-      <p className="font-semibold text-slate-700 tabular-nums">{value}</p>
+      <p className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">{label}</p>
+      <p className="font-semibold text-foreground tabular-nums">{value}</p>
     </div>
   )
 }

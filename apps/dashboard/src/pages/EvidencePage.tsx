@@ -5,6 +5,7 @@ import { ErrorState } from '@/components/common/ErrorState'
 import { LoadingState } from '@/components/common/LoadingState'
 import { CaseSummaryCard } from '@/components/incidents/CaseSummaryCard'
 import { EvidenceChecklist } from '@/components/incidents/EvidenceChecklist'
+import { IncidentHeader } from '@/components/incidents/IncidentHeader'
 import { IncidentList } from '@/components/incidents/IncidentList'
 import { useMerchantContext } from '@/context/MerchantContext'
 import { useIncident } from '@/hooks/useIncident'
@@ -40,9 +41,9 @@ function EvidenceContent({ merchantId }: { merchantId: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <p className="text-xs font-medium tracking-wide text-slate-400 uppercase">Evidence Readiness</p>
-        <p className="mt-2 max-w-3xl text-sm text-slate-600">
+      <section className="rounded-xl border border-border bg-card p-5 shadow-sm shadow-black/20">
+        <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">Evidence Readiness</p>
+        <p className="mt-2 max-w-3xl text-sm text-secondary-foreground">
           Reason-code-specific evidence readiness for <span className="font-medium">{merchantId}</span>'s detected
           incidents — the same evidence-readiness logic shown on Incident Response, focused here on what's available
           versus missing. Sentinel never fabricates a document, transaction record, tracking number, invoice ID, or
@@ -62,14 +63,14 @@ function EvidenceContent({ merchantId }: { merchantId: string }) {
       )}
 
       {incidents.data && incidents.data.count > 0 && (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">
+        <>
           <IncidentList
             incidents={incidents.data.incidents}
             selectedIncidentId={selectedIncidentId}
             onSelect={setSelectedIncidentId}
           />
           {selectedIncidentId && <EvidenceDetailPane incidentId={selectedIncidentId} />}
-        </div>
+        </>
       )}
     </div>
   )
@@ -84,6 +85,7 @@ function EvidenceDetailPane({ incidentId }: { incidentId: string }) {
 
   return (
     <div className="flex flex-col gap-6">
+      <IncidentHeader incident={incident.data} />
       <CaseSummaryCard caseSummary={incident.data.case_summary} />
       <EvidenceChecklist evidence={incident.data.evidence_readiness} />
     </div>

@@ -12,10 +12,10 @@ export function Header() {
   const pageTitle = NAV_ITEMS.find((item) => item.to === pathname)?.label ?? 'Overview'
 
   return (
-    <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 bg-white px-6 py-4">
+    <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border bg-background px-6 py-4">
       <div>
-        <h1 className="text-lg font-semibold text-slate-900">{pageTitle}</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="text-lg font-semibold text-foreground">{pageTitle}</h1>
+        <p className="text-sm text-secondary-foreground">
           {selected ? (
             <>
               {selected.archetype} · {selected.business_tier} tier

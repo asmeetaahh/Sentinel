@@ -25,8 +25,8 @@ export function ResponsePreparation({ incident }: { incident: IncidentDetail }) 
             <span
               className={`rounded-full px-2.5 py-1 font-medium ${
                 index <= currentStepIndex
-                  ? 'bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200'
-                  : 'bg-slate-50 text-slate-400 ring-1 ring-slate-200'
+                  ? 'bg-indigo-500/15 text-indigo-300 ring-1 ring-indigo-400/30'
+                  : 'bg-muted text-muted-foreground ring-1 ring-border'
               }`}
             >
               {step}
@@ -40,9 +40,9 @@ export function ResponsePreparation({ incident }: { incident: IncidentDetail }) 
         ))}
       </ol>
 
-      <div className="mt-4 border-t border-slate-100 pt-4">
+      <div className="mt-4 border-t border-border-subtle pt-4">
         {!evidenceReady ? (
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-secondary-foreground">
             Evidence readiness must reach READY before a response can be prepared for this incident. Resolve the
             missing evidence listed above first.
           </p>
@@ -55,9 +55,9 @@ export function ResponsePreparation({ incident }: { incident: IncidentDetail }) 
             Prepare response
           </button>
         ) : (
-          <div className="rounded-md border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm text-indigo-900">
+          <div className="rounded-md border border-indigo-400/30 bg-indigo-500/10 px-4 py-3 text-sm text-indigo-100">
             <p className="font-medium">Merchant confirmation required.</p>
-            <p className="mt-1 text-indigo-800">
+            <p className="mt-1 text-indigo-200">
               Sentinel has organized the available evidence for this incident. Nothing has been submitted anywhere —
               this prototype does not file or submit disputes. A merchant would need to explicitly review and confirm
               this response before it could be prepared for submission through Razorpay's actual dispute process,

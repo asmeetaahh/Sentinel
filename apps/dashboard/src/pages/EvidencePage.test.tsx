@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -47,8 +47,9 @@ describe('EvidencePage', () => {
 
   it('renders the real estimated case count', async () => {
     renderEvidencePage()
-    expect(await screen.findByText('Affected cases (estimated)')).toBeInTheDocument()
-    expect(screen.getByText(String(mockIncidentDetail.case_summary.estimated_case_count))).toBeInTheDocument()
+    const heading = await screen.findByText('Affected cases (estimated)')
+    const card = heading.closest('section') as HTMLElement
+    expect(within(card).getByText(String(mockIncidentDetail.case_summary.estimated_case_count))).toBeInTheDocument()
   })
 
   it('switches the evidence detail pane when a different incident is selected', async () => {

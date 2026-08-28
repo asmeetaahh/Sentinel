@@ -34,16 +34,16 @@ function ExplainabilityContent({ merchantId }: { merchantId: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <p className="text-xs font-medium tracking-wide text-slate-400 uppercase">Explainability</p>
-        <p className="mt-2 max-w-3xl text-sm text-slate-600">
+      <section className="rounded-xl border border-border bg-card p-5 shadow-sm shadow-black/20">
+        <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">Explainability</p>
+        <p className="mt-2 max-w-3xl text-sm text-secondary-foreground">
           What the model's own SHAP values say about its {formatDate(asOfDate)} prediction for{' '}
           <span className="font-medium">{merchantId}</span> — the same verified drivers shown elsewhere in Sentinel,
           in plain language. SHAP attributes the model's output to its inputs; it does not establish that any feature
           causes elevated risk, and this benchmark was trained entirely on synthetic data.
         </p>
         {explanation.data && (
-          <p className="mt-3 text-sm text-slate-600">
+          <p className="mt-3 text-sm text-secondary-foreground">
             Modeled {explanation.data.horizon_days}-day probability:{' '}
             <span className="font-medium tabular-nums">
               {formatPercent(explanation.data.prediction.model_probability_calibrated)}
@@ -64,7 +64,7 @@ function ExplainabilityContent({ merchantId }: { merchantId: string }) {
             negative={explanation.data.drivers.top_negative_contributors}
             causalityDisclaimer={explanation.data.causality_disclaimer}
           />
-          <p className="text-xs leading-relaxed text-slate-400">
+          <p className="text-xs leading-relaxed text-muted-foreground">
             Verified: these SHAP contributions reconstruct the model's own predicted probability to within{' '}
             {explanation.data.faithfulness.reconstruction_error.toExponential(1)} for this prediction — Sentinel
             refuses to display an explanation that fails this reconstruction check, so every driver shown above is

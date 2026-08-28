@@ -54,7 +54,7 @@ export function AssistantPanel({
 
   return (
     <MetricCard title={title}>
-      <p className="mb-3 text-xs text-slate-400">
+      <p className="mb-3 text-xs text-muted-foreground">
         Ask about this merchant's verified risk, exposure, liquidity, simulation, or incident data. Sentinel's
         assistant explains already-computed results — it does not calculate risk itself.
       </p>
@@ -71,12 +71,12 @@ export function AssistantPanel({
           value={question}
           onChange={(event) => setQuestion(event.target.value)}
           placeholder="Ask a question about this merchant's verified context…"
-          className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none"
+          className="flex-1 rounded-md border border-border px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none"
         />
         <button
           type="submit"
           disabled={assistant.loading || !question.trim()}
-          className="flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-300"
+          className="flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
         >
           {assistant.loading ? <InlineLoadingState /> : 'Ask'}
         </button>

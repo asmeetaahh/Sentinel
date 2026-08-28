@@ -41,9 +41,9 @@ function RiskContent({ merchantId }: { merchantId: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <p className="text-xs font-medium tracking-wide text-slate-400 uppercase">Risk Engine</p>
-        <p className="mt-2 max-w-3xl text-sm text-slate-600">
+      <section className="rounded-xl border border-border bg-card p-5 shadow-sm shadow-black/20">
+        <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">Risk Engine</p>
+        <p className="mt-2 max-w-3xl text-sm text-secondary-foreground">
           The verified 30-day chargeback-risk assessment for <span className="font-medium">{merchantId}</span> as of{' '}
           {formatDate(asOfDate)} — the same saved model, decision threshold, exposure estimate, liquidity-stress
           calculation, and confidence/data-quality signal used everywhere else in Sentinel. This page presents that

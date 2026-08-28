@@ -1,27 +1,96 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 @import 'tailwindcss';
 
+/**
+ * Sentinel's dark surface system — the one place these tokens are defined.
+ * Extends Tailwind's own theme mechanism (no separate/competing color
+ * system); everything else (status colors, provenance badges, chart
+ * accents) continues to draw from Tailwind's existing indigo/red/amber/
+ * emerald/teal/sky palettes, just tuned for a dark canvas. See
+ * docs/architecture/frontend.md "Design system".
+ *
+ * Naming follows the widely-recognized background/foreground/card/muted/
+ * border convention (the same one shadcn/ui uses) so the tokens read as
+ * an intentional design system, not one-off hex values.
+ */
 @theme {
   --font-sans:
-    'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    'Manrope', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* App canvas — near-black with a cool navy undertone, never pure black. */
+  --color-background: #0a0c11;
+  /* Card / panel surfaces — one deliberate step up from canvas. */
+  --color-card: #11141b;
+  /* Nested/inset surfaces (expandable detail boxes, chips, hover states) —
+     one step up from card, still clearly part of the same dark canvas. */
+  --color-muted: #171b24;
+  /* Default 1px card border. */
+  --color-border: #242938;
+  /* Quieter internal dividers (between rows inside a card). */
+  --color-border-subtle: #1c2029;
+
+  /* Text hierarchy — three deliberate tiers, all readable (never a
+     "disabled" gray) against --color-background and --color-card. */
+  --color-foreground: #f4f6fa; /* headings, large values, primary labels */
+  --color-secondary-foreground: #aab3c5; /* body / secondary text */
+  --color-muted-foreground: #7c8494; /* methodology/disclaimer footers */
 }
 
 html {
-  color-scheme: light;
+  color-scheme: dark;
+  height: 100%;
+  overflow: hidden;
 }
 
 body {
+  height: 100%;
   margin: 0;
+  overflow: hidden;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
+#root {
+  height: 100%;
+}
+
 /* Restrained, visible focus ring for keyboard navigation — never removed. */
 :focus-visible {
-  outline: 2px solid theme('colors.indigo.500');
+  outline: 2px solid theme('colors.indigo.400');
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+/**
+ * Native <input type="range"> track styling (simulator bounded controls).
+ * `accent-color` (set via Tailwind's `accent-indigo-600` utility in
+ * ControlSlider.tsx) covers the thumb, but browsers don't reliably darken
+ * the unfilled track from `color-scheme` alone — left unstyled it renders
+ * as a stock light-gray bar, the one native form control that doesn't
+ * follow the rest of the dark system automatically.
+ */
+input[type='range'] {
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--color-muted);
+}
+input[type='range']::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--color-muted);
+}
+input[type='range']::-moz-range-track {
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--color-muted);
+}
+input[type='range']::-moz-range-progress {
+  height: 4px;
+  border-radius: 9999px;
+  background: theme('colors.indigo.500');
 }

@@ -17,21 +17,21 @@ export function LiquidityCard({ liquidity }: { liquidity: LiquiditySection }) {
       provenance={liquidity.available_liquidity.provenance}
       footer={liquidity.available_liquidity.note}
     >
-      <p className="text-2xl font-semibold text-slate-800 tabular-nums">
+      <p className="text-2xl font-semibold text-foreground tabular-nums">
         {formatAmountCompact(liquidity.available_liquidity.value)}
       </p>
 
       <div className="mt-4">
         <div className="flex items-center justify-between text-xs">
-          <span className="font-medium tracking-wide text-slate-400 uppercase">Liquidity stress</span>
-          {stressValue !== null && <span className="font-semibold text-slate-700 tabular-nums">{formatRatio(stressValue)}×</span>}
+          <span className="font-medium tracking-wide text-muted-foreground uppercase">Liquidity stress</span>
+          {stressValue !== null && <span className="font-semibold text-foreground tabular-nums">{formatRatio(stressValue)}×</span>}
         </div>
         {stressValue === null ? (
-          <p className="mt-2 text-xs text-slate-400">{liquidity.liquidity_stress.note}</p>
+          <p className="mt-2 text-xs text-muted-foreground">{liquidity.liquidity_stress.note}</p>
         ) : (
           <>
             <div
-              className="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-100"
+              className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted"
               role="img"
               aria-label={`Liquidity stress ratio ${formatRatio(stressValue)}, where 1.0 means estimated exposure equals available liquidity`}
             >
@@ -40,7 +40,7 @@ export function LiquidityCard({ liquidity }: { liquidity: LiquiditySection }) {
                 style={{ width: `${barWidthPct}%` }}
               />
             </div>
-            <p className="mt-1.5 text-[11px] text-slate-400">
+            <p className="mt-1.5 text-[11px] text-muted-foreground">
               100% = estimated exposure would equal available liquidity. {liquidity.liquidity_stress.note}
             </p>
           </>

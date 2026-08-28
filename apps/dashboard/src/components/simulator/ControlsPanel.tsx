@@ -39,12 +39,12 @@ export function ControlsPanel({
         ))}
       </div>
 
-      <div className="mt-6 flex items-center gap-3 border-t border-slate-100 pt-4">
+      <div className="mt-6 flex items-center gap-3 border-t border-border-subtle pt-4">
         <button
           type="button"
           onClick={onRun}
           disabled={!canRun}
-          className="flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-300"
+          className="flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
         >
           {running ? <InlineLoadingState /> : 'Run simulation'}
         </button>
@@ -52,13 +52,13 @@ export function ControlsPanel({
           type="button"
           onClick={onReset}
           disabled={!hasChanges || running}
-          className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-md border border-border px-4 py-2 text-sm font-medium text-secondary-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
         >
           Reset to observed values
         </button>
       </div>
       {!hasChanges && (
-        <p className="mt-2 text-xs text-slate-400">Adjust at least one control above to run a simulation.</p>
+        <p className="mt-2 text-xs text-muted-foreground">Adjust at least one control above to run a simulation.</p>
       )}
     </MetricCard>
   )

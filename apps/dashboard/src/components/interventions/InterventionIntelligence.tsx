@@ -32,7 +32,7 @@ export function InterventionIntelligence({
 
   return (
     <MetricCard title="Recommended interventions" provenance="derived">
-      <p className="mb-3 text-xs text-slate-400">
+      <p className="mb-3 text-xs text-muted-foreground">
         Deterministic, rule-based candidates — grounded in this merchant's own deviation from its recent baseline
         across the three bounded simulator controls, not an ML prediction or an AI-generated suggestion. Reviewing
         or testing one does not guarantee a change in real-world risk.
@@ -41,7 +41,7 @@ export function InterventionIntelligence({
       {interventions.count === 0 ? (
         <EmptyState title="No intervention currently justified" detail={interventions.empty_state_note ?? undefined} />
       ) : (
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-border-subtle">
           {interventions.recommendations.map((rec) => (
             <InterventionRow
               key={rec.intervention_id}
