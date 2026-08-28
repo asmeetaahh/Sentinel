@@ -219,16 +219,19 @@ No internal filesystem path is ever exposed in a response.
 
 ## Frontend
 
-`IncidentResponsePage` (nav item now enabled — the only previously-disabled
-item this task turns on) is a master/detail layout: `IncidentList` on the
-left, and on the right — deliberately reusing the **exact same** Overview
-components (`RiskSummary`, `ExposureCard`, `LiquidityCard`, `RiskDrivers`)
-via a thin `IncidentDetail -> RiskResponse` type adapter, not a
-reimplementation — followed by incident-specific `IncidentHeader`,
-`CaseSummaryCard`, `EvidenceChecklist`, and `ResponsePreparation`. This
-literal code reuse is what makes the risk → exposure → liquidity → drivers
-→ incident → evidence → preparation chain visibly the same intelligence,
-not a parallel, disconnected feature.
+`IncidentResponsePage` is a single-column, full-width layout, not a
+left/right master-detail split: `IncidentList` renders as a compact,
+horizontally-wrapping incident switcher across the top of the page, and
+the selected incident's content stacks beneath it at full width —
+starting with incident-specific `IncidentHeader`, then deliberately
+reusing the **exact same** Overview components (`RiskSummary`,
+`ExposureCard`, `LiquidityCard`, `RiskDrivers`) via a thin
+`IncidentDetail -> RiskResponse` type adapter, not a reimplementation —
+followed by `CaseSummaryCard`, `EvidenceChecklist`, and
+`ResponsePreparation`. This literal code reuse is what makes the risk →
+exposure → liquidity → drivers → incident → evidence → preparation
+chain visibly the same intelligence, not a parallel, disconnected
+feature.
 
 Color usage is deliberately restrained: red is reserved for `elevated` risk
 state and `insufficient` evidence only; priority uses amber/slate, not a

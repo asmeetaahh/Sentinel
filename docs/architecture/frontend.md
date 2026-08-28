@@ -43,10 +43,12 @@ template) for linting. **Vitest + @testing-library/react + jsdom** for
 tests, since it shares Vite's config/transform pipeline and needs no
 separate bundler setup.
 
-**react-router-dom** for real page routing (`/` Overview, `/simulator`
-Simulator) — added once a second real screen (the What-If Simulator,
-see `docs/architecture/simulator.md`) existed; before that, one screen
-didn't justify a router.
+**react-router-dom** for real page routing across the six enabled
+screens (`/` Overview, `/risk` Risk, `/explainability` Explainability,
+`/simulator` Simulator, `/incident-response` Incident Response,
+`/evidence` Evidence) — added once a second real screen (the What-If
+Simulator, see `docs/architecture/simulator.md`) existed; before that,
+one screen didn't justify a router.
 
 ## Directory layout
 
@@ -83,8 +85,11 @@ apps/dashboard/src/
     assistant/           AssistantPanel, SuggestedPrompts, AssistantAnswer — see docs/architecture/ai_orchestrator.md
   pages/
     OverviewPage.tsx           composes the above for the Overview screen
+    RiskPage.tsx                composes the above for the Risk screen
+    ExplainabilityPage.tsx       composes the above for the Explainability screen
     SimulatorPage.tsx           composes the above for the Simulator screen
     IncidentResponsePage.tsx     composes the above for the Incident Response screen
+    EvidencePage.tsx            composes the above for the Evidence screen
   test/
     setup.ts, fixtures.ts, noHardcodedData.test.ts
 ```
@@ -118,13 +123,16 @@ in one place and makes components testable with mocked hook data.
 Both `Sidebar` and `Header` read the same `NAV_ITEMS` list
 (`components/layout/navigation.ts`) — the sidebar to render links, the
 header to look up the active route's label — so the page title can never
-drift out of sync with the current route. Of the seven nav items,
-**Overview**, **Simulator**, and **Incident Response** are enabled; Risk,
-Explainability, Evidence, and Settings render as disabled with a "Soon"
-badge — real, visibly-inert placeholders, not fake-functional links, per
-each task's explicit scope (those modules are not built). There is no
-separate "AI" nav item — the assistant (`docs/architecture/ai_orchestrator.md`)
-is embedded directly on the three enabled screens instead, since no
+drift out of sync with the current route. All six nav items —
+**Overview**, **Risk**, **Explainability**, **Simulator**, **Incident
+Response**, and **Evidence** — are enabled; there is no disabled or
+"Soon" placeholder screen. There is deliberately no "Settings" entry:
+no settings/preferences functionality exists anywhere in the backend
+(no user accounts, no configurable state), so a disabled "Settings —
+Soon" placeholder would be a dead promise rather than a real product
+surface. There is also no separate "AI" nav item — the assistant
+(`docs/architecture/ai_orchestrator.md`) is embedded directly on the
+Overview, Simulator, and Incident Response screens instead, since no
 existing placeholder for a standalone AI screen exists.
 
 ## Overview screen
@@ -209,13 +217,16 @@ single `intervention_id` to attach it to.
 ## Incident Response screen
 
 See `docs/architecture/incident_response.md` for the full design. In
-brief: `IncidentResponsePage` is a master/detail layout — `IncidentList` on
-the left, and on the right, the **same** `RiskSummary`/`ExposureCard`/
-`LiquidityCard`/`RiskDrivers` components from `components/overview/`
-(via a thin `IncidentDetail -> RiskResponse` type adapter, not a
-reimplementation) followed by `IncidentHeader`, `CaseSummaryCard`,
-`EvidenceChecklist`, `ResponsePreparation`, and `AssistantPanel` (with the
-selected incident threaded in as context). `ResponsePreparation` and
+brief: `IncidentResponsePage` stacks a single-column layout — `IncidentList`
+renders as a compact, horizontally-wrapping incident switcher across the
+top (not a left-hand rail), and the full-width content below it starts
+with `IncidentHeader` for the selected incident, followed by the
+**same** `RiskSummary`/`ExposureCard`/`LiquidityCard`/`RiskDrivers`
+components from `components/overview/` (via a thin
+`IncidentDetail -> RiskResponse` type adapter, not a reimplementation),
+then `CaseSummaryCard`, `EvidenceChecklist`, `ResponsePreparation`, and
+`AssistantPanel` (with the selected incident threaded in as context).
+`ResponsePreparation` and
 `AssistantPanel` are both keyed by the incident id so switching incidents
 resets their local state — an early bug caught here during live
 verification was two sibling elements keyed with the *same* string
@@ -256,10 +267,12 @@ screen.)
 Defined mostly through consistent Tailwind usage rather than a separate
 tokens file:
 
-- **Typography**: Inter (UI), JetBrains Mono (numeric/tabular figures),
+- **Typography**: Manrope (UI), JetBrains Mono (numeric/tabular figures),
   loaded via Google Fonts in `index.css`.
-- **Surfaces**: white cards on a `slate-50` page background, `slate-200`
-  borders, restrained shadows — no gradients, no glassmorphism.
+- **Surfaces**: near-black dark theme cards and page background, thin
+  low-contrast borders, restrained shadows and a subtle purple/indigo
+  accent glow on active/selected elements — no excessive gradients, no
+  glassmorphism.
 - **Color semantics**: slate = observed, indigo = modeled, teal =
   derived (`lib/provenance.ts`); red = elevated risk / negative driver,
   emerald/teal = normal risk / positive driver. Intervention priority
@@ -317,9 +330,9 @@ npm run build
 - **No codegen**: `api/types.ts` is hand-maintained against the backend
   schemas; a backend response-shape change requires a matching manual
   edit here.
-- **Three screens**: Overview, Simulator, and Incident Response are
-  implemented; the other four nav destinations are intentionally inert
-  placeholders.
+- **Six screens**: Overview, Risk, Explainability, Simulator, Incident
+  Response, and Evidence are all implemented and enabled; there are no
+  inert placeholder screens.
 - **Bundle size**: the production build is ~650 KB (~192 KB gzipped),
   mostly `recharts`; acceptable for this tool's size, but would want
   code-splitting before adding more chart-heavy screens.

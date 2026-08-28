@@ -8,9 +8,9 @@ export function RiskMemoryPanel({ memory }: { memory: InterventionMemoryListResp
   return (
     <MetricCard title="Risk Memory (this session)">
       <p className="mb-3 text-xs text-muted-foreground">
-        A lightweight, in-process record of intervention activity for this session only — not a database, and not
-        cleared or persisted between backend restarts. This is a prototype decision history, not a validated
-        learning system.
+        A lightweight, in-process record of intervention activity for this session only — not a database. It is not
+        persisted, and is cleared whenever the backend restarts. This is a prototype decision history, not a
+        validated learning system.
       </p>
 
       {memory.count === 0 ? (
