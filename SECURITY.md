@@ -2,19 +2,18 @@
 
 This document describes the security posture, data handling, and
 responsible-use boundaries of this repository. It is written for a
-**local, single-user, research/development prototype** — it does not
-claim, and should not be read as claiming, production-grade security
-engineering.
+**local, single-user product prototype** — it does not claim, and
+should not be read as claiming, production-grade security engineering.
 
 ---
 
 ## 1. Security Scope
 
-This repository contains **Sentinel**, an independent research
-prototype built for the Razorpay Buildathon (Track 02 — AI Risk
-Manager). It includes a synthetic data generator, an ML training/
-evaluation pipeline, a FastAPI backend, a React dashboard, and an AI
-orchestration layer.
+This repository contains **Sentinel**, an independent merchant-facing
+AI Risk Manager product prototype built for the Razorpay Buildathon
+(Track 02). It includes a FastAPI backend, a React dashboard, and an AI
+orchestration layer, with its risk intelligence built and evaluated
+using a synthetic data generator and an ML training/evaluation pipeline.
 
 **Sentinel is not part of Razorpay's infrastructure.** It does not run
 inside Razorpay's systems, does not connect to any Razorpay service,
@@ -227,7 +226,7 @@ a public report.
 
 ## 8. Local Development
 
-Sentinel is a **local development / research prototype**, run on a
+Sentinel is a **local development product prototype**, run on a
 developer's own machine. There is no deployed, shared, or multi-tenant
 instance described anywhere in this repository. Keep your local `.env`
 file(s) and any real API credentials private — do not paste them into
@@ -261,6 +260,7 @@ Stated explicitly, not implied:
 - **CORS is permissive by design for local development**, not hardened
   for a shared or public deployment (§8).
 - **The AI prompt-injection defense is not absolute** — see §4.
-- **This is a synthetic-benchmark research prototype** — see §5. Model
-  outputs, simulator results, and intervention recommendations are not
-  validated against real-world data or real-world outcomes.
+- **Sentinel's risk intelligence is built and evaluated on a
+  synthetic benchmark** — see §5. Model outputs, simulator results, and
+  intervention recommendations are not validated against real-world
+  data or real-world outcomes.

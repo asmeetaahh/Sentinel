@@ -423,7 +423,8 @@ Already implemented and verified in the repository:
   lead time, temporal stress testing)
 - Calibration investigation
 - SHAP explainability, with faithfulness verification
-- Backend API (FastAPI, typed, read-only over the research artifacts)
+- Backend API (FastAPI, typed, read-only over the trained model and
+  benchmark artifacts)
 - Dashboard — six screens: Overview, Risk, Explainability, Simulator,
   Incident Response, Evidence
 - What-if simulator
