@@ -232,9 +232,12 @@ describe('OverviewPage', () => {
     renderOverviewWithSelector()
 
     // M0001 is selected by default: no recommendation, empty Risk Memory, high confidence.
+    // Risk (confidence) and interventions load via independent async calls,
+    // so both are awaited explicitly rather than assuming one implies the
+    // other has also resolved.
     expect(await screen.findByText('No intervention currently justified')).toBeInTheDocument()
     expect(screen.getByText('No intervention activity recorded yet')).toBeInTheDocument()
-    expect(screen.getByText('High')).toBeInTheDocument()
+    expect(await screen.findByText('High')).toBeInTheDocument()
     expect(endpoints.getInterventions).toHaveBeenCalledWith('M0001', expect.anything())
 
     await userEvent.selectOptions(screen.getByLabelText('Merchant'), 'M0002')

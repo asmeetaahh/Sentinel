@@ -107,6 +107,7 @@ export function TrajectoryChart({ observations }: { observations: ObservationRec
               fill="#4338ca"
               fillOpacity={0.08}
               strokeWidth={1.75}
+              isAnimationActive={false}
             />
             <Line
               yAxisId="rate"
@@ -116,6 +117,7 @@ export function TrajectoryChart({ observations }: { observations: ObservationRec
               stroke="#dc2626"
               strokeWidth={1.75}
               dot={false}
+              isAnimationActive={false}
             />
             <Line
               yAxisId="rate"
@@ -126,6 +128,7 @@ export function TrajectoryChart({ observations }: { observations: ObservationRec
               strokeWidth={1.5}
               dot={false}
               strokeDasharray="4 3"
+              isAnimationActive={false}
             />
           </ComposedChart>
         </ResponsiveContainer>

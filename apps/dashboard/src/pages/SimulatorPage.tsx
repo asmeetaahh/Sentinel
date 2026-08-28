@@ -85,9 +85,27 @@ function SimulatorContent({ merchantId }: { merchantId: string }) {
       ? interventions.data.recommendations.find((rec) => rec.control_id === simulation.data!.controls[0].control_id)
       : undefined
 
+  // Reconnects the "Test in Simulator" deep link back to the specific
+  // recommendation that sent the merchant here — available immediately
+  // from the query param, unlike matchingRecommendation above (which
+  // requires a simulation to have already been run). Uses only the
+  // already-fetched `interventions` data; computes nothing new.
+  const deepLinkedRecommendation =
+    highlightedControlId && interventions.data
+      ? interventions.data.recommendations.find((rec) => rec.control_id === highlightedControlId)
+      : undefined
+
   return (
     <div className="flex flex-col gap-6">
       <SimulatorIntro merchantId={merchantId} asOfDate={asOfDate} />
+
+      {deepLinkedRecommendation && (
+        <section className="rounded-xl border border-indigo-200 bg-indigo-50/60 p-4">
+          <p className="text-xs font-medium tracking-wide text-indigo-500 uppercase">Testing a recommended intervention</p>
+          <p className="mt-1 text-sm font-semibold text-indigo-900">{deepLinkedRecommendation.title}</p>
+          <p className="mt-1 text-sm text-indigo-800">{deepLinkedRecommendation.reason}</p>
+        </section>
+      )}
 
       {controls.loading && <LoadingState label="Loading simulator controls…" />}
       {controls.error ? <ErrorState error={controls.error} /> : null}

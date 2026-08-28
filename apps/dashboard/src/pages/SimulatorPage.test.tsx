@@ -9,6 +9,7 @@ import {
   mockControlsList,
   mockEmptyInterventionMemory,
   mockEmptyInterventions,
+  mockInterventionsWithRecommendation,
   mockMerchantList,
   mockMerchantProfile,
   mockSimulationResponse,
@@ -119,6 +120,29 @@ describe('SimulatorPage', () => {
     vi.spyOn(endpoints, 'getSimulationControls').mockRejectedValue(new Error('controls unavailable'))
     renderSimulator()
     expect(await screen.findByText('controls unavailable')).toBeInTheDocument()
+  })
+
+  it('shows a "Testing a recommended intervention" banner naming the real recommendation when arriving via a deep link that matches an active recommendation', async () => {
+    vi.spyOn(endpoints, 'getInterventions').mockResolvedValue(mockInterventionsWithRecommendation)
+    renderSimulator('/simulator?control=refund_rate_28d')
+
+    expect(await screen.findByText('Testing a recommended intervention')).toBeInTheDocument()
+    expect(screen.getByText(mockInterventionsWithRecommendation.recommendations[0].title)).toBeInTheDocument()
+    expect(screen.getByText(mockInterventionsWithRecommendation.recommendations[0].reason)).toBeInTheDocument()
+  })
+
+  it('does not show the intervention banner when there is no ?control= deep link', async () => {
+    vi.spyOn(endpoints, 'getInterventions').mockResolvedValue(mockInterventionsWithRecommendation)
+    renderSimulator('/simulator')
+    await screen.findByText(/what-if simulator/i)
+    expect(screen.queryByText('Testing a recommended intervention')).not.toBeInTheDocument()
+  })
+
+  it('does not show the intervention banner when the deep-linked control has no matching active recommendation', async () => {
+    vi.spyOn(endpoints, 'getInterventions').mockResolvedValue(mockEmptyInterventions)
+    renderSimulator('/simulator?control=refund_rate_28d')
+    await screen.findByText(/what-if simulator/i)
+    expect(screen.queryByText('Testing a recommended intervention')).not.toBeInTheDocument()
   })
 
   it('reset restores sliders to baseline and clears the result', async () => {
