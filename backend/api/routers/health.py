@@ -9,8 +9,9 @@ from backend.api.state import AppState
 router = APIRouter(tags=["health"])
 
 DISCLAIMER = (
-    "Synthetic benchmark research prototype. Model outputs are not validated against, or calibrated to, "
-    "real-world merchant or transaction data, and Sentinel has no access to real Razorpay systems or data."
+    "Sentinel's risk intelligence is built and evaluated on a synthetic benchmark. Model outputs are not "
+    "validated against, or calibrated to, real-world merchant or transaction data, and Sentinel has no "
+    "access to real Razorpay systems or data."
 )
 
 

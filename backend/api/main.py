@@ -50,8 +50,15 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Sentinel API",
     description=(
-        "Synthetic-benchmark chargeback-risk research prototype, exposed through a backend API. "
-        "Not production-ready. Not validated on real-world data. No access to real Razorpay systems or data."
+        "Sentinel is a merchant-facing AI Risk Manager: it helps merchants identify materially "
+        "elevated future chargeback-loss exposure early, understand what is driving it, translate "
+        "that risk into financial and liquidity impact, test bounded operational decisions before "
+        "acting, and prepare to respond if the risk materializes. "
+        "This API is an independent prototype built for the Razorpay Buildathon (Track 02). It has "
+        "no access to Razorpay's proprietary systems, merchant accounts, risk or dispute "
+        "infrastructure, or real transaction data. Its risk intelligence is built and evaluated on "
+        "a fully synthetic benchmark and has not been validated on real-world data or deployed to "
+        "production."
     ),
     version="0.1.0",
     lifespan=lifespan,

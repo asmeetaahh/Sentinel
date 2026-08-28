@@ -32,7 +32,8 @@ from backend.services.lookups import require_merchant, resolve_day_index
 from backend.simulation import simulation_service
 
 STANDING_LIMITATIONS_BASE = [
-    "Sentinel is a synthetic-benchmark research prototype. It has no access to real Razorpay systems, "
+    "Sentinel is an independent merchant-facing AI Risk Manager prototype. Its risk intelligence is "
+    "built and evaluated on a synthetic benchmark, and it has no access to real Razorpay systems, "
     "proprietary data, settlement decisions, or enforcement decisions.",
 ]
 
