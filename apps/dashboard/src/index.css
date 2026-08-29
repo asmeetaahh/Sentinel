@@ -66,6 +66,21 @@ body {
   border-radius: 4px;
 }
 
+/*
+ * Backend-sourced descriptive text (feature definitions, control/evidence
+ * rationale, disclaimers) can contain long unbroken tokens — e.g.
+ * "sum(chargeback_count)/sum(transaction_count)" — that default text
+ * wrapping never breaks. Inside a flex/grid item that content's unbroken
+ * width becomes the item's minimum size, forcing the whole row/card wider
+ * than the viewport on narrow (mobile) screens. Letting these wrap
+ * mid-token only ever changes rendering once a line would otherwise
+ * overflow its container, so cards with room to spare (desktop) are
+ * unaffected.
+ */
+p {
+  overflow-wrap: break-word;
+}
+
 /**
  * Native <input type="range"> track styling (simulator bounded controls).
  * `accent-color` (set via Tailwind's `accent-indigo-600` utility in

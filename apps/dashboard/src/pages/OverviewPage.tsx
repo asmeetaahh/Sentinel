@@ -60,7 +60,7 @@ function OverviewContent({ merchantId }: { merchantId: string }) {
               {profile.data.weekly_seasonality_profile.replace('_', ' ')}
             </p>
           </div>
-          <div className="flex gap-6 text-right text-sm">
+          <div className="grid grid-cols-3 gap-3 text-xs sm:text-sm md:flex md:gap-6 md:text-right">
             <Stat label="Latest GMV" value={profile.data.latest_observed_snapshot.gmv.toFixed(0)} />
             <Stat label="Transactions" value={String(profile.data.latest_observed_snapshot.transaction_count)} />
             <Stat label="On-time fulfillment" value={formatPercent(profile.data.latest_observed_snapshot.fulfillment_on_time_rate)} />
