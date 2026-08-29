@@ -15,6 +15,7 @@ re-derives features, and never touches the synthetic generator.
 
 from __future__ import annotations
 
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -39,6 +40,17 @@ DEV_CORS_ORIGINS = [
 # synthetic-benchmark API with no auth/session data, not a production
 # CORS policy.
 DEV_CORS_ORIGIN_REGEX = r"http://(localhost|127\.0\.0\.1):\d+"
+
+# The deployed frontend's origin (e.g. a Render Static Site URL) is not
+# known at commit time and must never be guessed/hardcoded here. Set
+# SENTINEL_FRONTEND_ORIGINS (comma-separated, e.g. one origin, or the
+# onrender.com URL plus a custom domain) as an environment variable on the
+# backend's Render service once the Static Site exists. Unset/empty adds
+# nothing — local development keeps working via DEV_CORS_ORIGIN_REGEX
+# above regardless of this variable.
+PRODUCTION_CORS_ORIGINS = [
+    origin.strip() for origin in os.environ.get("SENTINEL_FRONTEND_ORIGINS", "").split(",") if origin.strip()
+]
 
 
 @asynccontextmanager
@@ -66,7 +78,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=DEV_CORS_ORIGINS,
+    allow_origins=DEV_CORS_ORIGINS + PRODUCTION_CORS_ORIGINS,
     allow_origin_regex=DEV_CORS_ORIGIN_REGEX,
     allow_credentials=True,
     # POST added for the simulator endpoint (backend/api/routers/simulator.py)
