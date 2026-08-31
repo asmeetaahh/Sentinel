@@ -1,0 +1,238 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+@import 'tailwindcss';
+
+/**
+ * Sentinel marketing — foundation design tokens only.
+ *
+ * This is a separate frontend from apps/dashboard and does not share its
+ * component code, but reuses the same brand identity (near-black canvas,
+ * Manrope, an indigo/violet accent) so the two feel like one product.
+ * Section-specific visual language (cinematic layouts, 3D scenes, motion)
+ * is intentionally NOT decided here — this file only establishes the
+ * baseline canvas a future section can build on.
+ */
+@theme {
+  --font-sans:
+    'Manrope', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --color-background: #05060a;
+  --color-foreground: #f4f6fa;
+  --color-muted-foreground: #7c8494;
+  --color-accent: #7c6cf6;
+  --color-accent-soft: #a89bfb;
+}
+
+html {
+  color-scheme: dark;
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  height: 100%;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/**
+ * Hero intelligence-core visual (src/scenes/HeroScene.tsx and friends).
+ * Pure CSS keyframes rather than a JS animation loop — cheap, and they
+ * keep running smoothly regardless of what React is doing.
+ */
+@keyframes orb-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes orb-surface-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/**
+ * OrbitalField's rings never rotate as shapes — rotating a non-circular
+ * ellipse around its own center makes it visibly pulse/tumble ("wobble")
+ * as its apparent width and height cycle. Instead the ellipse geometry
+ * stays completely static and only its dash phase animates, which reads
+ * as clean rotational motion with zero shape distortion. The offset
+ * values (multiples of each ring's dash period, chosen so they all
+ * divide evenly into 360) make every loop seamless.
+ */
+@keyframes dash-flow-cw {
+  to {
+    stroke-dashoffset: -360;
+  }
+}
+
+@keyframes dash-flow-ccw {
+  to {
+    stroke-dashoffset: 360;
+  }
+}
+
+/** A particle traveling along a ring's own (static) path via
+ * `offset-path` — 0%→100% of a closed loop is an exact, seamless cycle,
+ * so no wobble or jump is possible here either. */
+@keyframes orbit-travel-cw {
+  to {
+    offset-distance: 100%;
+  }
+}
+
+@keyframes orbit-travel-ccw {
+  from {
+    offset-distance: 100%;
+  }
+  to {
+    offset-distance: 0%;
+  }
+}
+
+@keyframes marker-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes glow-breathe {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.04);
+  }
+}
+
+/** RiskDivergence (src/sections/SignalEmergence.tsx) — a slow marching
+ * dash along the one signal path that breaks away from the rest. */
+@keyframes signal-flow {
+  to {
+    stroke-dashoffset: -110;
+  }
+}
+
+/** MoneyFlowField (src/components/MoneyFlowField.tsx) — a particle
+ * traveling along an OPEN (non-looping) flow path via `offset-path`.
+ * Fading out right as it reaches 100% and back in at 0% hides the
+ * otherwise-visible "teleport" an open path would show at the loop
+ * boundary, the same way a closed ellipse never needs this trick. */
+@keyframes flow-particle {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+
+/** HeroScene's background glow — extremely slow atmospheric drift, not a
+ * loop anyone is meant to consciously notice. */
+@keyframes atmosphere-drift {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(calc(-50% + 14px), calc(-50% - 10px)) scale(1.03);
+  }
+}
+
+/**
+ * SimulateSection's intervention sliders — a plain native `<input
+ * type="range">` (keyboard/screen-reader behavior comes for free) with
+ * just enough custom track/thumb styling to read as part of this design
+ * system rather than a default OS control.
+ */
+.sentinel-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(to right, rgba(124, 108, 246, 0.55), rgba(168, 155, 251, 0.55));
+  outline-offset: 6px;
+}
+
+.sentinel-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #f4f6fa;
+  border: 2px solid var(--color-accent);
+  box-shadow: 0 0 8px rgba(124, 108, 246, 0.6);
+  cursor: pointer;
+}
+
+.sentinel-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #f4f6fa;
+  border: 2px solid var(--color-accent);
+  box-shadow: 0 0 8px rgba(124, 108, 246, 0.6);
+  cursor: pointer;
+}
+
+.sentinel-range::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(to right, rgba(124, 108, 246, 0.55), rgba(168, 155, 251, 0.55));
+}
+
+/** StabilizeSection's exposure → pressure → stability connector — a
+ * single dot descending a straight vertical rail. `flow-particle`
+ * (offset-path based) is built for curved SVG paths; a plain top:0%→100%
+ * loop is simpler and just as correct for a straight line, so this is
+ * the one new keyframe rather than forcing offset-path onto a line. */
+@keyframes flow-descend {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
