@@ -22,11 +22,10 @@ It is a working system, not a slide deck: a typed FastAPI backend, a six-screen 
 
 | | |
 |---|---|
-| **Live Product** | [sentinel-dashboard-39tw.onrender.com](https://sentinel-dashboard-39tw.onrender.com/) |
-| **Marketing Site** | [sentinel-marketing-suzb.onrender.com](https://sentinel-marketing-suzb.onrender.com/) |
-| **Demo Video** | [Watch on Google Drive](https://drive.google.com/file/d/10x-h0YaBS_qooRwld6pYcPI3_abHHYTw/view?usp=sharing) |
-| **Research Journey** | [`docs/research/RESEARCH.md`](docs/research/RESEARCH.md) |
-| **GitHub Repository** | [github.com/asmeetaahh/Sentinel](https://github.com/asmeetaahh/Sentinel) |
+| **Live Product** | [Open Sentinel →](https://sentinel-dashboard-39tw.onrender.com/) |
+| **Marketing Site** | [Explore the Marketing Site →](https://sentinel-marketing-suzb.onrender.com/) |
+| **Demo Video** | [Watch the Demo →](https://drive.google.com/file/d/10x-h0YaBS_qooRwld6pYcPI3_abHHYTw/view?usp=sharing) |
+| **Research Journey** | [Read the Research →](docs/research/RESEARCH.md) |
 
 ---
 
