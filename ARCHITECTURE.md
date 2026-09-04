@@ -708,7 +708,7 @@ The dashboard currently provides:
 -AI Assistant
 
 The product itself remains primarily 2D and usability-focused.
-The 3D experience belongs to the separate marketing/storytelling layer described later in this document.
+The cinematic experience belongs to the separate marketing/storytelling layer described later in this document.
 
 ---
 
@@ -917,7 +917,7 @@ This flow connects prediction to decision support rather than treating each dash
 
 ## 30. Marketing Website Architecture
 
-The 3D marketing website is a separate presentation layer around Sentinel.
+The marketing site is a separate presentation layer around Sentinel.
 It is not the product dashboard and does not replace any backend or ML functionality.
 
 Its purpose is to communicate:
@@ -933,8 +933,8 @@ The marketing website is the cinematic narrative layer.
 
 ---
 
-## 31. 3D Research Lab
-The Research Lab is a section inside the 3D marketing website itself.
+## 31. Research Lab
+The Research Lab is a section inside the marketing site itself.
 It is not a separate product or application.
 
 Its purpose is to turn Sentinel's research process into a visual journey.
@@ -997,7 +997,7 @@ The two layers should complement each other rather than duplicate one another.
 ## 32. Research and Evidence Relationship
 
 The research architecture is intentionally split into two experiences.
-# 3D Marketing Website
+# Marketing Site
 The website provides the concise, cinematic research story.
 It focuses on:
 
@@ -1030,7 +1030,7 @@ It contains:
 
 ## 33. Final Marketing Website Destinations
 
-At the end of the 3D marketing website, visitors will be given clear links to the three primary project destinations:
+At the end of the marketing site, visitors will be given clear links to the three primary project destinations:
 ┌─────────────────────┐
 │   GITHUB REPOSITORY │
 └─────────────────────┘
@@ -1098,7 +1098,7 @@ Sentinel intentionally does not include:
 | AI Orchestrator           | Grounded explanation and orchestration       |
 | Risk Memory               | Structured action/simulation/outcome records |
 | Frontend                  | Presentation and user interaction            |
-| 3D Marketing Site         | Storytelling and research presentation       |
+| Marketing Site            | Storytelling and research presentation       |
 | GitHub Research           | Deep technical evidence and reproducibility  |
 
 ---

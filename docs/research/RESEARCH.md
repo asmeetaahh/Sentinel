@@ -952,10 +952,10 @@ it; `ARCHITECTURE.md` documents how it is built.
 
 ---
 
-## Research → 3D Research Lab
+## Research → Research Lab
 
 This research journey will also be presented visually, as a section
-inside Sentinel's 3D marketing website — the **Research Lab**. It is a
+inside Sentinel's marketing site — the **Research Lab**. It is a
 section of the marketing site, not a separate product or a separate
 body of findings from this document.
 
@@ -970,7 +970,7 @@ Question → Landscape → Candidate Gaps → Falsification → Hypothesis
 presented as a concise, cinematic story — the visual telling of the
 same journey, not a different or more favorable one.
 
-**This written document is the source of truth.** The 3D website
+**This written document is the source of truth.** The marketing site
 visualizes this research; it must not invent claims absent from
 `RESEARCH.md` or `EVALUATION.md`. To be explicit about what each
 document is for:

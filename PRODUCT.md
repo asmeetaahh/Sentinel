@@ -435,13 +435,13 @@ Already implemented and verified in the repository:
 - Intervention intelligence (V1, deterministic)
 - Merchant Risk Memory (V1, in-process, session-scoped)
 
-Remaining work is scoped as **finishing and presenting**, not building
-new product capability:
+Remaining work was scoped as **finishing and presenting**, not building
+new product capability, and is now complete:
 
 - Final integration QA and visual polish
-- 3D marketing website
+- Marketing site (built and deployed)
 - Research presentation and documentation in GitHub
-- Demo / pitch
+- Demo / pitch video (recorded)
 - Final submission QA
 
 No new product features are planned before submission.

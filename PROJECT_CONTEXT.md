@@ -314,7 +314,7 @@ The actual dashboard should feel like serious premium fintech software.
 
 The dashboard should expose the intelligence progression from risk detection → explanation → simulation → intervention → response, while remaining primarily 2D and operationally usable.
 
-The marketing site will be cinematic and 3D.The marketing site should communicate the research journey:
+The marketing site will be cinematic. The marketing site should communicate the research journey:
 question → investigation → falsification → hypothesis → experiment →
 results → failures → intervention → strategic opportunity.
 
@@ -324,7 +324,7 @@ as validated results.
 
 The product itself should remain primarily 2D and highly usable.
 
-The 3D experience is for:
+The cinematic marketing experience is for:
 - marketing
 - storytelling
 - pitch opening
@@ -337,7 +337,7 @@ Avoid turning the actual dashboard into a gimmicky 3D interface.
 The submission should include:
 
 1. Working product
-2. Cinematic 3D marketing website
+2. Cinematic marketing website
 3. 5-minute pitch video
 4. Highly polished GitHub repository
 5. Architecture documentation
@@ -387,6 +387,6 @@ The ML engine must work before the UI is polished.
 14. Merchant Risk Memory / Outcome Loop
 15. Full product integration and QA
 16. Product freeze
-17. 3D marketing site
+17. Marketing site
 18. Pitch
 19. Final documentation and submission polish

@@ -2,11 +2,9 @@
 
 # Sentinel
 
-**Sentinel helps merchants see an emerging chargeback-risk episode before it becomes a financial surprise.**
+**Sentinel helps a merchant see an emerging chargeback-risk episode before it becomes a financial surprise.**
 
 *Merchant-facing AI Risk Manager — independent product prototype, Razorpay Buildathon Track 02*
-
-[Live Product](#) · [3D Marketing Website](#) · [Pitch / Demo Video](#) · [Research Journey](docs/research/RESEARCH.md)
 
 </div>
 
@@ -14,230 +12,177 @@
 
 ## 1. What Sentinel Is
 
-Sentinel is a **merchant-facing risk-intelligence product**: it detects
-when a merchant's chargeback-loss exposure is becoming materially
-elevated, explains why in plain, verifiable terms, translates that risk
-into cash-flow and liquidity consequences, lets the merchant test
-bounded operational changes before committing to one, and prepares them
-to respond if the risk actually turns into an incident.
+Sentinel is a merchant-facing risk-intelligence product. It detects when a merchant's chargeback-loss exposure is becoming materially elevated, explains why in plain and verifiable terms, translates that risk into cash-flow and liquidity consequences, lets the merchant test a bounded operational change before committing to one, and prepares them to respond if the risk turns into an incident.
 
-It is a working system, not a slide deck — a typed backend, a
-six-screen dashboard, and a grounded AI layer, all runnable today. Its
-underlying risk model is currently built and evaluated on a synthetic
-benchmark (see [§9](#9-evidence-and-evaluation)), and it makes no claim to
-Razorpay's proprietary data, risk systems, or dispute infrastructure.
+It is a working system, not a slide deck: a typed FastAPI backend, a six-screen React dashboard, a separate marketing site, and a grounded AI layer, all runnable today. The underlying risk model is currently built and evaluated on a synthetic benchmark (see [§7](#7-held-out-evaluation)), and Sentinel makes no claim to Razorpay's proprietary data, risk systems, or dispute infrastructure.
 
 ---
 
-## 2. The Real Merchant Problem
+## 2. Explore Sentinel
 
-A merchant does not experience risk as an isolated model score. They
-experience it as **rising disputes, potential loss exposure,
-operational pressure, settlement and working-capital uncertainty**, and
-the harder question underneath all of it: *what should I actually do
-about this before it gets worse?*
-
-Most of that experience is retrospective. A merchant typically finds
-out their risk was elevated only once chargebacks have already landed
-— at which point the loss is no longer a forecast, it is a fact. The
-financial-continuity pressure this creates (will this month's exposure
-eat into available liquidity, is there time to act, is the business
-prepared to respond) is a real operational problem for a merchant, even
-though no part of it requires — and Sentinel does not claim — visibility
-into a payment platform's internal settlement, enforcement, or bank
-decisions. It is a problem about the merchant's own trailing operational
-signals and how early those signals can be turned into something
-actionable.
+| | |
+|---|---|
+| **Live Product** | [sentinel-dashboard-39tw.onrender.com](https://sentinel-dashboard-39tw.onrender.com/) |
+| **Marketing Site** | [sentinel-marketing-suzb.onrender.com](https://sentinel-marketing-suzb.onrender.com/) |
+| **Demo Video** | [Watch on Google Drive](https://drive.google.com/file/d/10x-h0YaBS_qooRwld6pYcPI3_abHHYTw/view?usp=sharing) |
+| **Research Journey** | [`docs/research/RESEARCH.md`](docs/research/RESEARCH.md) |
+| **GitHub Repository** | [github.com/asmeetaahh/Sentinel](https://github.com/asmeetaahh/Sentinel) |
 
 ---
 
-## 3. The Gap Sentinel Fills
+## 3. The Problem Sentinel Solves
 
-Existing payment-risk infrastructure is real and mature, but it mostly
-sits at two different points in time relative to a merchant's own risk
-trend:
+A merchant does not experience risk as an isolated model score. They experience it as rising disputes, potential loss exposure, operational pressure, and settlement or working-capital uncertainty, underneath one harder question: *what should I actually do about this before it gets worse?*
+
+Most of that experience is retrospective today. A merchant typically learns their risk was elevated only after chargebacks have already landed, at which point the loss is a fact, not a forecast. That is a real problem about a merchant's own trailing operational signals and how early they can be turned into something actionable — it does not require, and Sentinel does not claim, visibility into a payment platform's internal settlement, enforcement, or bank decisions.
+
+Existing payment-risk infrastructure sits at two other points in time relative to a merchant's own risk trend:
 
 ```
 TRANSACTION DECISIONING          →  approve/decline a single payment, at authorization time
 DISPUTE PREVENTION / RESPONSE    →  intercept or respond to a dispute once one already exists
 ```
 
-Between those two points is a layer that most infrastructure does not
-occupy: a **merchant-level, forward-looking decision layer** that looks
-at a merchant's own trailing behavior over time — not a single payment —
-and asks whether it is heading somewhere bad early enough to matter.
-Sentinel is built specifically for that layer:
-
-```
-merchant-level risk exposure → explanation → financial translation
-    → bounded what-if simulation → intervention guidance → incident/evidence readiness
-```
-
-This "layer in between" is the central idea behind the product: not a
-better transaction score, and not a faster dispute-response tool, but
-the connective layer that turns an early signal into something a
-merchant can actually reason about and act on.
+Sentinel is built for the layer in between: a merchant-level, forward-looking decision layer that looks at a merchant's own trailing behavior over time, not a single payment, and asks whether it is heading somewhere bad early enough to matter.
 
 ---
 
-## 4. What the Product Actually Does
+## 4. Why Sentinel Is Different
 
-These are not independent features bolted together — each stage exists
-because the one before it, on its own, is not enough to be useful. A
-risk score without an explanation isn't trustworthy. An explanation
-without a financial translation isn't actionable. A translation without
-a way to test a response isn't a decision tool. Sentinel is the chain
-that connects all of them:
+Sentinel is not trying to replace a payment processor, a transaction fraud engine, a chargeback-guarantee product, or a dispute-management platform. Those solve real problems at different points in the timeline. Sentinel's focus is the decision layer above all of them:
 
-| Stage | What it does | Status |
-|---|---|---|
-| **Risk detection** | Flags materially elevated 30-day chargeback-loss exposure for a merchant | **Implemented** |
-| **Explainability** | SHAP-based, faithfulness-verified drivers behind that score | **Implemented** |
-| **Exposure / Liquidity translation** | Converts modeled risk into an exposure figure and a liquidity-stress ratio | **Implemented** (transparent derivation, not a second model) |
-| **What-if simulator** | Bounded, deterministic counterfactuals over 3 real operational controls | **Implemented** |
-| **Intervention Intelligence** | Grounded, ranked suggestions for what to test, tied to observed deviation + SHAP | **Implemented** |
-| **Incident Response** | Turns a detected episode into reason code, priority, and a response-prep workflow | **Implemented** |
-| **Evidence Readiness** | Reports what evidence is available vs. missing for a detected incident | **Implemented** |
-| **AI Orchestrator** | A grounded assistant that explains the above in natural language | **Implemented** |
-| **Risk Memory** | Records intervention/simulation activity for the session | **Implemented as scaffolding** — in-process, not persisted, cleared on every backend restart |
-| **Outcome learning loop** | Learning which interventions actually work from real outcomes | **Not built** — see [§10](#10-research-journey-as-supporting-evidence) |
+- **Merchant-level and forward-looking**, not transaction-level — it reasons about a merchant's trailing operational trend, not whether to approve one payment.
+- **Risk translated into financial-continuity terms**, not left as an abstract probability — an exposure figure and a liquidity-stress ratio a merchant can reason about.
+- **Explainability with real provenance**, not a black box — every number is labeled observed, modeled, or derived, and every SHAP explanation is checked to reconstruct the model's own output before it is shown.
+- **Bounded counterfactual simulation** that turns a score into a decision tool ("what if I changed this") without pretending to be a causal guarantee.
+- **Intervention Intelligence** that connects a detected signal to a concrete, testable operational lever, not just a recommendation with no next step.
+- **An outcome-recording foundation (Risk Memory)**, honestly scoped — it records what was tried and explicitly does not claim to have learned from outcomes that don't yet exist in this benchmark.
+- **Incident and evidence readiness** treated as part of the same intelligence chain that detected the risk, not a bolted-on ticketing feature.
+- **A grounded AI layer** that explains already-computed product outputs. It does not calculate risk itself, and every number it cites is verified identical to the same authoritative service every dashboard screen uses.
+- **Explicit uncertainty everywhere** — synthetic-data boundaries, model limitations, and unresolved findings are shown in the product, not hidden behind polish.
 
-Full behavior and scope: [`PRODUCT.md`](PRODUCT.md).
+The combination of these pieces into one connected workflow, not any single one alone, is the product thesis.
 
 ---
 
-## 5. What Makes Sentinel Different
-
-Sentinel is not trying to replace a payment processor, a transaction
-fraud engine, a chargeback-guarantee product, or a dispute-management
-platform. Those solve real, different problems at different points in
-the timeline. Sentinel's distinctive focus is the decision layer above
-all of them:
-
-- **Merchant-level and forward-looking**, not transaction-level — it
-  reasons about a merchant's trailing operational trend, not whether to
-  approve one payment.
-- **Risk translated into financial-continuity terms**, not left as an
-  abstract probability — exposure and liquidity-stress figures a
-  merchant can actually reason about.
-- **Explainability with real provenance**, not a black box — every
-  number is labeled observed, modeled, or derived, and every SHAP
-  explanation is checked to reconstruct the model's own output before
-  it's ever shown.
-- **Bounded counterfactual simulation** that turns a score into a
-  decision tool — "what if I changed this" — without pretending to be a
-  causal guarantee.
-- **Intervention Intelligence** that connects a detected signal to a
-  concrete, testable operational lever, not just a recommendation with
-  no next step.
-- **An outcome-recording foundation (Risk Memory)**, honestly scoped —
-  it records what was tried and precisely, explicitly, does not claim
-  to have learned from outcomes that don't yet exist in this benchmark.
-- **Incident and evidence readiness treated as the same intelligence
-  chain that detected the risk**, not a bolted-on ticketing feature.
-- **A grounded AI layer** that explains already-computed product
-  outputs — it does not calculate risk itself, and every number it
-  cites is verified identical to the same authoritative service every
-  dashboard screen uses.
-- **Explicit uncertainty everywhere** — synthetic-data boundaries,
-  model limitations, and unresolved findings are shown in the product,
-  not hidden behind polish.
-
-The prototype combines these capabilities into one connected workflow
-rather than shipping any single one as an isolated feature — that
-combination, not any one piece alone, is the product thesis.
-
----
-
-## 6. Why This Matters to Razorpay / Business Value
-
-This section describes **potential strategic value**, not a demonstrated
-outcome. The current prototype demonstrates that this kind of
-merchant-level decision layer can be built end-to-end and evaluated
-honestly on a synthetic benchmark — it does **not** demonstrate reduced
-chargebacks, reduced churn, reduced support costs, or reduced losses for
-any real merchant or for Razorpay, and no claim to that effect is made
-anywhere in this repository.
-
-If a capability like this were built and validated on real merchant
-data inside a payment platform, the strategic opportunity it points
-toward includes:
-
-- Helping merchants identify deteriorating operational risk earlier
-  than a purely retrospective view allows.
-- Making a complex risk signal understandable — drivers, financial
-  consequence, and next steps — instead of a single opaque score.
-- Helping merchants decide **what is worth testing operationally**
-  before committing to a change, rather than guessing.
-- Potentially reducing avoidable loss and improving merchant resilience
-  — a hypothesis this prototype is built to eventually test, not a
-  result it has produced.
-- Making a payment platform more valuable to merchants beyond raw
-  transaction processing, by adding a decision-support layer merchants
-  don't otherwise get.
-- Creating room for premium risk-intelligence or merchant-tooling
-  products built on top of the same underlying signals.
-- Longer-term, informing merchant financial-health or working-capital
-  products — strictly contingent on real-data validation this prototype
-  has not performed.
-
-**What would be required to validate any of this**: real merchant
-transaction and outcome data, a real deployment, and a real evaluation
-of whether interventions merchants actually took changed their
-real-world risk — none of which exists in this repository today (see
-[§10](#10-research-journey-as-supporting-evidence) and
-[§11](#11-limitations--honest-boundaries)).
-
----
-
-## 7. How the Technical System Makes This Credible
-
-Before the specific numbers ([§9](#9-evidence-and-evaluation)), the short
-version of why this isn't a hand-waved concept: the risk model was
-built on a **reproducible synthetic benchmark** (fixed seed, byte-
-identical regeneration), evaluated with a **held-out, merchant-level
-test split** and a **separate temporal stress test** on a later,
-never-trained-on time period, compared against real baselines (not just
-reported in isolation), and explained with SHAP attributions that are
-checked — not assumed — to reconstruct the model's own output. The
-product sits on a **typed FastAPI backend** and a **React dashboard**
-that render only what the API actually returns, with a **grounded AI
-layer** that cites verified numbers rather than generating its own, and
-an **automated test suite** (563 tests across backend, ML, and frontend)
-that exercises this behavior directly rather than by inspection.
-
-This is engineering rigor in service of the product story — the next
-two sections show what that rigor actually is (§8) and what it actually
-found, including where it didn't work (§9).
-
----
-
-## 8. Product Workflow / Architecture
-
-**The product loop:**
+## 5. Product Workflow
 
 ```
 Observe → Predict → Explain → Translate → Simulate → Decide → Prepare
 ```
 
-- **Observe** — a merchant's own trailing operational behavior: refund
-  rate, on-time fulfillment, chargeback history, customer mix, GMV.
-- **Predict** — the saved 30-day model flags materially elevated
-  chargeback-loss exposure against its own decision threshold.
-- **Explain** — SHAP attributions show which observed signals pushed
-  that score up or down, verified to reconstruct the model's own output.
-- **Translate** — the modeled risk becomes an exposure figure and a
-  liquidity-stress ratio, in terms a merchant can act on.
-- **Simulate** — a bounded what-if tool re-runs the same model under a
-  merchant-adjusted control and reports a **MODELED IMPACT**, never a
-  guarantee.
-- **Decide** — Intervention Intelligence surfaces which of those
-  controls is actually worth testing, grounded in observed deviation
-  and SHAP corroboration.
-- **Prepare** — if risk becomes an incident, response preparation and
-  evidence readiness connect prevention to response.
+- **Observe** — a merchant's own trailing operational behavior: refund rate, on-time fulfillment, chargeback history, customer mix, GMV.
+- **Predict** — the saved 30-day model flags materially elevated chargeback-loss exposure against its own decision threshold.
+- **Explain** — SHAP attributions show which observed signals pushed that score up or down, verified to reconstruct the model's own output.
+- **Translate** — the modeled risk becomes an exposure figure and a liquidity-stress ratio, in terms a merchant can act on.
+- **Simulate** — a bounded what-if tool re-runs the same model under a merchant-adjusted control and reports a **MODELED IMPACT**, never a guarantee.
+- **Decide** — Intervention Intelligence surfaces which of those controls is actually worth testing, grounded in observed deviation and SHAP corroboration.
+- **Prepare** — if risk becomes an incident, response preparation and evidence readiness connect prevention to response.
 
-**System architecture:**
+---
+
+## 6. Product Overview
+
+Six connected dashboard screens carry this loop end to end. A live walkthrough is in the [demo video](#2-explore-sentinel); this table is the quick reference:
+
+| Screen | What it shows |
+|---|---|
+| **Overview** | Current risk state (Normal/Elevated), 30-day modeled probability, confidence/data-quality indicator, 90-day trend of observed GMV/chargeback/refund rate |
+| **Risk** | The full modeled risk read for a merchant, with the same provenance labeling used everywhere else |
+| **Explainability** | SHAP-based drivers behind the score, faithfulness-verified against the model's own output |
+| **Simulator** | Bounded what-if controls (refund rate, on-time fulfillment, new-customer share) and the resulting MODELED IMPACT |
+| **Incident Response** | Detected episodes, reason code, priority, and a four-step response-preparation tracker |
+| **Evidence** | Per-incident evidence readiness across seven categories, each resolved by a disclosed rule |
+
+Every stage exists because the one before it, on its own, is not enough to be useful: a risk score without an explanation isn't trustworthy, an explanation without a financial translation isn't actionable, and a translation without a way to test a response isn't a decision tool.
+
+| Stage | Status |
+|---|---|
+| Risk detection, explainability, exposure/liquidity translation | Implemented |
+| What-if simulator, Intervention Intelligence | Implemented |
+| Incident response, evidence readiness | Implemented |
+| AI orchestrator (grounded, provenance-labeled) | Implemented |
+| Risk Memory | Implemented as scaffolding — in-process, not persisted, cleared on every backend restart |
+| Outcome-learning loop (learning which interventions work from real outcomes) | Not built — see [§9](#9-what-we-learned--failure-analysis) |
+
+Full behavior and scope: [`PRODUCT.md`](PRODUCT.md).
+
+---
+
+## 7. Held-Out Evaluation
+
+All results below are measured on a fully synthetic, reproducible benchmark and cross-checked directly against the committed evaluation artifacts (`data/metadata/modeling/results.json`, `calibration_results.json`). No real Razorpay or merchant data is used anywhere in this repository.
+
+**Selected candidate: Random Forest, 30-day horizon, held-out merchant-level test set (n = 960 rows, 8 merchants never seen in training):**
+
+| Metric | Value |
+|---|---|
+| Precision | 0.502 |
+| Recall | 0.552 |
+| F1 | 0.526 |
+| PR-AUC | 0.603 |
+| Confusion matrix (TN / FP / FN / TP) | 587 / 132 / 108 / 133 |
+| Median warning lead time | 7.0 days |
+| Brier score (uncalibrated) | 0.188 |
+| Brier score (calibrated, sigmoid) | 0.192 — no improvement |
+| Incidents actually flagged | 50 of 80 injected risk episodes, across 34 of 50 merchants |
+
+**Temporal stress test** (same 8 test merchants, evaluated only on a later time window the model never trained on):
+
+| Horizon | Normal PR-AUC | Stress PR-AUC | Δ |
+|---|---|---|---|
+| 30 days | 0.603 | **0.476** | −0.127 (−21% relative) |
+
+Random Forest at 30 days still clearly beats the baseline and stays well above chance, but this is a real, non-trivial sensitivity to distribution shift, not a clean survival.
+
+Full methodology, every metric, and the complete failure analysis: [`EVALUATION.md`](EVALUATION.md).
+
+---
+
+## 8. Baseline Comparison
+
+Four models were evaluated unconditionally across three horizons, with hyperparameters fixed before any test-set result was seen:
+
+| Model | Horizon | Precision | Recall | F1 | PR-AUC |
+|---|---|---|---|---|---|
+| Historical-threshold baseline | 30d | 0.252 | 1.000 | 0.402 | 0.257 |
+| Logistic Regression | 30d | 0.455 | 0.718 | 0.557 | 0.486 |
+| **Random Forest** | **30d** | **0.502** | 0.552 | 0.526 | **0.603** |
+| XGBoost | 30d | 0.437 | 0.751 | 0.553 | 0.467 |
+
+The historical-threshold baseline's near-perfect recall is not skill: at 30 days it flags 997 of 1,000 test rows positive, close to a "flag-everything" strategy, and its PR-AUC (0.257) sits barely above the raw positive rate. Random Forest was selected for the best PR-AUC at the strongest horizon and the best false-positive profile of the four (132 FP vs. 133 TP, the only model with FP:TP under 1 at 30 days) — not a clean win, since XGBoost and Logistic Regression are close on F1 and Random Forest shows the largest degradation of the three under temporal stress.
+
+PR-AUC across horizons for every real model:
+
+| Model | 7d | 14d | 30d |
+|---|---|---|---|
+| Logistic Regression | 0.226 | 0.301 | 0.486 |
+| Random Forest | 0.262 | 0.370 | 0.603 |
+| XGBoost | 0.221 | 0.269 | 0.467 |
+
+---
+
+## 9. What We Learned / Failure Analysis
+
+Both favorable and unfavorable findings are reported here. Nothing in this section is cherry-picked.
+
+- **7-day prediction is weak.** PR-AUC at 7 days (0.221–0.262 across models) adds little over chance-ranking. Sentinel does not present a 7-day prediction as a reliable warning.
+- **30 days is the strongest evaluated horizon.** Predictive separation rises sharply and consistently with horizon for every real model, at a rate that outpaces the modest rise in positive-class base rate — a genuine horizon effect, not just "more positives = easier."
+- **Temporal stress degrades PR-AUC.** The selected 30-day candidate drops from 0.603 to 0.476 (−21% relative) on a later, never-trained-on period of the same held-out merchants. It survives partially, not cleanly.
+- **Calibration did not improve Brier score.** A Platt (sigmoid) calibration layer was fit and evaluated; Brier score went from 0.188 to 0.192 (worse), and worse still under temporal stress (0.231 → 0.253). Precision/recall/F1/PR-AUC are mathematically unchanged by construction (sigmoid scaling is monotonic). Both variants ship; neither is presented as "calibrated and ready."
+- **Exposure regression lost to a simpler baseline.** A Random Forest regression candidate for future chargeback amount was beaten on MAE and RMSE by a naive trailing-average persistence baseline at 14d and 30d. No regression artifact was ever shipped — the product's exposure figure uses the same trailing-average baseline directly, labeled `derived`.
+- **A hard-negative scenario failed.** The benchmark's central design constraint (growth ≠ risk) holds in aggregate, but the `viral_campaign` hard-negative scenario shows a 100% false-positive rate (n = 7, a small sample) — exactly the failure mode this part of the benchmark exists to expose. `payment_method_shift`, another hard-negative type, holds cleanly at a 0% false-positive rate.
+- **A warning lead-time measurement bug was found and fixed.** The first implementation credited Random Forest at 30d a median lead time of 30.0 days — indistinguishable from "always fires" — because it did not require the positive prediction to be contiguous with the episode's onset. The corrected, honest figure is 7.0 days.
+- **An archetype was structurally suppressed by a generator bug, and corrected.** The Education archetype's original transaction-volume parameters made chargeback outcomes nearly unobservable regardless of injected risk severity, not a genuine "low-risk" finding. Fixing the volume parameters (not the risk-rate parameters) moved Education from the lowest positive-rate archetype to mid-pack.
+- **An unresolved SHAP finding remains open.** In two individually inspected high-confidence positive predictions, a chargeback-rate feature value of exactly 0.0 pushed the score *up*, opposite to that feature's global average signed direction. This is not a contradiction (SHAP can capture real interaction effects), but it has not been root-caused.
+
+Full failure analysis, including every corrected bug and every negative result: [`EVALUATION.md` §17](EVALUATION.md).
+
+---
+
+## 10. Architecture and the AI Boundary
+
+**System flow:**
 
 ```
 Synthetic Benchmark + ML Artifacts
@@ -250,133 +195,82 @@ Synthetic Benchmark + ML Artifacts
         → Merchant Risk Memory
 ```
 
-The system that computes risk is kept structurally separate from the
-system that explains it — the AI layer never writes into a risk,
-exposure, liquidity, SHAP, simulation, or incident value. Full
-implementation-level design: [`ARCHITECTURE.md`](ARCHITECTURE.md).
+The central architectural principle: **the system that computes risk remains structurally separate from the system that explains it.** The AI layer never writes into a risk, exposure, liquidity, SHAP, simulation, or incident value.
 
----
+**The AI boundary, specifically:**
 
-## 9. Evidence and Evaluation
+- Every number the AI orchestrator discusses is computed by an existing backend service before the AI provider is ever called, and a dedicated test independently verifies the assistant's cited numbers are byte-identical to the same authoritative service call every dashboard screen makes.
+- A deterministic pre-filter checks every incoming question for known prompt-injection phrasings before any provider is called; a second, prompt-level instruction treats the user's own message as untrusted input.
+- The default provider is a fully deterministic mock (no network calls). Two real providers — OpenAI and an OpenAI-compatible open-weight provider (Featherless.ai) — are supported and always labeled with the exact provider/model identifier that produced a response, never presented as though the model itself performed the risk analysis.
 
-All results below are measured on a **fully synthetic, reproducible
-benchmark**: 50 merchants × 180 days, one fixed seed, 8 merchant
-archetypes, 140 scheduled scenario events, 55 engineered features. No
-real Razorpay or merchant data is used anywhere in this repository.
-Both favorable and unfavorable findings are reported — nothing here is
-cherry-picked:
+Every value Sentinel shows is labeled by provenance:
 
-| Result | Value |
+| Label | Meaning |
 |---|---|
-| PR-AUC, Random Forest, 7d / 14d / 30d | 0.262 / 0.370 / 0.603 |
-| PR-AUC, 30d, temporal stress test (later, unseen period) | 0.603 → **0.476** |
-| Median warning lead time, 30d (after a measurement bug fix) | **7.0 days** |
-| Brier score, uncalibrated vs. calibrated (30d) | 0.188 → **0.192 (no improvement)** |
-| Hard-negative (growth ≠ risk) behavior | Holds in aggregate; **fails on one scenario type** (100% false-positive rate, small sample) |
-| Exposure regression vs. a trailing-average baseline | **Beaten by the simpler baseline** — no regression artifact shipped |
-| Incident detection (real episodes the model actually flagged) | 50 of 80 injected risk episodes, across 34 of 50 merchants |
+| **Observed** | Read directly from data |
+| **Modeled** | Output of the trained, evaluated classifier |
+| **Derived** | Transparent arithmetic on observed/modeled values — no model |
+| **Synthetic / prototype assumption** | A disclosed benchmark or evidence-readiness heuristic |
 
-Predictive separation increases materially with horizon; 7-day
-prediction remains weak, so the product does not present a 7-day
-prediction as a reliable warning. The selected candidate degrades under
-temporal drift rather than surviving it cleanly. Calibration and
-exposure regression are reported as **negative results**, not hidden —
-investigating them honestly, and shipping the simpler, defensible
-option instead of the more impressive-looking one, is itself part of
-the credibility case, not a footnote.
-
-**This is synthetic-benchmark evidence. It does not establish
-production performance, real-merchant validity, or causal effect of any
-intervention or simulator output.** Full methodology, every metric, and
-the complete failure analysis: [`EVALUATION.md`](EVALUATION.md).
+Full implementation-level design: [`ARCHITECTURE.md`](ARCHITECTURE.md). AI orchestrator detail: [`docs/architecture/ai_orchestrator.md`](docs/architecture/ai_orchestrator.md).
 
 ---
 
-## 10. Research Journey as Supporting Evidence
+## 11. Synthetic Benchmark Methodology
 
-Research is the evidence layer behind the product, not the product's
-identity. Before writing product code, the underlying thesis — that a
-merchant-level, forward-looking signal is worth building at all — was
-deliberately stress-tested rather than assumed:
+- **Scale**: 50 merchants × 180 days, one fixed seed (42), 9,000 daily rows, zero date gaps, zero duplicate rows, zero nulls.
+- **Archetypes**: 8 merchant archetypes (D2C Fashion, Electronics, SaaS, Travel, Marketplace, Education, Quick Commerce, Digital Goods), each with its own baseline ranges for GMV, AOV, refund/chargeback rates, fulfillment speed, and payment mix.
+- **Events**: 140 scheduled scenario events across 9 types — 5 risk types and 4 benign-growth hard negatives — using a smoothstep onset/decay ramp with no same-merchant overlap.
+- **Features**: 55 engineered features across 9 groups, all causal (a trailing or expanding window ending at the prediction date). The feature pipeline never imports the events or labels files at all.
+- **Split**: merchant-level, archetype-stratified (64.0% train / 20.0% validation / 16.0% test); no merchant appears in more than one split.
+- **Temporal cutoff**: `day_index < 120` for training and the normal test; `day_index >= 120`, only on the already-held-out test merchants, for the temporal stress test.
+- **Leakage controls**: a column-name audit, a ground-truth-leakage check, a single-feature AUC audit, and a feature-importance-concentration check all pass at every horizon. Truncation invariance is proven directly: generating only the first 60 days of a run reproduces byte-identical output to the first 60 days of a 120-day run with the same seed.
+- **Reproducibility**: regenerating seed 42 twice produces byte-identical CSVs; every random draw traces back to a keyed `numpy.random.SeedSequence`.
 
-```
-Question → Landscape → Candidate Gaps → Falsification → Hypothesis
-    → Experiment → Results → Failure Analysis → Intervention → Future
-```
-
-That includes a chapter dedicated to actively trying to falsify the
-product thesis before committing to it (would a simpler dispute-
-prevention tool make this unnecessary? would a chargeback guarantee be
-more valuable to a merchant than prediction? could the model just be
-mistaking healthy growth for risk?) and an honest account of what
-survived that scrutiny and what didn't. The full narrative is documented
-in [`docs/research/RESEARCH.md`](docs/research/RESEARCH.md) — it is not
-reproduced here, and it is intentionally positioned as validation
-*behind* the product, not as a separate research project this repository
-happens to also contain.
+Full dataset methodology, every disclosed modeling assumption, and the dataset validation report: [`EVALUATION.md` §2–3](EVALUATION.md) and [`docs/research/dataset_validation_report.md`](docs/research/dataset_validation_report.md).
 
 ---
 
-## 11. Limitations / Honest Boundaries
+## 12. Limitations — What Sentinel Cannot Claim
 
-- **Fully synthetic benchmark.** No real Razorpay data, real merchant
-  transactions, or real dispute outcomes anywhere in this project.
-- **No claim to Razorpay's proprietary systems, data, or
-  infrastructure** — including no claim to predict Razorpay's internal
-  settlement-hold decisions, enforcement actions, internal risk scores,
-  or bank decisions. Sentinel models only observable, synthetic
-  merchant-level signals.
-- **The current model is a provisional benchmark candidate** (Random
-  Forest, 30-day horizon) — not a production deployment claim.
-- **Intervention Intelligence is bounded and deterministic**, not a
-  learned causal-optimization policy.
-- **Risk Memory does not self-learn and is not persistent.** It is an
-  in-process, session-scoped record, cleared on every backend restart;
-  every outcome is `not_observed` — there is no real post-intervention
-  outcome data for it to learn from.
-- **Simulator output is a bounded counterfactual model result**
-  ("MODELED IMPACT"), never a causal guarantee.
-- **No real-world performance validation.** Every metric in this
-  repository comes from the synthetic benchmark described in §9.
+- **Fully synthetic benchmark.** No real Razorpay data, real merchant transactions, or real dispute outcomes anywhere in this project. Every metric in this repository comes from the 50×180 synthetic benchmark described in [§11](#11-synthetic-benchmark-methodology).
+- **No claim to Razorpay's proprietary systems, data, or infrastructure** — including no claim to predict or access Razorpay's internal settlement-hold decisions, enforcement actions, internal risk scores, or bank decisions. Sentinel models only observable, synthetic merchant-level signals.
+- **The simulator is a modeled, counterfactual result, never a causal one.** It re-runs the same trained classifier under a bounded, merchant-adjusted input and reports a MODELED IMPACT — not a guarantee, and not an estimate of real-world causal effect.
+- **Risk Memory is session-scoped and in-process, not an outcome-learning system.** It is cleared on every backend restart, is never written to disk, and every record's `outcome_status` is a hardcoded `not_observed` — there is no real post-intervention outcome data for it to learn from, and no code path can set it to anything else.
+- **The current model is a provisional benchmark candidate** (Random Forest, 30-day horizon), not a production deployment claim.
+- **Intervention Intelligence is bounded and deterministic**, not a learned causal-optimization policy.
+- **No real-world performance validation.** Benchmark performance must not be read as production validation or a claim about real-world predictive accuracy.
 
-Full, itemized limitations, failure analysis, and security posture:
-[`EVALUATION.md`](EVALUATION.md) and [`SECURITY.md`](SECURITY.md).
+Full, itemized limitations and security posture: [`EVALUATION.md`](EVALUATION.md) and [`SECURITY.md`](SECURITY.md).
 
 ---
 
-## 12. Links
+## 13. Tech Stack
 
-| | |
-|---|---|
-| **Live Product** | *placeholder — to be added after deployment* |
-| **3D Marketing Website** | *placeholder — not yet built (will include the 3D Research Lab as a supporting exploration of the evidence behind Sentinel, not as Sentinel's primary identity)* |
-| **Pitch / Demo Video** | *placeholder — not yet recorded* |
-| **Research Journey** | [`docs/research/RESEARCH.md`](docs/research/RESEARCH.md) |
-| **GitHub Repository** | this repository |
+- **Backend**: Python, FastAPI, Pydantic v2, uvicorn — a typed, read-only API over the trained model and benchmark artifacts. No database, no auth layer; the backend serves a fixed, local, synthetic dataset read-only from disk.
+- **ML**: numpy, pandas, scikit-learn, XGBoost, SHAP.
+- **Dashboard** (`apps/dashboard`): React 19, TypeScript, Vite, Tailwind CSS v4, recharts, react-router-dom.
+- **Marketing site** (`apps/marketing`): React 19, TypeScript, Vite, Tailwind CSS v4, GSAP + ScrollTrigger, Lenis — a cinematic, scroll-driven presentation layer built with layered CSS/SVG composition, not a 3D engine.
+- **Testing**: pytest (backend/ML), Vitest + Testing Library (dashboard).
+- **AI providers**: a deterministic mock provider (default, no network dependency); OpenAI; Featherless.ai (OpenAI-compatible, open-weight models) — both real providers optional and lazily loaded.
 
 ---
----
 
-# Appendix: Repository Reference
-
-The sections below are practical reference material — repository
-layout, how to run Sentinel locally, and the technology stack — kept
-after the product narrative above so a reader gets the product case
-first and the operational detail second.
-
-## Repository Structure
+## 14. Project Structure
 
 ```
 sentinel/
-├── apps/dashboard/     React + TypeScript dashboard (6 screens)
-├── backend/            FastAPI backend — risk, simulation, incidents,
-│                        evidence, interventions, memory, AI orchestrator
+├── apps/
+│   ├── dashboard/       React + TypeScript product dashboard (6 screens)
+│   └── marketing/       React + TypeScript marketing site (scroll-driven, GSAP)
+├── backend/             FastAPI backend — risk, simulation, incidents,
+│                         evidence, interventions, memory, AI orchestrator
 ├── data/                Generated synthetic benchmark, features, ML artifacts
 ├── docs/
 │   ├── architecture/    Per-module implementation design docs
-│   └── research/        Research journey + full research/evaluation reports
+│   └── research/        Research journey + dataset/baseline reports
 ├── ml/                  Data generation, feature engineering, modeling,
-│                        explainability, validation
+│                         explainability, validation
 ├── scripts/             Generate data, build features, train/evaluate, run backend
 ├── tests/                Python test suite (backend, ML, AI orchestrator)
 ├── ARCHITECTURE.md      System architecture
@@ -387,7 +281,9 @@ sentinel/
 └── SECURITY.md          Security / data-handling notes
 ```
 
-## Running Sentinel Locally
+---
+
+## 15. Local Setup
 
 ### Backend
 
@@ -406,10 +302,9 @@ uv venv .venv && uv pip install --python .venv/bin/python -r requirements.txt
 # Interactive docs: http://127.0.0.1:8010/docs
 ```
 
-macOS also requires `brew install libomp` for XGBoost (training/
-evaluation scripts only, not the served backend — see `requirements.txt`).
+macOS also requires `brew install libomp` for XGBoost (training/evaluation scripts only, not the served backend — see `requirements.txt`).
 
-### Frontend
+### Dashboard
 
 ```bash
 cd apps/dashboard
@@ -418,13 +313,21 @@ npm install
 npm run dev                  # http://localhost:5173 (or next free port)
 ```
 
+### Marketing site
+
+```bash
+cd apps/marketing
+npm install
+npm run dev                  # http://localhost:5173 (or next free port)
+```
+
 ### Checks
 
 ```bash
-# Python
+# Python (332 tests)
 .venv/bin/python -m pytest tests/ -v
 
-# Frontend (from apps/dashboard/)
+# Dashboard (238 tests, from apps/dashboard/)
 npx vitest run
 npx tsc -b --noEmit
 npm run lint
@@ -440,45 +343,11 @@ npm run build
 | `FEATHERLESS_API_KEY`, `FEATHERLESS_BASE_URL`, `FEATHERLESS_MODEL` | repo root `.env` | Only if using the Featherless.ai provider |
 | `VITE_API_BASE_URL` | `apps/dashboard/.env` | Backend URL the dashboard calls |
 
-See `.env.example` and `apps/dashboard/.env.example`. Never commit a
-real API key — both example files are gitignored placeholders.
+See `.env.example` and `apps/dashboard/.env.example`. Never commit a real API key; both example files are gitignored placeholders.
 
-## Technology
+---
 
-- **Backend**: Python, FastAPI, Pydantic v2, uvicorn — typed, read-only
-  API over the trained model and benchmark artifacts.
-- **ML**: numpy, pandas, scikit-learn, XGBoost, SHAP.
-- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS v4, recharts,
-  react-router-dom.
-- **Testing**: pytest (backend/ML), Vitest + Testing Library (frontend).
-- **AI providers**: a deterministic mock provider (default, no network
-  dependency); OpenAI; Featherless.ai (OpenAI-compatible, open-weight
-  models) — both real providers optional and lazily loaded.
-
-No database and no auth layer exist — the backend serves a fixed,
-local, synthetic dataset read-only from disk.
-
-## AI / Assistant Honesty
-
-Sentinel's assistant explains **already-computed** risk, exposure,
-liquidity, SHAP drivers, simulations, and incidents. It does not, and
-structurally cannot, calculate a risk score itself — every number it
-discusses is computed by an existing service before the AI provider is
-ever called, verified byte-identical to the same authoritative call
-every dashboard screen makes.
-
-Every value Sentinel shows is labeled by provenance:
-
-| Label | Meaning |
-|---|---|
-| **Observed** | Read directly from data |
-| **Modeled** | Output of the trained, evaluated classifier |
-| **Derived** | Transparent arithmetic on observed/modeled values — no model |
-| **Synthetic / prototype assumption** | A disclosed benchmark or evidence-readiness heuristic |
-
-Details: [`docs/architecture/ai_orchestrator.md`](docs/architecture/ai_orchestrator.md).
-
-## Documentation Map
+## 16. Supporting Documentation
 
 | Document | Covers |
 |---|---|
@@ -487,21 +356,10 @@ Details: [`docs/architecture/ai_orchestrator.md`](docs/architecture/ai_orchestra
 | [`EVALUATION.md`](EVALUATION.md) | Quantitative evaluation and failure analysis |
 | [`docs/research/RESEARCH.md`](docs/research/RESEARCH.md) | Research journey and evidence |
 | [`SECURITY.md`](SECURITY.md) | Security / data-handling notes |
+| [`docs/architecture/`](docs/architecture/) | Per-module implementation design docs |
 
-## Project Status
+Sentinel's automated test suite currently covers 570 tests (332 backend/ML via pytest, 238 frontend via Vitest), exercising this behavior directly rather than by inspection.
 
-The core Sentinel product — risk engine, explainability, exposure/
-liquidity, simulator, intervention intelligence, incident response,
-evidence readiness, AI orchestrator, and Risk Memory V1 — is
-substantially implemented and evaluated, across all six dashboard
-screens (Overview, Risk, Explainability, Simulator, Incident Response,
-Evidence).
+### Project status
 
-**Remaining work** is presentation and delivery, not core product
-scope:
-
-- 3D marketing website (including the 3D Research Lab section)
-- Final deployment
-- Pitch / demo video
-
-None of the above are complete yet — see [§12](#12-links).
+The core Sentinel product — risk engine, explainability, exposure/liquidity, simulator, intervention intelligence, incident response, evidence readiness, AI orchestrator, and Risk Memory V1 — is substantially implemented and evaluated, across all six dashboard screens. The dashboard, the marketing site, and this documentation set are complete and deployed; remaining work before submission is limited to final QA rather than new product scope.
