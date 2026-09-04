@@ -1,10 +1,11 @@
 import { CtaButton } from '@/components/CtaButton'
 
-const LINKS = ['Overview', 'Research']
+const DASHBOARD_URL = 'https://sentinel-dashboard-39tw.onrender.com/'
 
-/** No routing exists yet in this app, and the eventual destinations
- * (Explore page, Research section) are out of scope for this task — links
- * render as real, styled, inert anchors rather than invented pages. */
+/** The "Overview"/"Research" nav links (inert placeholders — no routing
+ * existed for them anyway) were removed along with the homepage sections
+ * they pointed toward. Logo/branding stay as-is; the CTA now links out to
+ * the live deployed dashboard instead of being an inert anchor. */
 export function Nav() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-5 sm:px-10">
@@ -16,20 +17,9 @@ export function Nav() {
         </div>
       </div>
 
-      <nav aria-label="Primary" className="hidden items-center gap-8 md:flex">
-        {LINKS.map((label) => (
-          <a
-            key={label}
-            href="#"
-            onClick={(event) => event.preventDefault()}
-            className="text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
-          >
-            {label}
-          </a>
-        ))}
-      </nav>
-
-      <CtaButton className="text-xs sm:text-sm">Explore Sentinel</CtaButton>
+      <CtaButton href={DASHBOARD_URL} target="_blank" rel="noopener noreferrer" className="text-xs sm:text-sm">
+        Explore Sentinel
+      </CtaButton>
     </header>
   )
 }

@@ -22,6 +22,17 @@ const TRUSTED_LINES = [
 ]
 const DIVERGENT_LINE = 'M -40,205 C 400,195 800,140 1480,60'
 
+/** The resources/CTA row added below the reveal act — real, verified
+ * destinations (checked via HTTP request before shipping), all external
+ * so all open in a new tab. All four carry identical visual weight —
+ * no link is styled as more "primary" than the others. */
+const EXPLORE_LINKS = [
+  { label: 'See the Code', href: 'https://github.com/asmeetaahh/Sentinel' },
+  { label: 'Explore the Research', href: 'https://github.com/asmeetaahh/Sentinel/blob/main/docs/research/RESEARCH.md' },
+  { label: 'Try Sentinel Live', href: 'https://sentinel-dashboard-39tw.onrender.com/' },
+  { label: 'Watch the Demo', href: 'https://drive.google.com/file/d/10x-h0YaBS_qooRwld6pYcPI3_abHHYTw/view?usp=sharing' },
+]
+
 const clamp01 = (n: number) => Math.max(0, Math.min(1, n))
 
 /** Fades in over [inStart, inEnd], holds at 1, fades out over
@@ -67,6 +78,12 @@ export function ExplainSection() {
   const revealRef = useRef<HTMLDivElement>(null)
   const pulseWrapRef = useRef<HTMLDivElement>(null)
   const particleRefs = useRef<(HTMLDivElement | null)[]>([])
+  // New — the resources/CTA row added below the reveal act. Purely
+  // additive: it reads the SAME `revealOpacity` value already computed
+  // for the reveal act (see below), it doesn't add a new timing band or
+  // touch act1/turn/reveal's own code, so it simply appears together
+  // with "That's why we built Sentinel."
+  const ctaRef = useRef<HTMLDivElement>(null)
   const reduceMotion = usePrefersReducedMotion()
 
   useEffect(() => {
@@ -75,8 +92,9 @@ export function ExplainSection() {
     const turn = turnRef.current
     const reveal = revealRef.current
     const pulseWrap = pulseWrapRef.current
+    const cta = ctaRef.current
     const particles = particleRefs.current.filter((el): el is HTMLDivElement => el !== null)
-    if (!section || !act1 || !turn || !reveal || !pulseWrap) return
+    if (!section || !act1 || !turn || !reveal || !pulseWrap || !cta) return
 
     const applyProgress = (progress: number) => {
       const act1Opacity = bandOpacity(progress, 0, 0.05, 0.5, 0.6)
@@ -89,6 +107,8 @@ export function ExplainSection() {
       turn.style.transform = `translateY(${(1 - turnOpacity) * 14}px)`
       reveal.style.opacity = String(revealOpacity)
       reveal.style.transform = `translateY(${(1 - revealOpacity) * 14}px)`
+      cta.style.opacity = String(revealOpacity)
+      cta.style.transform = `translateY(${(1 - revealOpacity) * 14}px)`
 
       // The reveal-phase pulse behind "Sentinel" — quiet, timed to when
       // the word itself becomes visible, not before.
@@ -170,7 +190,10 @@ export function ExplainSection() {
             strokeWidth={1.5}
             opacity={0.55}
             strokeDasharray="4 7"
-            style={{ animation: reduceMotion ? 'none' : 'signal-flow 6s linear infinite', filter: 'drop-shadow(0 0 4px rgba(240,163,95,0.5))' }}
+            style={{
+              animation: reduceMotion ? 'none' : 'signal-flow 6s linear infinite',
+              filter: 'drop-shadow(0 0 4px rgba(240,163,95,0.5))',
+            }}
           />
         </svg>
 
@@ -206,47 +229,79 @@ export function ExplainSection() {
           />
         </div>
 
-        <div className="relative mx-auto min-h-[520px] w-full max-w-2xl sm:min-h-[420px]">
-          {/* ACT 1 — the signals existed, but were fragmented */}
-          <div ref={act1Ref} className="absolute inset-x-0 top-0" style={{ opacity: 0 }}>
-            <p className="text-xs font-medium tracking-[0.2em] text-muted-foreground uppercase">
-              The signals were already there
-            </p>
-            <h2 className="mt-5 text-3xl leading-tight font-semibold tracking-tight text-balance sm:text-5xl">
-              The clues appear before the shock.
-            </h2>
-            <div className="mt-6 space-y-1 text-sm text-muted-foreground/90 sm:text-base">
-              <p>A change in transaction behavior.</p>
-              <p>A rise in disputes.</p>
-              <p>A shift in payment velocity.</p>
-              <p>Increasing concentration.</p>
+        {/* Wraps the existing three-act stack (unchanged below) alongside
+            the new CTA row so the two stack vertically — the sticky
+            pane's own flex container has no explicit flex-direction, so a
+            second direct child would otherwise sit beside the acts, not
+            below them. Nothing inside the acts container itself changes. */}
+        <div className="flex flex-col items-center">
+          <div className="relative mx-auto min-h-[520px] w-full max-w-2xl sm:min-h-[420px]">
+            {/* ACT 1 — the signals existed, but were fragmented */}
+            <div ref={act1Ref} className="absolute inset-x-0 top-0" style={{ opacity: 0 }}>
+              <p className="text-xs font-medium tracking-[0.2em] text-muted-foreground uppercase">The signals were already there</p>
+              <h2 className="mt-5 text-3xl leading-tight font-semibold tracking-tight text-balance sm:text-5xl">
+                The clues appear before the shock.
+              </h2>
+              <div className="mt-6 space-y-1 text-sm text-muted-foreground/90 sm:text-base">
+                <p>A change in transaction behavior.</p>
+                <p>A rise in disputes.</p>
+                <p>A shift in payment velocity.</p>
+                <p>Increasing concentration.</p>
+              </div>
+              <p className="mt-5 text-sm text-muted-foreground/70 sm:text-base">None of these signals alone tells the whole story.</p>
+              <p className="mx-auto mt-5 max-w-sm text-base text-muted-foreground sm:text-lg">
+                The problem is not a lack of data.
+                <br />
+                It&apos;s knowing when the pattern is changing.
+              </p>
             </div>
-            <p className="mt-5 text-sm text-muted-foreground/70 sm:text-base">None of these signals alone tells the whole story.</p>
-            <p className="mx-auto mt-5 max-w-sm text-base text-muted-foreground sm:text-lg">
-              The problem is not a lack of data.
-              <br />
-              It&apos;s knowing when the pattern is changing.
-            </p>
+
+            {/* THE TURN — a single transitional line */}
+            <div ref={turnRef} className="absolute inset-x-0 top-0" style={{ opacity: 0 }}>
+              <p className="mx-auto max-w-lg text-2xl leading-snug font-medium tracking-tight text-balance sm:text-4xl">
+                But when the signals move together, the story changes.
+              </p>
+            </div>
+
+            {/* THE REVEAL — Sentinel */}
+            <div ref={revealRef} className="absolute inset-x-0 top-0" style={{ opacity: 0 }}>
+              <p className="text-xs font-medium tracking-[0.2em] text-accent-soft uppercase">Sentinel</p>
+              <h2 className="mt-5 text-4xl leading-tight font-semibold tracking-tight text-balance sm:text-6xl">
+                That&apos;s why we built{' '}
+                <span className="bg-gradient-to-r from-accent to-accent-soft bg-clip-text text-transparent">Sentinel</span>.
+              </h2>
+              <p className="mx-auto mt-6 max-w-lg text-base text-muted-foreground sm:text-lg">
+                Sentinel connects merchant-level signals, detects emerging changes in risk, and turns them into a trajectory you can test
+                before the financial shock arrives.
+              </p>
+            </div>
           </div>
 
-          {/* THE TURN — a single transitional line */}
-          <div ref={turnRef} className="absolute inset-x-0 top-0" style={{ opacity: 0 }}>
-            <p className="mx-auto max-w-lg text-2xl leading-snug font-medium tracking-tight text-balance sm:text-4xl">
-              But when the signals move together, the story changes.
-            </p>
-          </div>
-
-          {/* THE REVEAL — Sentinel */}
-          <div ref={revealRef} className="absolute inset-x-0 top-0" style={{ opacity: 0 }}>
-            <p className="text-xs font-medium tracking-[0.2em] text-accent-soft uppercase">Sentinel</p>
-            <h2 className="mt-5 text-4xl leading-tight font-semibold tracking-tight text-balance sm:text-6xl">
-              That&apos;s why we built{' '}
-              <span className="bg-gradient-to-r from-accent to-accent-soft bg-clip-text text-transparent">Sentinel</span>.
-            </h2>
-            <p className="mx-auto mt-6 max-w-lg text-base text-muted-foreground sm:text-lg">
-              Sentinel connects merchant-level signals, detects emerging changes in risk, and turns them into a
-              trajectory you can test before the financial shock arrives.
-            </p>
+          {/* Resources/CTA row — appears together with the reveal act
+              above (same `revealOpacity`, written in applyProgress).
+              All four links share one identical treatment — near-black
+              surface, a faint permanent lavender border/glow (the same
+              signal-aesthetic accent used across the section), and a
+              gentle intensification on hover. No link is emphasized
+              over another. */}
+          <div ref={ctaRef} className="mt-9 flex flex-wrap items-center justify-center gap-3 sm:mt-11 sm:gap-3.5" style={{ opacity: 0 }}>
+            {EXPLORE_LINKS.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center gap-2.5 rounded-[10px] border border-accent-soft/20 bg-white/[0.015] px-5 py-3 text-[13px] font-medium tracking-[0.01em] text-muted-foreground shadow-[0_0_16px_-8px_rgba(139,123,247,0.35)] transition-all duration-300 ease-out hover:border-accent-soft/40 hover:bg-white/[0.03] hover:text-foreground hover:shadow-[0_0_26px_-6px_rgba(139,123,247,0.5)] sm:px-6 sm:py-3.5 sm:text-sm"
+              >
+                {link.label}
+                <span
+                  aria-hidden
+                  className="text-muted-foreground/60 transition-transform duration-300 ease-out group-hover:translate-x-1 group-hover:text-accent-soft"
+                >
+                  →
+                </span>
+              </a>
+            ))}
           </div>
         </div>
       </div>
