@@ -361,4 +361,4 @@ Sentinel's automated test suite currently covers 570 tests (332 backend/ML via p
 
 ### Project status
 
-The core Sentinel product — risk engine, explainability, exposure/liquidity, simulator, intervention intelligence, incident response, evidence readiness, AI orchestrator, and Risk Memory V1 — is substantially implemented and evaluated, across all six dashboard screens. The dashboard, the marketing site, and this documentation set are complete and deployed; remaining work before submission is limited to final QA rather than new product scope.
+The core Sentinel product — risk engine, explainability, exposure/liquidity, simulator, intervention intelligence, incident response, evidence readiness, AI orchestrator, and Risk Memory V1 — is substantially implemented and evaluated, across all six dashboard screens. The dashboard, the marketing site, and this documentation set are complete and deployed.
